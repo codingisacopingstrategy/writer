@@ -106,8 +106,8 @@ class MtAuthorMeta(models.Model):
         db_table = u'mt_author_meta'
 
 class MtAuthorSummary(models.Model):
-    author_summary_author_id = models.IntegerField()
-    author_summary_type = models.CharField(max_length=765, primary_key=True)
+    author_summary_author_id = models.IntegerField(primary_key=True)
+    author_summary_type = models.CharField(max_length=765)
     author_summary_class = models.CharField(max_length=225)
     author_summary_vchar_idx = models.CharField(max_length=765, blank=True)
     author_summary_vinteger_idx = models.IntegerField(null=True, blank=True)
@@ -238,7 +238,7 @@ class MtCategoryMeta(models.Model):
         db_table = u'mt_category_meta'
 
 class MtComment(models.Model):
-    comment_id = models.IntegerField()
+    comment_id = models.IntegerField(primary_key=True)
     comment_author = models.CharField(max_length=300, blank=True)
     comment_blog_id = models.IntegerField()
     comment_commenter_id = models.IntegerField(null=True, blank=True)
@@ -283,7 +283,7 @@ class MtConfig(models.Model):
         db_table = u'mt_config'
 
 class MtEntry(models.Model):
-    entry_id = models.IntegerField()
+    entry_id = models.IntegerField(primary_key=True)
     entry_allow_comments = models.IntegerField(null=True, blank=True)
     entry_allow_pings = models.IntegerField(null=True, blank=True)
     entry_atom_id = models.CharField(max_length=765, blank=True)
@@ -312,6 +312,8 @@ class MtEntry(models.Model):
     entry_to_ping_urls = models.TextField(blank=True)
     entry_week_number = models.IntegerField(null=True, blank=True)
     entry_current_revision = models.IntegerField()
+    def __unicode__(self):
+        return self.entry_title
     class Meta:
         db_table = u'mt_entry'
 
@@ -347,8 +349,8 @@ class MtEntryRev(models.Model):
         db_table = u'mt_entry_rev'
 
 class MtEntrySummary(models.Model):
-    entry_summary_entry_id = models.IntegerField()
-    entry_summary_type = models.CharField(max_length=765, primary_key=True)
+    entry_summary_entry_id = models.IntegerField(primary_key=True)
+    entry_summary_type = models.CharField(max_length=765)
     entry_summary_class = models.CharField(max_length=225)
     entry_summary_vchar_idx = models.CharField(max_length=765, blank=True)
     entry_summary_vinteger_idx = models.IntegerField(null=True, blank=True)
@@ -511,7 +513,7 @@ class MtSession(models.Model):
         db_table = u'mt_session'
 
 class MtTag(models.Model):
-    tag_id = models.IntegerField()
+    tag_id = models.IntegerField(primary_key=True)
     tag_is_private = models.IntegerField(null=True, blank=True)
     tag_n8d_id = models.IntegerField(null=True, blank=True)
     tag_name = models.CharField(max_length=765)
@@ -519,7 +521,7 @@ class MtTag(models.Model):
         db_table = u'mt_tag'
 
 class MtTbping(models.Model):
-    tbping_id = models.IntegerField()
+    tbping_id = models.IntegerField(primary_key=True)
     tbping_blog_id = models.IntegerField()
     tbping_blog_name = models.CharField(max_length=765, blank=True)
     tbping_created_by = models.IntegerField(null=True, blank=True)
@@ -657,7 +659,7 @@ class MtTrackback(models.Model):
         db_table = u'mt_trackback'
 
 class MtTsError(models.Model):
-    ts_error_error_time = models.IntegerField()
+    ts_error_error_time = models.IntegerField(primary_key=True)
     ts_error_funcid = models.IntegerField()
     ts_error_jobid = models.IntegerField()
     ts_error_message = models.CharField(max_length=765)
@@ -675,7 +677,7 @@ class MtTsExitstatus(models.Model):
 
 class MtTsFuncmap(models.Model):
     ts_funcmap_funcid = models.IntegerField(primary_key=True)
-    ts_funcmap_funcname = models.CharField(max_length=765, unique=True)
+    ts_funcmap_funcname = models.CharField(max_length=765)
     class Meta:
         db_table = u'mt_ts_funcmap'
 
@@ -688,7 +690,7 @@ class MtTsJob(models.Model):
     ts_job_insert_time = models.IntegerField(null=True, blank=True)
     ts_job_priority = models.IntegerField(null=True, blank=True)
     ts_job_run_after = models.IntegerField()
-    ts_job_uniqkey = models.CharField(max_length=765, unique=True, blank=True)
+    ts_job_uniqkey = models.CharField(max_length=765, blank=True)
     class Meta:
         db_table = u'mt_ts_job'
 
