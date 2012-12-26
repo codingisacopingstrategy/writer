@@ -1,8 +1,11 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.template import RequestContext, Template, Context
 
-from write.models import (MtEntry, )
+from write.models import (MtEntry, MtTemplate )
+from write.template import transform
+
+entry_template = Template(transform(MtTemplate.objects.get(pk=11).template_text))
 
 def wall(request):
     tpl_params = {}
@@ -15,5 +18,6 @@ def entry(request, slug):
     except MtEntry.DoesNotExist:
         entry = MtEntry(entry_basename=slug)
     if request.method == 'GET':
-        return HttpResponse(entry.entry_text)
+        template = transform(MtTemplate.objects.get(pk=11).template_text)
+        return HttpResponse(entry_template.render(Context({ 'e' : entry })))
 
