@@ -316,6 +316,7 @@ class MtEntry(models.Model):
         return self.entry_title
     class Meta:
         db_table = u'mt_entry'
+        ordering = ('-entry_authored_on',)
 
 class MtEntryMeta(models.Model):
     entry_meta_entry_id = models.IntegerField(primary_key=True)
