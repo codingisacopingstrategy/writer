@@ -3,9 +3,6 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext, Template, Context
 
 from write.models import (MtEntry, MtTemplate, MtAuthor, MtAsset, MtComment)
-from write.template import transform
-
-entry_template = Template(transform(MtTemplate.objects.get(pk=11).template_text))
 
 def wall(request):
     tpl_params = {}
@@ -35,5 +32,5 @@ def entry(request, slug):
         tpl_params['recent_comments'] = MtComment.objects.all()[:10]
 
 
-        return HttpResponse(entry_template.render(Context(tpl_params)))
+        return render_to_response("entry.html", tpl_params, context_instance = RequestContext(request))
 

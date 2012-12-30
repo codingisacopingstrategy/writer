@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+    <link rel="stylesheet" href="/and/style/in/style.css" type="text/css" />
+<link rel="stylesheet" href="/and/style/in/reset.css" type="text/css" />
+<link rel="stylesheet" href="/and/style/in/grid.css" type="text/css" />
+<link rel="stylesheet" href="/and/style/in/style.css" type="text/css" />
+<link rel="start" href="/and/" title="Home" />
+<link rel="alternate" type="application/atom+xml" title="Recent Entries" href="/and/feed/us/recent_entries.xml" />
+<script type="text/javascript" src="/and/scripts/being/jquery-1.5.min.js"></script>
+<script type="text/javascript" src="/and/scripts/being/jquery.syntaxhighlighter.min.js"></script>
+<script type="text/javascript" src="/and/scripts/being/scripts.js"></script>
+<script type="text/javascript" src="/and/mt.js"></script>
+    <title>I like tight pants and {{ e.entry_title|lower }}</title>
+    <link rel="stylesheet" href="/and/style/in/{{ a.author_basename}}.css" type="text/css" />
+
+</head>
+<body>
+
+<div id="header" class="container_7">
+  <div class="grid_2">
+  <h1><a href="/or/">i . like tight pants . net</a></h1>
+  </div>
+  <div class="grid_3">
+<!--  <ul>
+    
+    <li class="current">latest</li>
+    
+    <li><a href="/and/about">about</a></li>
+    <li><a href="/and/archives">index</a></li>
+  </ul> -->&nbsp;
+  </div>
+  <div class="grid_2">
+  <p class="byline">New entries published Monday and Thursday, 22:00 CET (<a href="/and/feed/us/recent_entries.xml">RSS</a>)</p>
+  </div>
+</div>
+
+
+<div id="content" class="container_7">
+<div class="grid_1">
+  
+  <img src="{{ a_thumbnail_url }}" style="width:100px;height:100px;" alt="" />
+  
+  <h4 class="author">{{ a.author_nickname }}</h4>
+  <p>&nbsp;</p>
+  
+  <hr />
+  
+  <h4>Articles</h4>
+  <dl>
+  
+  {% for e in a_entries %}
+  <dt><a href="/or/{{ e.entry_basename }}">{{ e.entry_title }}</a></dt>
+  <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
+  {% endfor %}
+  </dl>
+
+  <mt:Comments lastn="10">
+  <mt:CommentsHeader>
+  <h4>Comments</h4>
+  <dl>
+  </mt:CommentsHeader>
+  <MTIfCommenterIsEntryAuthor>
+    <dt><$mt:CommentAuthor$> on <a href ="<$mt:CommentLink regex_replace="/^http://i\.liketightpants\.net(.*)\.html/","$1"$>"><mt:CommentEntry>{{ e.entry_title }}</mt:CommentEntry></a></dt>
+    <dd><$mt:CommentDate$></dd>
+  </MTIfCommenterIsEntryAuthor>
+  <mt:CommentsFooter>
+  </dl>
+  </mt:CommentsFooter>
+  </mt:Comments>
+
+  <hr />
+  
+  <h4>Other writers</h4>
+  <ul>
+  {% for a in authors %}
+    <li>{{ a.author_nickname }}</li>
+  {% endfor %}
+  </ul>
+    
+</div>
+<div class="grid_5 post">
+  <p class="byline">{% with e=previous %}
+  <a href="/or/{{ e.entry_basename }}">Previous</a> 
+  {% endwith %}
+  {% with e=next %}
+    / <a href="/or/{{ e.entry_basename }}">Next</a>
+  {% endwith %}</p>
+  <div>
+    <div class="article grid_3 alpha omega suffix_2">
+    <h4>{{ e.entry_title }}</h4>
+    {{ e.entry_text|safe }}
+    
+    </div>
+  </div>
+  <hr />
+
+</div>
+
+<div class="grid_1">
+  <h4>Latest articles</h4>
+  <dl>
+  {% for e in recent_entries %}
+  <dt><a href="/or/{{ e.entry_basename }}">{{ e.entry_title }}</a></dt>
+  <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
+  {% endfor %}
+  </dl>
+
+  <$mt:Include widget="Recent Comments"$>
+
+</div>
+</div>
+<div id="bar">&nbsp;</div>
+
+</body>
+</html>
+
