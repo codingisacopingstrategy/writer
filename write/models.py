@@ -25,6 +25,8 @@ class MtAsset(models.Model):
     asset_modified_on = models.DateTimeField(null=True, blank=True)
     asset_parent = models.IntegerField(null=True, blank=True)
     asset_url = models.CharField(max_length=765, blank=True)
+    def __unicode__(self):
+        return self.asset_file_name
     class Meta:
         db_table = u'mt_asset'
 
@@ -86,6 +88,8 @@ class MtAuthor(models.Model):
     author_type = models.IntegerField()
     author_url = models.CharField(max_length=765, blank=True)
     author_userpic_asset_id = models.IntegerField(null=True, blank=True)
+    def __unicode__(self):
+        return self.author_nickname
     class Meta:
         db_table = u'mt_author'
 
@@ -257,8 +261,11 @@ class MtComment(models.Model):
     comment_text = models.TextField(blank=True)
     comment_url = models.CharField(max_length=765, blank=True)
     comment_visible = models.IntegerField(null=True, blank=True)
+    def __unicode__(self):
+        return u"%s: %s" % (self.comment_author, self.comment_text.splitlines()[0])
     class Meta:
         db_table = u'mt_comment'
+        ordering = ('-comment_id',)
 
 class MtCommentMeta(models.Model):
     comment_meta_comment_id = models.IntegerField(primary_key=True)

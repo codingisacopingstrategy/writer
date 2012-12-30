@@ -2,7 +2,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Template, Context
 
-from write.models import (MtEntry, MtTemplate )
+from write.models import (MtEntry, MtTemplate, MtAuthor, MtAsset, MtComment)
 from write.template import transform
 
 entry_template = Template(transform(MtTemplate.objects.get(pk=11).template_text))
@@ -17,7 +17,23 @@ def entry(request, slug):
         entry = MtEntry.objects.get(entry_basename=slug)
     except MtEntry.DoesNotExist:
         entry = MtEntry(entry_basename=slug)
+        entry.entry_author_id=3 # glit by default
     if request.method == 'GET':
-        template = transform(MtTemplate.objects.get(pk=11).template_text)
-        return HttpResponse(entry_template.render(Context({ 'e' : entry })))
+        author = MtAuthor.objects.get(pk=entry.entry_author_id)
+        authors = MtAuthor.objects.filter(author_created_by=True) # This happens to get all the authors we need
+        a_thumbnail = MtAsset.objects.get(pk = author.author_userpic_asset_id)
+
+        tpl_params = {}
+        tpl_params['e'] = entry
+        tpl_params['e_permalink'] = '/or/' + slug
+        tpl_params['a'] = author
+        tpl_params['a_thumbnail_url'] = a_thumbnail.asset_url % "http://mt.schr.fr/lib"
+        tpl_params['a_entries'] = MtEntry.objects.filter(entry_author_id=author.author_id)
+        tpl_params['a_comments'] = MtComment.objects.filter(comment_commenter_id=author.author_id)[:10]
+        tpl_params['authors'] =authors
+        tpl_params['recent_entries'] = MtEntry.objects.all()[:10]
+        tpl_params['recent_comments'] = MtComment.objects.all()[:10]
+
+
+        return HttpResponse(entry_template.render(Context(tpl_params)))
 
