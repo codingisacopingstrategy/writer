@@ -29,7 +29,7 @@ def entry(request, slug):
         tpl_params['a_comments'] = MtComment.objects.filter(comment_commenter_id=author.author_id)[:10]
         tpl_params['authors'] =authors
         tpl_params['recent_entries'] = MtEntry.objects.all()[:10]
-        tpl_params['recent_comments'] = MtComment.objects.all()[:10]
+        tpl_params['recent_comments'] = MtComment.objects.filter(comment_visible=1)[:10]
 
 
         return render_to_response("entry.html", tpl_params, context_instance = RequestContext(request))

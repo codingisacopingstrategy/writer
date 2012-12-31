@@ -49,27 +49,19 @@
   
   <h4>Articles</h4>
   <dl>
-  
   {% for e in a_entries %}
   <dt><a href="/or/{{ e.entry_basename }}">{{ e.entry_title }}</a></dt>
   <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
   {% endfor %}
   </dl>
 
-  <mt:Comments lastn="10">
-  <mt:CommentsHeader>
   <h4>Comments</h4>
   <dl>
-  </mt:CommentsHeader>
-  <MTIfCommenterIsEntryAuthor>
-    <dt><$mt:CommentAuthor$> on <a href ="<$mt:CommentLink regex_replace="/^http://i\.liketightpants\.net(.*)\.html/","$1"$>"><mt:CommentEntry>{{ e.entry_title }}</mt:CommentEntry></a></dt>
-    <dd><$mt:CommentDate$></dd>
-  </MTIfCommenterIsEntryAuthor>
-  <mt:CommentsFooter>
+  {% for c in a_comments %}
+    <dt>{{ c.comment_author }} on <a href ="/or/">Title of entry</a></dt>
+    <dd>{{ c.comment_created_on|date:"F j, Y f A" }}</dd>
+  {% endfor %}
   </dl>
-  </mt:CommentsFooter>
-  </mt:Comments>
-
   <hr />
   
   <h4>Other writers</h4>
@@ -107,7 +99,13 @@
   {% endfor %}
   </dl>
 
-  <$mt:Include widget="Recent Comments"$>
+
+  <h4>Latest Comments</h4>
+  <ul>
+  {% for c in recent_comments %}
+    <li><strong>{{ c.comment_author }}:</strong> {{ c.comment_text|striptags|truncatewords:10 }} <a href="/or/" title="full comment on: Title of entry">read more</a></li>
+  {% endfor %}
+  </ul>
 
 </div>
 </div>
