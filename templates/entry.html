@@ -73,12 +73,10 @@
     
 </div>
 <div class="grid_5 post">
-  <p class="byline">{% with e=previous %}
-  <a href="/or/{{ e.entry_basename }}">Previous</a> 
-  {% endwith %}
-  {% with e=next %}
-    / <a href="/or/{{ e.entry_basename }}">Next</a>
-  {% endwith %}</p>
+  <p class="byline">
+  {% if e.previous %}<a href="/or/{{ e.previous.entry_basename }}">Previous</a>{% endif %}
+  {% if e.next %}  / <a href="/or/{{ e.next.entry_basename }}">Next</a>{% endif %}
+  </p>
   <div>
     <div class="article grid_3 alpha omega suffix_2">
     <h4>{{ e.entry_title }}</h4>

@@ -319,6 +319,19 @@ class MtEntry(models.Model):
     entry_to_ping_urls = models.TextField(blank=True)
     entry_week_number = models.IntegerField(null=True, blank=True)
     entry_current_revision = models.IntegerField()
+
+    # http://stackoverflow.com/questions/2214852/next-previous-links-from-a-query-set-generic-views
+    def next(self):
+        next = MtEntry.objects.filter(entry_id__gt=self.entry_id)
+        if next:
+            return next[0]
+        return False
+    def previous(self):
+        prev = MtEntry.objects.filter(entry_id__lt=self.entry_id)
+        if prev:
+            return prev[0]
+        return False
+
     def __unicode__(self):
         return self.entry_title
     class Meta:
