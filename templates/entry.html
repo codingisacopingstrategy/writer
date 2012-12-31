@@ -83,7 +83,14 @@
     <div class="article grid_3 alpha omega suffix_2">
     <h4>{{ e.entry_title }}</h4>
     {{ e.entry_text|safe }}
-    
+
+    <h4 class="comments-header">{% if e_comments %}{{ e_comments.count }} Comments{% else %}No Comments{% endif %}</h4>
+
+    <div class="comments-content">
+      {% include "comment.html" %}
+    </div>
+
+
     </div>
   </div>
   <hr />
