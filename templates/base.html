@@ -1,11 +1,44 @@
-{% extends "base.html" %}
-
-{% block title %}{{ e.entry_title|lower }}{% endblock %}
-
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+    <link rel="stylesheet" href="/and/style/in/style.css" type="text/css" />
+<link rel="stylesheet" href="/and/style/in/reset.css" type="text/css" />
+<link rel="stylesheet" href="/and/style/in/grid.css" type="text/css" />
+<link rel="stylesheet" href="/and/style/in/style.css" type="text/css" />
+<link rel="start" href="/and/" title="Home" />
+<link rel="alternate" type="application/atom+xml" title="Recent Entries" href="/and/feed/us/recent_entries.xml" />
+<script type="text/javascript" src="/and/scripts/being/jquery-1.5.min.js"></script>
+<script type="text/javascript" src="/and/scripts/being/jquery.syntaxhighlighter.min.js"></script>
+<script type="text/javascript" src="/and/scripts/being/scripts.js"></script>
+<script type="text/javascript" src="/and/mt.js"></script>
+    <title>I like tight pants and {% block title %}mathematics{% endblock %}</title>
 {% block head %}
-<link rel="stylesheet" href="/and/style/in/{{ a.author_name}}.css" type="text/css" />
+{% endblock %}
+</head>
+<body>
+
+{% block header %}
+<div id="header" class="container_7">
+  <div class="grid_2">
+  <h1><a href="/or/">i . like tight pants . net</a></h1>
+  </div>
+  <div class="grid_3">
+<!--  <ul>
+    
+    <li class="current">latest</li>
+    
+    <li><a href="/and/about">about</a></li>
+    <li><a href="/and/archives">index</a></li>
+  </ul> -->&nbsp;
+  </div>
+  <div class="grid_2">
+  <p class="byline">New entries published Monday and Thursday, 22:00 CET (<a href="/and/feed/us/recent_entries.xml">RSS</a>)</p>
+  </div>
+</div>
 {% endblock %}
 
+<div id="content" class="container_7">
 {% block content %}
 <div class="grid_1">
   
@@ -83,4 +116,9 @@
 
 </div>
 {% endblock %}
+</div>
+<div id="bar">&nbsp;</div>
+
+</body>
+</html>
 

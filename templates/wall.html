@@ -1,5 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="grid_7">
 <ul>
 {% for e in entries %}
     <li><a href="{% url write.views.entry e.entry_basename %}">{{ e.entry_title }}</a>{% if e.entry_status == 1 %} (draft){% endif %}</li>
 {% endfor %}
 </ul>
+</div>
+{% endblock %}
