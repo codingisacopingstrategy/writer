@@ -3,6 +3,55 @@
 {% block title %}{{ e.entry_title|lower }}{% endblock %}
 
 {% block head %}
+<!-- load the jQuery and require.js libraries -->
+<script type="text/javascript" src="/and/scripts/being/aloha/lib/require.js"></script>
+<script type="text/javascript" src="/and/scripts/being/aloha/lib/vendor/jquery-1.7.2.js"></script>
+
+<!-- load the Aloha Editor core and some plugins -->
+<script src="/and/scripts/being/aloha/lib/aloha.js"
+                   data-aloha-plugins="common/ui,
+                                        common/format,
+                                        common/list,
+                                        common/link,
+                                        common/highlighteditables,
+                                        extra/sourceview">
+</script>
+
+<!-- load the Aloha Editor CSS styles -->
+<link href="/and/scripts/being/aloha/css/aloha.css" rel="stylesheet" type="text/css" />
+ 
+<!-- make all elements with class="editable" editable with Aloha Editor -->
+<script type="text/javascript">
+    Aloha.ready( function() {
+        var $ = Aloha.jQuery;
+
+        $('article').aloha();
+        Aloha.bind('aloha-smart-content-changed', function(jQueryEvent, eventArgument) {
+            console.log(jQueryEvent, eventArgument)
+
+            var e = eventArgument.editable;
+            var entryId = e.obj.attr('id').replace('entry-','');
+            var postData = { 
+                'entry_text' : Aloha.activeEditable.getContents() }
+
+            console.log(JSON.stringify(postData))
+
+            var request = jQuery.ajax({
+                url: "/api/entry/" + entryId + "/",
+                type: "PATCH",
+                data: JSON.stringify(postData),
+                dataType: "json",
+                contentType: "application/json",
+                processData: false,
+                error: function(xhr, status, error) {
+                    console.log("error!");
+                    console.log(xhr, status, error);
+                    },
+                });
+
+            });
+     });
+</script>
 <link rel="stylesheet" href="/and/style/in/{{ a.author_name}}.css" type="text/css" />
 {% endblock %}
 
@@ -49,8 +98,9 @@
   <div>
     <div class="article grid_3 alpha omega suffix_2">
     <h4>{{ e.entry_title }}</h4>
+    <article id="entry-{{ e.entry_id }}">
     {{ e.entry_text|safe }}
-
+    </article>
     <h4 class="comments-header">{% if e_comments %}{{ e_comments.count }} Comments{% else %}No Comments{% endif %}</h4>
 
     <div class="comments-content">
