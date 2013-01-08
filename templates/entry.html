@@ -4,11 +4,11 @@
 
 {% block head %}
 <!-- load the jQuery and require.js libraries -->
-<script type="text/javascript" src="/and/scripts/being/aloha/lib/require.js"></script>
-<script type="text/javascript" src="/and/scripts/being/aloha/lib/vendor/jquery-1.7.2.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}aloha/lib/require.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}aloha/lib/vendor/jquery-1.7.2.js"></script>
 
 <!-- load the Aloha Editor core and some plugins -->
-<script src="/and/scripts/being/aloha/lib/aloha.js"
+<script src="{{ STATIC_URL }}aloha/lib/aloha.js"
                    data-aloha-plugins="common/ui,
                                         common/format,
                                         common/list,
@@ -18,40 +18,11 @@
 </script>
 
 <!-- load the Aloha Editor CSS styles -->
-<link href="/and/scripts/being/aloha/css/aloha.css" rel="stylesheet" type="text/css" />
+<link href="{{ STATIC_URL }}aloha/css/aloha.css" rel="stylesheet" type="text/css" />
  
-<!-- make all elements with class="editable" editable with Aloha Editor -->
-<script type="text/javascript">
-    Aloha.ready( function() {
-        var $ = Aloha.jQuery;
+<!-- make all elements <article> editable with Aloha Editor -->
+<script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry.js"></script>
 
-        $('article').aloha();
-        Aloha.bind('aloha-smart-content-changed', function(jQueryEvent, eventArgument) {
-            console.log(jQueryEvent, eventArgument)
-
-            var e = eventArgument.editable;
-            var entryId = e.obj.attr('id').replace('entry-','');
-            var postData = { 
-                'entry_text' : Aloha.activeEditable.getContents() }
-
-            console.log(JSON.stringify(postData))
-
-            var request = jQuery.ajax({
-                url: "/api/entry/" + entryId + "/",
-                type: "PATCH",
-                data: JSON.stringify(postData),
-                dataType: "json",
-                contentType: "application/json",
-                processData: false,
-                error: function(xhr, status, error) {
-                    console.log("error!");
-                    console.log(xhr, status, error);
-                    },
-                });
-
-            });
-     });
-</script>
 <link rel="stylesheet" href="/and/style/in/{{ a.author_name}}.css" type="text/css" />
 {% endblock %}
 
