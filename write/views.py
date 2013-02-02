@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Template, Context
@@ -9,12 +11,22 @@ def wall(request):
     tpl_params['entries'] = MtEntry.objects.all()
     return render_to_response("wall.html", tpl_params, context_instance = RequestContext(request))
 
-def entry(request, slug):
+def entry(request, slug, authored_on=datetime.now()):
     try:
         entry = MtEntry.objects.get(entry_basename=slug)
     except MtEntry.DoesNotExist:
         entry = MtEntry(entry_basename=slug)
+        entry.entry_authored_on = authored_on
+        entry.entry_created_on = datetime.now()
+        entry.entry_created_by=3
         entry.entry_author_id=3 # glit by default
+        entry.entry_text = """
+        <p>Hello dear start the editing process.</p>
+        entry.
+        """
+        
+        entry.entry_title = slug.replace('_',' ').title()
+        entry.entry_status = 1 # draft by default
     if request.method == 'GET':
         author = MtAuthor.objects.get(pk=entry.entry_author_id)
         authors = MtAuthor.objects.filter(author_created_by=True) # This happens to get all the authors we need

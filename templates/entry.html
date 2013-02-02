@@ -24,6 +24,30 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry.js"></script>
 
 <link rel="stylesheet" href="/and/style/in/{{ a.author_name}}.css" type="text/css" />
+
+<meta property="entry_allow_comments" content="1" />
+<meta property="entry_allow_pings" content="1" />
+<meta property="entry_atom_id" content="" />
+<meta property="entry_basename" content="{{ e.entry_basename }}" />
+<meta property="entry_blog_id" content="1" />
+<meta property="entry_category_id" content="null" />
+<meta property="entry_class" content="entry" />
+<meta property="entry_convert_breaks" content="0" />
+<meta property="entry_created_by" content="{{ e.entry_created_by }}" />
+<meta property="entry_created_on" content="{{ e.entry_created_on|date:"Y-m-d\TH:i:s" }}" />
+<meta property="entry_current_revision" content="0" />
+<meta property="entry_excerpt" content="" />
+<meta property="entry_keywords" content="{{ e.entry_keywords }}" />
+<meta property="entry_modified_by" content="1" />
+<meta property="entry_modified_on" content="{{ e.entry_modified_on|date:"Y-m-d\TH:i:s" }}" />
+<meta property="entry_ping_count" content="0" />
+<meta property="entry_pinged_urls" content="" />
+<meta property="entry_status" content="{{ e.entry_status }}" />
+<meta property="entry_tangent_cache" content="" />
+<meta property="entry_template_id" content="null" />
+<meta property="entry_text_more" content="" />
+<meta property="entry_to_ping_urls" content="" />
+
 {% endblock %}
 
 {% block content %}
@@ -31,7 +55,8 @@
   
   <img src="{{ a_thumbnail_url }}" style="width:100px;height:100px;" alt="" />
   
-  <h4 class="author">{{ a.author_nickname }}</h4>
+  <h4 class="author" property="entry_author_id" content="{{ e.entry_author_id }}">{{ a.author_nickname }}</h4>
+  <h4 class="author" property="entry_authored_on" content="{{ e.entry_authored_on|date:"Y-m-d\TH:i:s" }}">{{ e.entry_authored_on|date:"F j, Y f A" }}</h4>
   <p>&nbsp;</p>
   
   <hr />
@@ -68,8 +93,8 @@
   </p>
   <div>
     <div class="article grid_3 alpha omega suffix_2">
-    <h4>{{ e.entry_title }}</h4>
-    <article id="entry-{{ e.entry_id }}">
+    <h4 property="entry_title" contenteditable="true">{{ e.entry_title }}</h4>
+    <article{% if e.entry_id %} property="entry_id" content="{{ e.entry_id }}"{% endif %} class="entry" id="entry-{{ e.entry_id }}">
     {{ e.entry_text|safe }}
     </article>
     <h4 class="comments-header">{% if e_comments %}{{ e_comments.count }} Comments{% else %}No Comments{% endif %}</h4>
