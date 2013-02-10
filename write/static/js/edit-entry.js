@@ -82,7 +82,73 @@ var Entry = function() {
                                 }
 }
 
-Entry.prototype.toHash = function() {
+var Comment = function(el, text) {
+    this.el =         el;
+    this.comment_id =          function() {
+                                    if (this.el.attr('property') === 'comment_id') {
+                                        return parseInt(this.el.
+                                            attr('content'));
+                                    }
+                                    return false;
+                                };
+    this.comment_author =      function() {
+                                    if (this.el.find("[property=comment_author]").length === 0) {
+                                        return this.el.find("select option:selected").
+                                                text();
+                                    }
+                                    return this.el.find("[property=comment_author]").
+                                                text();
+                                };
+    this.comment_blog_id = 1;
+    this.comment_commenter_id = function() {
+                                    if (this.el.find("select").length === 0) {
+                                        return null;
+                                    }
+                                    return parseInt(this.el.find("select option:selected").
+                                                attr('value'));
+                                };
+
+    this.comment_created_by = this.comment_commenter_id;
+    this.comment_created_on =   function() {
+                                    return this.el.find("[property=comment_created_on]").
+                                            attr("content");
+                                };
+    this.comment_email =    function() {
+                                    return this.el.find("[property=comment_email]").
+                                            attr("content");
+                                };
+    this.comment_entry_id = entry.entry_id;
+    this.comment_ip = "192.168.0.1";
+    this.comment_junk_log = "";
+    this.comment_junk_score = null;
+    this.comment_junk_status = 1;
+    this.comment_last_moved_on = "2000-01-01T00:00:00";
+    this.comment_modified_by = null;
+    this.comment_modified_on = null;
+    this.comment_parent_id =    function() {
+                                    if (this.el.parents(".comments-parent-container").length === 0) {
+                                        return null;
+                                    };
+                                return new Comment(this.el.parents(".comments-parent-container").first().prev(), "").comment_id()
+                                }
+    this.comment_text = text;
+    this.comment_url =          function() {
+                                    if (this.el.find("select").length === 0) {
+                                        return this.el.find("[property=comment_url]").
+                                                    attr('href');
+                                    }
+                                    return "";
+                                };;
+    this.comment_visible = 1;
+    this.resource_uri =         function() {
+                                    if (this.comment_id) { 
+                                        return "/api/comment/" + this.comment_id() + "/";
+                                    }
+                                    return "/api/comment/";
+                                };
+}
+
+Entry.prototype.toHash = Comment.prototype.toHash = function() {
     var result = {};
     for (var property in this) {
     if (this.hasOwnProperty(property))
@@ -96,7 +162,7 @@ Entry.prototype.toHash = function() {
     return result;
 };
 
-Entry.prototype.makeHash = function(keys) {
+Entry.prototype.makeHash = Comment.prototype.makeHash = function(keys) {
     var result = {};
     for (i=0; i < keys.length; i++) {
         var property = keys[i];
@@ -109,6 +175,39 @@ Entry.prototype.makeHash = function(keys) {
     }
     return result;
 };
+
+Comment.prototype.update = function() {
+    if (this.comment_id()) {
+        console.log("it is an existing Comment object");
+        var postData = this.makeHash(["comment_author", "comment_commenter_id", "comment_created_by", "comment_text", "comment_created_on", "comment_email",
+ "comment_parent_id", "comment_url"]);
+ 
+         console.log(JSON.stringify(postData));
+         var url = this.resource_uri();
+         
+         var request = jQuery.ajax({
+            url: url,
+            type: "PATCH",
+            data: JSON.stringify(postData),
+            dataType: "json",
+            contentType: "application/json",
+            processData: false,
+            success: function(data) {
+                console.log("Succesfully updated Comment nr " + comment.comment_id());
+            },
+            error: function(xhr, status, error) {
+                console.log("error!");
+                console.log(xhr, status, error);
+                },
+            });
+ 
+    } else {
+        console.log("creating a new Comment object");
+        console.log("to be implemented");
+    }
+}
+
+
 
 var entry;
 
@@ -181,6 +280,11 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
                 });
             
         }
+    } else if (e.obj.hasClass("comment-editor")) {
+        console.log("started updating a Comment object")
+        comment = new Comment(  e.obj.parents(".comment").first(), 
+                                Aloha.activeEditable.getContents()  );
+        comment.update();
     }
     
     };
@@ -188,6 +292,6 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
 Aloha.ready( function() {
     var $ = Aloha.jQuery;
     entry = new Entry();
-    $('article').aloha();
+    $('article, div.comment-editor').aloha();
     Aloha.bind('aloha-smart-content-changed', smartUpdate);
  });

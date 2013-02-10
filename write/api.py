@@ -11,4 +11,5 @@ class MtEntryResource(ModelResource):
 class MtCommentResource(ModelResource):
     class Meta:
         queryset = MtComment.objects.all()
+        authorization = Authorization()
         resource_name = 'comment'
