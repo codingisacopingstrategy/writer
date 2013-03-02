@@ -7,7 +7,7 @@
 {{ c.comment_text|safe }}
 </div>
 <p class="byline" property="comment_email" content="{{ c.comment_email }}">
-  {% if c.comment_commenter_id %}<img src="{{ a_thumbnail_url }}" width="18" height="18" />{% endif %} 
+  {% if c.comment_commenter_id %}<img src="/and/assets/that/are/pictures/of/author/{{ c.comment_author }}.png" width="18" height="18" />{% endif %} 
   by {% if c.comment_commenter_id %}
     <select>
      {% for author in authors %}

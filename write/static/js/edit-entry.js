@@ -141,7 +141,7 @@ var Comment = function(el, text) {
                                 };;
     this.comment_visible = 1;
     this.resource_uri =         function() {
-                                    if (this.comment_id) { 
+                                    if (this.comment_id()) { 
                                         return "/api/comment/" + this.comment_id() + "/";
                                     }
                                     return "/api/comment/";
@@ -204,6 +204,39 @@ Comment.prototype.update = function() {
     } else {
         console.log("creating a new Comment object");
         console.log("to be implemented");
+        
+        var postData = this.toHash()
+        delete postData.comment_id
+        delete postData.resource_uri
+        delete postData.el
+        
+        var url = this.resource_uri();
+        
+        console.log(JSON.stringify(postData));
+        
+        var request = jQuery.ajax({
+        url: url,
+        type: "POST",
+        data: JSON.stringify(postData),
+        dataType: "json",
+        contentType: "application/json",
+        processData: false,
+        success: function(data, textStatus, jqXHR) {
+            console.log("Succesfully created Comment" + postData.comment_id);
+            console.log(jqXHR.getResponseHeader('Location'));
+            // I’m seeing some weird errors which I think are related to the
+            // fact that we’re using a non-standard primary key (`comment_id`)
+            // the url returned by the API doesn’t contain an id
+            // (i.e. /api/comment/None/). So we can’t learn the id.
+            // should reproduce on a smaller model and file a bug.
+            // for now we reload the page when a new post is created.
+            location.reload(true);
+        },
+        error: function(xhr, status, error) {
+            console.log("error!");
+            console.log(xhr, status, error);
+            },
+        });
     }
 }
 

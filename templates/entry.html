@@ -22,6 +22,7 @@
  
 <!-- make all elements <article> editable with Aloha Editor -->
 <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry-ui.js"></script>
 
 <link rel="stylesheet" href="/and/style/in/{{ a.author_name}}.css" type="text/css" />
 
@@ -100,7 +101,11 @@
     <h4 class="comments-header">{% if e_comments %}{{ e_comments.count }} Comments{% else %}No Comments{% endif %}</h4>
 
     <div class="comments-content">
-      {% include "comment.html" %}
+      {% if e_comments %}
+        {% include "comment.html" %}
+      {% endif %}
+        <a title="Reply" href="#reply">Reply</a>
+
     </div>
 
 
