@@ -1,13 +1,17 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 # This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#     * Rearrange models' order
-#     * Make sure each model has one field with primary_key=True
 # Feel free to rename the models, but don't rename db_table values or field names.
 #
 # Also note: You'll have to insert the output of 'django-admin.py sqlcustom [appname]'
 # into your database.
 
 from django.db import models
+
+# Because we’ll be calling out for screenshots
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class MtAsset(models.Model):
     asset_id = models.IntegerField(primary_key=True)
@@ -319,6 +323,11 @@ class MtEntry(models.Model):
     entry_to_ping_urls = models.TextField(blank=True)
     entry_week_number = models.IntegerField(null=True, blank=True)
     entry_current_revision = models.IntegerField()
+    
+    def entry_screenshot_url(self):
+        if self.entry_status == 1:
+            return None
+        return '/and/assets/as/screenshots/of/%s.png' % self.entry_basename.replace('_','-')
 
     # http://stackoverflow.com/questions/2214852/next-previous-links-from-a-query-set-generic-views
     def next(self):
@@ -716,4 +725,34 @@ class MtTsJob(models.Model):
     ts_job_uniqkey = models.CharField(max_length=765, blank=True)
     class Meta:
         db_table = u'mt_ts_job'
+
+"""
+Screenshots are used in the view where an editor can
+organise the relative timing of different blog posts.
+
+We are not going to use the following two event handlers,
+for now. They get triggered everytime an entry or
+comment is updated, which is quite often. This would
+spawn too many (expensive) screenshot requests.
+
+This could be mitigated by having a queue with a rate
+limit, i.e. it ignores requests that come too quick
+upon the previous one.
+
+Because currently there is only one person editing the
+entries at the time, and others don’t need to see live
+updates of this page in the editing view, we can suffice
+with a trigger at the moment the entry page is left.
+
+This is to be implemented still.
+"""
+
+@receiver(post_save, sender=MtEntry)
+def screenshot_handler_entry(sender, instance, created, raw, using, **kwargs):
+    print "Entry %s Saved!" % instance.entry_title
+
+@receiver(post_save, sender=MtComment)
+def screenshot_handler_comment(sender, instance, created, raw, using, **kwargs):
+    entry = MtEntry.objects.get(pk=instance.comment_entry_id)
+    print "Comment on Entry %s Saved!" % entry.entry_title
 

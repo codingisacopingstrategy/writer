@@ -4,8 +4,17 @@
 <div class="grid_7">
 <ul>
 {% for e in entries %}
-    <li><a href="{% url write.views.entry e.entry_basename %}">{{ e.entry_title }}</a>{% if e.entry_status == 1 %} (draft){% endif %}</li>
+    <div class="grid_1">
+          <a href="{% url write.views.entry e.entry_basename %}">
+            <img src="{{ e.entry_screenshot_url }}" style="width:150px;height:110px;" alt="I like tight pants and {{ e.entry_title|lower }}">
+          </a>
+          <p class="byline">{{ e.entry_title }} {% if e.entry_status == 1 %} (draft){% endif %}</p>
+    </div>
+{% if forloop.counter|divisibleby:7 %}
+</div>
+<div class="clear"></div>
+<div class="content container_7">
+{% endif %}
 {% endfor %}
-</ul>
 </div>
 {% endblock %}
