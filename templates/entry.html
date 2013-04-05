@@ -29,7 +29,7 @@
 <meta property="entry_allow_comments" content="1" />
 <meta property="entry_allow_pings" content="1" />
 <meta property="entry_atom_id" content="" />
-<meta property="entry_basename" content="{{ e.entry_basename }}" />
+<meta property="entry_slug" content="{{ e.entry_slug }}" />
 <meta property="entry_blog_id" content="1" />
 <meta property="entry_category_id" content="null" />
 <meta property="entry_class" content="entry" />
@@ -66,7 +66,7 @@
   <h4>Articles</h4>
   <dl>
   {% for e in a_entries %}
-  <dt><a href="/or/{{ e.entry_basename }}">{{ e.entry_title }}</a></dt>
+  <dt><a href="/or/{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
   <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
   {% endfor %}
   </dl>
@@ -90,8 +90,8 @@
 </div>
 <div class="post grid_5">
   <p class="byline">
-  {% if e.previous %}<a href="/or/{{ e.previous.entry_basename }}">Previous</a>{% endif %}
-  {% if e.next %}  / <a href="/or/{{ e.next.entry_basename }}">Next</a>{% endif %}
+  {% if e.previous %}<a href="/or/{{ e.previous.entry_slug }}">Previous</a>{% endif %}
+  {% if e.next %}  / <a href="/or/{{ e.next.entry_slug }}">Next</a>{% endif %}
   </p>
   <div>
     <div class="article grid_3 alpha omega suffix_2">
@@ -120,7 +120,7 @@
   <h4>Latest articles</h4>
   <dl>
   {% for e in recent_entries %}
-  <dt><a href="/or/{{ e.entry_basename }}">{{ e.entry_title }}</a></dt>
+  <dt><a href="/or/{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
   <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
   {% endfor %}
   </dl>

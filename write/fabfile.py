@@ -20,6 +20,10 @@ def status():
     with cd(env.path):
         run('git status')
 
+def pull():
+    with cd(env.path):
+        run('git pull origin master')
+
 def publish(message):
     with cd(env.path):
         run('/home/s/apps/mt.schr.fr/melody/tools/re') # rebuild pages

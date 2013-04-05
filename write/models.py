@@ -328,7 +328,10 @@ class MtEntry(models.Model):
         if self.entry_status == 1:
             return None
         return '/and/assets/as/screenshots/of/%s.png' % self.entry_basename.replace('_','-')
-
+    
+    def entry_slug(self):
+        return self.entry_basename.replace('_','-')
+    
     # http://stackoverflow.com/questions/2214852/next-previous-links-from-a-query-set-generic-views
     def next(self):
         if self.entry_id:
