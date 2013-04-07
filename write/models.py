@@ -750,18 +750,9 @@ with a trigger at the moment the entry page is left.
 This is to be implemented still.
 """
 
-"""
-UPDATE: we are actually using these handlers..
-And yes it is too heavy.
-"""
-
 @receiver(post_save, sender=MtEntry)
 def screenshot_handler_entry(sender, instance, created, raw, using, **kwargs):
     print "Entry %s Saved!" % instance.entry_title
-    # we only screenshot Draft entrys (for now):
-    if instance.entry_status == 1:
-        screenshot([instance.entry_slug()])
-        print "Entry %s Screenshotted!" % instance.entry_title
 
 @receiver(post_save, sender=MtComment)
 def screenshot_handler_comment(sender, instance, created, raw, using, **kwargs):

@@ -7,7 +7,7 @@ Create screenshots for the archive page
 
 from glob import iglob
 from random import randint
-from sys import argv
+from sys import argv, exit
 import os
 import subprocess
 
@@ -23,10 +23,10 @@ def screenshot(slugs=[]):
         # append a random query string to the uri so webkit doesn’t use a cached result
         url = "%s?id=%s" % (url, randint(222222, 777777))
         fullfile = os.path.join(APP_PATH, "static", "assets", "as", "screenshots", "of", "%s-full.png" % post)
-        print fullfile
         finalfile = fullfile.replace('-full', '')
         pipe = subprocess.Popen(['phantomjs', os.path.join(APP_PATH, 'rasterise.js'), url, fullfile])
-        pipe.wait()
+        if pipe.wait() != 0:
+            exit("Aborting")
         # convert post-full.png to 150 by 110 assets/as/screenshots/of/post.png
         pipe = subprocess.Popen("convert %s -resize 210x154^ -gravity North -extent 150x110 %s" % (fullfile, finalfile), shell=True)
         pipe.wait()
