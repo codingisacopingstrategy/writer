@@ -332,6 +332,18 @@ class MtEntry(models.Model):
     def entry_slug(self):
         return self.entry_basename.replace('_','-')
     
+    def entry_uri(self):
+        return '/or/' + self.entry_slug()
+    
+    def entry_event(self):
+        return { 'title' : self.entry_title,
+                 'start' : self.entry_authored_on.isoformat(),
+                 'url' : self.entry_uri(),
+                 'id' : self.entry_id,
+                 'screenshot_url' : self.entry_screenshot_url(),
+                 'resource_uri' : "/api/entry/%s/" % self.entry_id,
+                 'allDay' : False }
+    
     # http://stackoverflow.com/questions/2214852/next-previous-links-from-a-query-set-generic-views
     def next(self):
         if self.entry_id:

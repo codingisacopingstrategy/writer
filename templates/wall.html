@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 
+{% block head %}
+<link rel="stylesheet" type="text/css" href="/and/js/lib/fullcalendar/fullcalendar.css" />
+<script type="text/javascript" src="/and/js/lib/fullcalendar/fullcalendar.js"></script>
+{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript">
+    var events = {{ entries_json|safe }};
+</script>
+<script type="text/javascript" src="/and/js/calendar-view.js"></script>
+{% endblock %}
+
 {% block content %}
-<div class="grid_7">
-{% for e in entries %}
-    <div class="grid_1">
-          <a href="{% url write.views.entry e.entry_slug %}">
-            <img src="{{ e.entry_screenshot_url }}" style="width:150px;height:110px;" alt="I like tight pants and {{ e.entry_title|lower }}">
-          </a>
-          <p class="byline">{{ e.entry_title }} {% if e.entry_status == 1 %} (draft){% endif %}</p>
-    </div>
-{% if forloop.counter|divisibleby:7 %}
-</div>
-<div class="clear"></div>
-<div class="content container_7">
-{% endif %}
-{% endfor %}
+<div id="time">
+    
 </div>
 {% endblock %}

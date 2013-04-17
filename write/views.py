@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from django.http import HttpResponse, Http404
@@ -9,6 +10,8 @@ from write.models import (MtEntry, MtTemplate, MtAuthor, MtAsset, MtComment)
 def wall(request):
     tpl_params = {}
     tpl_params['entries'] = MtEntry.objects.all()
+    entries_hash = [e.entry_event() for e in MtEntry.objects.all()]
+    tpl_params['entries_json'] = json.dumps(entries_hash, indent=2, ensure_ascii=False)
     return render_to_response("wall.html", tpl_params, context_instance = RequestContext(request))
 
 def entry(request, slug, authored_on=datetime.now()):
