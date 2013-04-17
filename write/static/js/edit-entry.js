@@ -60,7 +60,8 @@ var Entry = function() {
                                 }
     this.entry_author_id =      function() {
                                     return parseInt($("[property=entry_author_id]").
-                                            attr("content"));
+                                            find("option:selected").
+                                                attr('value'));
                                 }
     this.entry_authored_on =    function() {
                                     return $("[property=entry_authored_on]").

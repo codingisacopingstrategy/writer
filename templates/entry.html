@@ -55,7 +55,11 @@
   
   <img src="{{ a_thumbnail_url }}" style="width:100px;height:100px;" alt="" />
   
-  <h4 class="author" property="entry_author_id" content="{{ e.entry_author_id }}">{{ a.author_nickname }}</h4>
+  <select property="entry_author_id">
+  {% for author in authors %}
+    <option value="{{ author.author_id }}"{% if author.author_id == e.entry_author_id %} selected="true"{% endif %}>{{ author.author_nickname }}</option>
+  {% endfor %}
+  </select>
   <h4 class="author" property="entry_authored_on" content="{{ e.entry_authored_on|date:"Y-m-d\TH:i:s" }}">{{ e.entry_authored_on|date:"F j, Y f A" }}</h4>
   <form action="" id="entry-authored-input"><input type="date" value="{{ e.entry_authored_on|date:"o-m-d" }}" /><input type="time" value="{{ e.entry_authored_on|date:"H:i" }}" /><a href="">OK</a></form>
   <p>&nbsp;</p>
