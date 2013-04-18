@@ -42,7 +42,6 @@
 <meta property="entry_modified_on" content="{{ e.entry_modified_on|date:"Y-m-d\TH:i:s" }}" />
 <meta property="entry_ping_count" content="0" />
 <meta property="entry_pinged_urls" content="" />
-<meta property="entry_status" content="{{ e.entry_status }}" />
 <meta property="entry_tangent_cache" content="" />
 <meta property="entry_template_id" content="null" />
 <meta property="entry_text_more" content="" />
@@ -62,6 +61,7 @@
   </select>
   <h4 class="author" property="entry_authored_on" content="{{ e.entry_authored_on|date:"Y-m-d\TH:i:s" }}">{{ e.entry_authored_on|date:"F j, Y f A" }}</h4>
   <form action="" id="entry-authored-input"><input type="date" value="{{ e.entry_authored_on|date:"o-m-d" }}" /><input type="time" value="{{ e.entry_authored_on|date:"H:i" }}" /><a href="">OK</a></form>
+  <h4 class="author">published: <input property="entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.entry_status == 2 %}checked="yes"{% endif%}/></h4>
   <p>&nbsp;</p>
   
   <hr />

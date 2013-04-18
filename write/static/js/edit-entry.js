@@ -39,13 +39,20 @@ var Entry = function() {
     this.entry_modified_by = parseNum($("meta[property=entry_modified_by]").attr("content"));
     this.entry_ping_count = parseNum($("meta[property=entry_ping_count]").attr("content"));
     this.entry_pinged_urls = $("meta[property=entry_pinged_urls]").attr("content");
-    this.entry_status = parseNum($("meta[property=entry_status]").attr("content"));
     this.entry_tangent_cache = $("meta[property=entry_tangent_cache]").attr("content");
     this.entry_template_id = parseNum($("meta[property=entry_template_id]").attr("content"));
     this.entry_text_more = $("meta[property=entry_text_more]").attr("content");
     this.entry_to_ping_urls = $("meta[property=entry_to_ping_urls]").attr("content");
     this.entry_week_number = $("meta[property=entry_week_number]").attr("content");
     // find properties set in body (user editable)
+    this.entry_status =          function() {
+                                    if ($("[property=entry_status]").is(':checked')) {
+                                        // published:
+                                        return 2;
+                                    } else {
+                                        return 1;
+                                    }
+                                }
     this.entry_id =          function() {
                                     if ($("[property=entry_id]").length == 0) {
                                         return false;
@@ -259,7 +266,7 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
         if (entryId) {
             console.log("it is an existing Entry object")
             
-            var postData = entry.makeHash(['entry_title', 'entry_author_id', 'entry_authored_on', 'entry_modified_on', 'entry_week_number'] )
+            var postData = entry.makeHash(['entry_title', 'entry_status', 'entry_author_id', 'entry_authored_on', 'entry_modified_on', 'entry_week_number'] )
             postData.entry_text = Aloha.activeEditable.getContents()
             
             console.log(JSON.stringify(postData))

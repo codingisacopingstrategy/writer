@@ -24,10 +24,26 @@ def pull():
     with cd(env.path):
         run('git pull origin master')
 
-def publish(message):
+def publish():
+    """
+    Rebuild the pages on the server
+    """
     with cd(env.path):
         run('/home/s/apps/mt.schr.fr/melody/tools/re') # rebuild pages
-        run('python screenshots.py') # generate screenshots for the archive
+        """ I disabled making screenshots because even if the other pages don’t change,
+            their new screenshots are never identical, so in git all these little png’s have
+            to be updated.
+            Need to write some logic that only makes screenshots for pages with modification
+            dates higher than the latest commit.
+        """
+        # run('python screenshots.py') # generate screenshots for the archive
+
+def commit(message):
+    """
+    Specify the message in a command line argument as such:
+    fab publish:message="This is the commit message"
+    """
+    with cd(env.path):
         run('git add .')
         run('git commit -m %s' % quote(message))
 
