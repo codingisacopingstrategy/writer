@@ -44,7 +44,9 @@ def entry(request, slug, authored_on=datetime.now()):
         entry.entry_status = 1 # draft by default
     if request.method == 'GET':
         author = MtAuthor.objects.get(pk=entry.entry_author_id)
-        authors = MtAuthor.objects.filter(author_created_by=True) # This happens to get all the authors we need
+        
+        author_ids = (3, 4, 5, 6, 7, 8) # the i.liketightpant contributors
+        authors = MtAuthor.objects.filter(author_created_by=True) # another way to get them
         a_thumbnail = MtAsset.objects.get(pk = author.author_userpic_asset_id)
 
         
@@ -56,7 +58,8 @@ def entry(request, slug, authored_on=datetime.now()):
         tpl_params['a_thumbnail_url'] = a_thumbnail.asset_url % "http://mt.schr.fr/lib"
         tpl_params['a_entries'] = MtEntry.objects.filter(entry_author_id=author.author_id)
         tpl_params['a_comments'] = MtComment.objects.filter(comment_commenter_id=author.author_id)[:10]
-        tpl_params['authors'] =authors
+        tpl_params['authors'] = authors
+        tpl_params['author_ids'] = author_ids
         tpl_params['recent_entries'] = MtEntry.objects.all()[:10]
         tpl_params['recent_comments'] = MtComment.objects.filter(comment_visible=1)[:10]
         tpl_params['parent'] = None
