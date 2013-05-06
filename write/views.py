@@ -46,7 +46,7 @@ def entry(request, slug, authored_on=datetime.now()):
         author = MtAuthor.objects.get(pk=entry.entry_author_id)
         
         author_ids = (3, 4, 5, 6, 7, 8) # the i.liketightpant contributors
-        authors = MtAuthor.objects.filter(author_created_by=True) # another way to get them
+        authors = MtAuthor.objects.all() #.filter(author_created_by=True) # another way to get them
         a_thumbnail = MtAsset.objects.get(pk = author.author_userpic_asset_id)
 
         
