@@ -266,7 +266,7 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
         if (entryId) {
             console.log("it is an existing Entry object")
             
-            var postData = entry.makeHash(['entry_title', 'entry_status', 'entry_author_id', 'entry_authored_on', 'entry_modified_on', 'entry_week_number'] )
+            var postData = entry.makeHash(['entry_title', 'entry_status', 'entry_author_id', 'entry_authored_on', 'entry_modified_on', 'entry_week_number', 'entry_comment_count'] )
             postData.entry_text = Aloha.activeEditable.getContents()
             
             console.log(JSON.stringify(postData))
