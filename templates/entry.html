@@ -2,7 +2,29 @@
 
 {% block title %}{{ e.entry_title|lower }}{% endblock %}
 
+{% block main_style_sheet %}<link rel="stylesheet/less" type="text/css" href="/and/style/in/{{ a.author_name}}.less" />{% endblock %}
+
 {% block head %}
+<script>
+    var Aloha = window.Aloha || ( window.Aloha = {} );
+    Aloha.settings = {
+        plugins: {
+            format: {
+                // configure buttons available in the toolbar
+                // this example enables all buttons available
+                config : [ 'strong', 'em', 'b', 'i', 'del', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code', 'pre', 'removeFormat'],
+                // specific configuration for each editable identified by css selectors
+                editables : {
+                    // the editable with id "teaser" won't offer any formatting options
+                    '#teaser'   : [  ]
+                },
+                // those are the tags that will be cleaned when clicking "remove formatting"
+                // this example resembles the default configuration
+                removeFormats : [ 'strong', 'em', 'b', 'i', 's', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
+            }
+        }
+    }
+</script>
 <!-- load the jQuery and require.js libraries -->
 <script type="text/javascript" src="{{ STATIC_URL }}aloha/lib/require.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}aloha/lib/vendor/jquery-1.7.2.js"></script>
@@ -13,7 +35,8 @@
                                         common/format,
                                         common/list,
                                         common/link,
-                                        common/highlighteditables">
+                                        common/highlighteditables,
+                                    extra/cite">
 </script>
 
 <!-- load the Aloha Editor CSS styles -->
@@ -22,8 +45,6 @@
 <!-- make all elements <article> editable with Aloha Editor -->
 <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry-ui.js"></script>
-
-<link rel="stylesheet" href="/and/style/in/{{ a.author_name}}.css" type="text/css" />
 
 <meta property="entry_allow_comments" content="1" />
 <meta property="entry_allow_pings" content="1" />
