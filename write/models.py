@@ -7,11 +7,15 @@
 # Also note: You'll have to insert the output of 'django-admin.py sqlcustom [appname]'
 # into your database.
 
+import re
+rex = re.compile(r'\W+')
+
 from django.db import models
 
 # Because we’ll be calling out for screenshots
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.template.defaultfilters import striptags
 
 from screenshots import screenshot
 
@@ -268,7 +272,8 @@ class MtComment(models.Model):
     comment_url = models.CharField(max_length=765, blank=True)
     comment_visible = models.IntegerField(null=True, blank=True)
     def __unicode__(self):
-        return u"%s: %s" % (self.comment_author, self.comment_text.splitlines()[0])
+        text = rex.sub( ' ', striptags(self.comment_text) )
+        return u"%s: %s" % (self.comment_author, text)
     class Meta:
         db_table = u'mt_comment'
         ordering = ('-comment_id',)
