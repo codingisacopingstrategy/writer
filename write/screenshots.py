@@ -12,11 +12,12 @@ import os
 import subprocess
 
 APP_PATH = os.path.abspath(os.path.dirname(__file__))
+PHANTOM_PATH = subprocess.Popen(['which','phantomjs'], stdout=subprocess.PIPE).communicate()[0].strip() 
 
 def screenshot(slugs=[]):
     posts = {}
     for i in slugs:
-        posts[i] = 'http://127.0.0.1:8000/or/' + i
+        posts[i] = 'http://127.0.0.1:7999/or/' + i
     
     for post, url in posts.iteritems():
         print "taking a screenshot of post", post, url
@@ -24,7 +25,7 @@ def screenshot(slugs=[]):
         url = "%s?id=%s" % (url, randint(222222, 777777))
         fullfile = os.path.join(APP_PATH, "static", "assets", "as", "screenshots", "of", "%s-full.png" % post)
         finalfile = fullfile.replace('-full', '')
-        pipe = subprocess.Popen(['phantomjs', os.path.join(APP_PATH, 'rasterise.js'), url, fullfile])
+        pipe = subprocess.Popen([PHANTOM_PATH, os.path.join(APP_PATH, 'rasterise.js'), url, fullfile])
         if pipe.wait() != 0:
             exit("Aborting")
         # convert post-full.png to 150 by 110 assets/as/screenshots/of/post.png
