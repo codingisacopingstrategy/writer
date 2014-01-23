@@ -17,10 +17,16 @@ env.hosts = ['s@schr.fr:599']
 env.path = '/home/s/apps/i.liketightpants.net/public/and/'
 
 def status():
+    """
+    Run `git status` on the server
+    """
     with cd(env.path):
         run('git status')
 
 def pull():
+    """
+    Pull from GitHub to server
+    """
     with cd(env.path):
         run('git pull origin master')
 
@@ -40,6 +46,7 @@ def publish():
 
 def commit(message):
     """
+    Commit on the server
     Specify the message in a command line argument as such:
     fab publish:message="This is the commit message"
     """
@@ -48,6 +55,9 @@ def commit(message):
         run('git commit -m %s' % quote(message))
 
 def archive():
+    """
+    Push from the server to GitHub
+    """
     with cd(env.path):
         run('git push origin master') # push to github
 
