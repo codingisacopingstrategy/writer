@@ -8,7 +8,19 @@
 # into your database.
 
 import re
+import os
+
+static_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'static', 'assets')
+
+local_static_files = []
+for root, dirs, files in os.walk(static_dir):
+    web_root = "/and/assets%s" % root.split('/assets')[-1]
+    for f in files:
+        local_static_files.append(os.path.join(os.sep, web_root, f))
+local_static_files = set(local_static_files)
+
 rex = re.compile(r'\W+')
+match_mentioned_files = re.compile('"(\/[^"]+)"')
 
 from django.db import models
 
@@ -330,6 +342,10 @@ class MtEntry(models.Model):
     entry_to_ping_urls = models.TextField(blank=True)
     entry_week_number = models.IntegerField(null=True, blank=True)
     entry_current_revision = models.IntegerField()
+    
+    def static_files(self):
+        entry_files = set(match_mentioned_files.findall(self.entry_text))
+        return list(entry_files & local_static_files)
     
     def entry_screenshot_url(self):
         return '/and/assets/as/screenshots/of/%s.png' % self.entry_basename.replace('_','-')
