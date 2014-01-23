@@ -16,10 +16,10 @@ $(function() {
             console.log("not a root level comment");
             var parent = $(this).parents(".comment").first();
             if (parent.next().hasClass("comments-parent-container")) {
-                console.log("there is already a container for children")
+                console.log("there is already a container for children");
             } else {
-                console.log("there is no container for children, adding one")
-                parent.after('<div class="comments-parent-container" style="margin-left: 20px;" />')
+                console.log("there is no container for children, adding one");
+                parent.after('<div class="comments-parent-container" style="margin-left: 20px;" />');
             }
             parent.next().append(el);
         } else {
@@ -54,5 +54,5 @@ $(function() {
         entryDate.show();
         entryDateForm.hide();
         // smartUpdate(); (we can’t do this, depends on Aloha editable for now)
-    })
+    });
 });

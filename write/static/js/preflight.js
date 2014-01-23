@@ -54,7 +54,7 @@ var cleanWhiteSpace = function (node, options, replacementDocument) {
     };
     processNode(node);
     return node;
-}
+};
 
 if (typeof exports !== 'undefined') {
     // exports as nodeJS module if appropriate

@@ -2,7 +2,7 @@ Date.prototype.toISOish = function() {
     // like http://stackoverflow.com/questions/2573521/how-do-i-output-an-iso-8601-formatted-string-in-javascript
     // but we explicitly don’t want to use UTC time
     // ( maybe we should, at some time? )
-    function pad(n) { return n < 10 ? '0' + n : n }
+    function pad(n) { return n < 10 ? '0' + n : n; }
     return this.getFullYear() + '-'
         + pad(this.getMonth() + 1) + '-'
         + pad(this.getDate()) + 'T'
@@ -20,7 +20,7 @@ Date.prototype.roundAboutTen = function() {
     this.setMinutes(0);
     this.setSeconds(Math.floor(Math.random() * 60));
     this.setTime(this.getTime() + ( Math.floor(Math.random() * 20) - 10 ) * 60000 );
-}
+};
 
 $("#time").fullCalendar({
     editable: true,
