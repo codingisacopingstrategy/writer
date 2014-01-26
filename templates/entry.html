@@ -2,10 +2,10 @@
 
 {% block title %}{{ e.entry_title|lower }}{% endblock %}
 
-{% block main_style_sheet %}<link rel="stylesheet/less" type="text/css" href="/and/style/in/{{ a.author_name}}.less" />{% endblock %}
+{% block main_style_sheet %}<link rel="stylesheet" type="text/css" href="/and/style/in/{{ a.author_name}}.css" />{% endblock %}
 
 {% block head %}
-<script>
+{% if EDITING %}<script>
     var Aloha = window.Aloha || ( window.Aloha = {} );
     Aloha.settings = {
         plugins: {
@@ -49,28 +49,23 @@
 <!-- make all elements <article> editable with Aloha Editor -->
 <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry-ui.js"></script>
+{% endif %}
+    <meta property="og:title" content="I like tight pants and {{ e.entry_title|lower }}"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:url" content="http://i.liketightpants.net/and/{{ e.entry_slug }}"/>
+    
+    <meta property="og:image" content="{{ e.entry_keywords }}"/>
+    <meta property="og:site_name" content="I like tight pants and mathematics"/>
+    <meta property="og:description"
+          content="{{ e.entry_excerpt }}"/>
+    <meta property="fb:admins" content="1488294875"/>
 
-<meta property="entry_allow_comments" content="1" />
-<meta property="entry_allow_pings" content="1" />
-<meta property="entry_atom_id" content="" />
 <meta property="entry_basename" content="{{ e.entry_basename }}" />
-<meta property="entry_blog_id" content="1" />
-<meta property="entry_category_id" content="null" />
-<meta property="entry_class" content="entry" />
-<meta property="entry_convert_breaks" content="0" />
-<meta property="entry_created_by" content="{{ e.entry_created_by }}" />
 <meta property="entry_created_on" content="{{ e.entry_created_on|date:"Y-m-d\TH:i:s" }}" />
-<meta property="entry_current_revision" content="0" />
-<meta property="entry_excerpt" content="" />
 <meta property="entry_keywords" content="{{ e.entry_keywords }}" />
+
 <meta property="entry_modified_by" content="1" />
 <meta property="entry_modified_on" content="{{ e.entry_modified_on|date:"Y-m-d\TH:i:s" }}" />
-<meta property="entry_ping_count" content="0" />
-<meta property="entry_pinged_urls" content="" />
-<meta property="entry_tangent_cache" content="" />
-<meta property="entry_template_id" content="null" />
-<meta property="entry_text_more" content="" />
-<meta property="entry_to_ping_urls" content="" />
 
 {% endblock %}
 
@@ -79,14 +74,14 @@
   
   <img src="{{ a_thumbnail_url }}" style="width:100px;height:100px;" alt="" />
   
-  <select property="entry_author_id">
+  {% if EDITING %}<select property="entry_author_id">
   {% for author in authors %}
     <option value="{{ author.author_id }}"{% if author.author_id == e.entry_author_id %} selected="true"{% endif %}>{{ author.author_nickname }}</option>
-  {% endfor %}
+  {% endfor %}{% else %}<h4 class="author">{{ author.author_nickname }}</h4>{% endif %}
   </select>
-  <h4 class="author" property="entry_authored_on" content="{{ e.entry_authored_on|date:"Y-m-d\TH:i:s" }}">{{ e.entry_authored_on|date:"F j, Y f A" }}</h4>
+  <h4 class="author" property="entry_authored_on" content="{{ e.entry_authored_on|date:"Y-m-d\TH:i:s" }}">{{ e.entry_authored_on|date:"F j, Y f A" }}</h4>{% if EDITING %}
   <form action="" id="entry-authored-input"><input type="date" value="{{ e.entry_authored_on|date:"o-m-d" }}" /><input type="time" value="{{ e.entry_authored_on|date:"H:i" }}" /><a href="">OK</a></form>
-  <h4 class="author">published: <input property="entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.entry_status == 2 %}checked="yes"{% endif%}/></h4>
+  <h4 class="author">published: <input property="entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.entry_status == 2 %}checked="yes"{% endif%}/></h4>{% endif %}
   <p>&nbsp;</p>
   
   <hr />

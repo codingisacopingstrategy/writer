@@ -4,14 +4,13 @@
 <meta charset="utf-8">
 <link rel="stylesheet" href="/and/style/in/reset.css" type="text/css" />
 <link rel="stylesheet" href="/and/style/in/grid.css" type="text/css" />
-{% block main_style_sheet %}<link rel="stylesheet/less" type="text/css" href="/and/style/in/style.less" />{% endblock %}
+{% block main_style_sheet %}<link rel="stylesheet" type="text/css" href="/and/style/in/style.css" />{% endblock %}
 
 <link rel="start" href="/and/" title="Home" />
 <link rel="alternate" type="application/atom+xml" title="Recent Entries" href="/and/feed/us/recent_entries.xml" />
 
-<script type="text/javascript" src="/and/js/lib/jquery/jquery-1.9.1.min.js"></script> <!-- In app’s static folder -->
-<script type="text/javascript" src="/and/js/lib/jquery/jquery-ui-1.10.2.custom.min.js"></script> <!-- In app’s static folder -->
-<script src="/and/js/lib/less-1.3.3.min.js" type="text/javascript"></script> <!-- In app’s static folder -->
+<script type="text/javascript" src="/and/scripts/being/jquery-1.11.0.min.js"></script>
+{% if EDITING %}<script type="text/javascript" src="/and/js/lib/jquery/jquery-ui-1.10.2.custom.min.js"></script> <!-- In app’s static folder -->{% endif %}
 
 <script type="text/javascript" src="/and/scripts/being/scripts.js"></script>
 <script type="text/javascript" src="/and/mt.js"></script>
@@ -27,13 +26,12 @@
   <h1><a href="/or/">i . like tight pants . net</a></h1>
   </div>
   <div class="grid_3">
-<!--  <ul>
+  <ul>
     
     <li class="current">latest</li>
-    
     <li><a href="/and/about">about</a></li>
     <li><a href="/and/archives">index</a></li>
-  </ul> -->&nbsp;
+  </ul>
   </div>
   <div class="grid_2">
   <p class="byline">New entries published Monday and Thursday, 22:00 CET (<a href="/and/feed/us/recent_entries.xml">RSS</a>)</p>

@@ -12,9 +12,10 @@ def wall(request):
     tpl_params['entries'] = MtEntry.objects.all()
     entries_hash = [e.entry_event() for e in MtEntry.objects.all()]
     tpl_params['entries_json'] = json.dumps(entries_hash, indent=2, ensure_ascii=False)
+    tpl_params['EDITING'] = True
     return render_to_response("wall.html", tpl_params, context_instance = RequestContext(request))
 
-def entry(request, slug, authored_on=datetime.now()):
+def entry(request, slug, editing=False):
     """
     Strictly speaking, the following is *not* a good idea.
     Because we are required to not use hyphens in entry_basename.
@@ -31,11 +32,11 @@ def entry(request, slug, authored_on=datetime.now()):
     try:
         entry = MtEntry.objects.get(entry_basename=basename)
     except MtEntry.DoesNotExist:
+        if not editing:
+            return Http404
         entry = MtEntry(entry_basename=basename)
-        entry.entry_authored_on = authored_on
-        entry.entry_created_on = datetime.now()
-        entry.entry_created_by=3
-        entry.entry_author_id=3 # glit by default
+        entry.entry_authored_on = entry.entry_created_on = datetime.now()
+        entry.entry_created_by = entry.entry_author_id= 3 # glit by default
         entry.entry_text = """
         <p>Hello dear start the editing process.</p>
         """
@@ -52,6 +53,7 @@ def entry(request, slug, authored_on=datetime.now()):
         
 
         tpl_params = {}
+        tpl_params['EDITING'] = editing
         tpl_params['e'] = entry
         tpl_params['e_comments'] = MtComment.objects.filter(comment_visible=1).filter(comment_entry_id=entry.entry_id).order_by('comment_created_on')
         tpl_params['a'] = author
@@ -66,3 +68,8 @@ def entry(request, slug, authored_on=datetime.now()):
 
         return render_to_response("entry.html", tpl_params, context_instance = RequestContext(request))
 
+def entry_read(request, slug):
+    return entry(request, slug, False)
+
+def entry_write(request, slug):
+    return entry(request, slug, True)

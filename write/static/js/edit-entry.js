@@ -22,30 +22,34 @@ var parseNum = function(n){
 }
 
 var Entry = function() {
-    // find properties set in metadata
-    this.entry_allow_comments = parseNum($("meta[property=entry_allow_comments]").attr("content"));
-    this.entry_allow_pings = parseNum($("meta[property=entry_allow_pings]").attr("content"));
-    this.entry_atom_id = $("meta[property=entry_atom_id]").attr("content");
+    this.entry_allow_comments = 1;
+    this.entry_allow_pings = 1;
+    this.entry_atom_id = "";
     this.entry_basename = $("meta[property=entry_basename]").attr("content");
-    this.entry_blog_id = parseNum($("meta[property=entry_blog_id]").attr("content"));
-    this.entry_category_id = parseNum($("meta[property=entry_category_id]").attr("content"));
-    this.entry_class = $("meta[property=entry_class]").attr("content");
-    this.entry_convert_breaks = $("meta[property=entry_convert_breaks]").attr("content");
-    this.entry_created_by = parseNum($("meta[property=entry_created_by]").attr("content"));
+    this.entry_blog_id = 1;
+    this.entry_category_id = null;
+    this.entry_class = "entry";
+    this.entry_convert_breaks = 0;
+    this.entry_created_by = 3;
     this.entry_created_on = $("meta[property=entry_created_on]").attr("content");
-    this.entry_current_revision = parseNum($("meta[property=entry_current_revision]").attr("content"));
-    this.entry_excerpt = $("meta[property=entry_excerpt]").attr("content");
-    this.entry_keywords = $("meta[property=entry_keywords]").attr("content");
+    this.entry_current_revision = 0;
     this.entry_modified_by = parseNum($("meta[property=entry_modified_by]").attr("content"));
-    this.entry_ping_count = parseNum($("meta[property=entry_ping_count]").attr("content"));
-    this.entry_pinged_urls = $("meta[property=entry_pinged_urls]").attr("content");
-    this.entry_tangent_cache = $("meta[property=entry_tangent_cache]").attr("content");
-    this.entry_template_id = parseNum($("meta[property=entry_template_id]").attr("content"));
-    this.entry_text_more = $("meta[property=entry_text_more]").attr("content");
-    this.entry_to_ping_urls = $("meta[property=entry_to_ping_urls]").attr("content");
-    this.entry_week_number = $("meta[property=entry_week_number]").attr("content");
+    this.entry_ping_count = 0;
+    this.entry_pinged_urls = "";
+    this.entry_tangent_cache = "";
+    this.entry_template_id = null;
+    this.entry_text_more = "";
+    this.entry_to_ping_urls = "";
     // find properties set in body (user editable)
-    this.entry_status =          function() {
+    this.entry_excerpt =        function(){
+                                    /** The Facebook description */
+                                   return $("meta[property=og:description").attr("content");
+    }
+    this.entry_keywords =       function( ){
+                                    /** Actually used for the Facebook preview image*/
+                                    return $("meta[property=og:image]").attr("content");
+                                }
+    this.entry_status =         function() {
                                     if ($("[property=entry_status]").is(':checked')) {
                                         // published:
                                         return 2;
@@ -53,31 +57,31 @@ var Entry = function() {
                                         return 1;
                                     }
                                 }
-    this.entry_id =          function() {
+    this.entry_id =             function() {
                                     if ($("[property=entry_id]").length == 0) {
                                         return false;
                                     } else {
                                         return parseInt($("[property=entry_id]").
                                                 attr("content"));
                                     }
-                                }
+                                };
     this.entry_title =          function() {
                                     return $("[property=entry_title]").
                                             text();
-                                }
+                                };
     this.entry_author_id =      function() {
                                     return parseInt($("[property=entry_author_id]").
                                             find("option:selected").
                                                 attr('value'));
-                                }
+                                };
     this.entry_authored_on =    function() {
                                     return $("[property=entry_authored_on]").
                                             attr("content");
-                            },
+                                },
     this.entry_modified_on =    function() {
                                     return $("meta[property=entry_modified_on]")
                                     .attr("content");
-                            },
+                                },
     this.entry_week_number =    function() {
                                     var d = new Date(this.entry_authored_on())
                                     var year = d.getFullYear();
