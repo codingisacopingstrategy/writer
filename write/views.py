@@ -47,22 +47,26 @@ def entry(request, slug, editing=False):
         author = MtAuthor.objects.get(pk=entry.entry_author_id)
         
         author_ids = (3, 4, 5, 6, 7, 8) # the i.liketightpant contributors
-        authors = MtAuthor.objects.all() #.filter(author_created_by=True) # another way to get them
+        authors = MtAuthor.objects.all()
+        main_authors = MtAuthor.objects.filter(author_id__in=author_ids)
         a_thumbnail = MtAsset.objects.get(pk = author.author_userpic_asset_id)
-
         
-
         tpl_params = {}
+        
         tpl_params['EDITING'] = editing
+        tpl_params['andor'] = '/or/' if editing else '/and/'
+        
         tpl_params['e'] = entry
         tpl_params['e_comments'] = MtComment.objects.filter(comment_visible=1).filter(comment_entry_id=entry.entry_id).order_by('comment_created_on')
         tpl_params['a'] = author
         tpl_params['a_thumbnail_url'] = a_thumbnail.asset_url % "http://mt.schr.fr/lib"
-        tpl_params['a_entries'] = MtEntry.objects.filter(entry_author_id=author.author_id)
-        tpl_params['a_comments'] = MtComment.objects.filter(comment_commenter_id=author.author_id)[:10]
+        tpl_params['a_entries'] = MtEntry.objects.filter(entry_author_id=author.author_id).filter(entry_status=2).exclude(pk=entry.entry_id)
+        tpl_params['a_comments'] = MtComment.objects.filter(comment_visible=1).filter(comment_commenter_id=author.author_id)[:10]
+        
         tpl_params['authors'] = authors
         tpl_params['author_ids'] = author_ids
-        tpl_params['recent_entries'] = MtEntry.objects.all()[:10]
+        tpl_params['main_authors'] = main_authors
+        tpl_params['recent_entries'] = MtEntry.objects.filter(entry_status=2)[:10]
         tpl_params['recent_comments'] = MtComment.objects.filter(comment_visible=1)[:10]
         tpl_params['parent'] = None
 

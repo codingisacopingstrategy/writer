@@ -283,6 +283,8 @@ class MtComment(models.Model):
     comment_text = models.TextField(blank=True)
     comment_url = models.CharField(max_length=765, blank=True)
     comment_visible = models.IntegerField(null=True, blank=True)
+    def comment_entry(self):
+        return MtEntry.objects.get(pk=self.comment_entry_id)
     def __unicode__(self):
         text = rex.sub( ' ', striptags(self.comment_text) )
         return u"%s: %s" % (self.comment_author, text)

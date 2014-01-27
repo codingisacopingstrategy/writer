@@ -77,35 +77,34 @@
   {% if EDITING %}<select property="entry_author_id">
   {% for author in authors %}
     <option value="{{ author.author_id }}"{% if author.author_id == e.entry_author_id %} selected="true"{% endif %}>{{ author.author_nickname }}</option>
-  {% endfor %}{% else %}<h4 class="author">{{ author.author_nickname }}</h4>{% endif %}
-  </select>
-  <h4 class="author" property="entry_authored_on" content="{{ e.entry_authored_on|date:"Y-m-d\TH:i:s" }}">{{ e.entry_authored_on|date:"F j, Y f A" }}</h4>{% if EDITING %}
+  {% endfor %}{% else %}<h4 class="author">{{ a.author_nickname }}</h4>
+  </select>{% endif %}<!--
+  <h4 class="author" property="entry_authored_on" content="{{ e.entry_authored_on|date:"Y-m-d\TH:i:s" }}">{{ e.entry_authored_on|date:"F j, Y f A" }}</h4>-->{% if EDITING %}
   <form action="" id="entry-authored-input"><input type="date" value="{{ e.entry_authored_on|date:"o-m-d" }}" /><input type="time" value="{{ e.entry_authored_on|date:"H:i" }}" /><a href="">OK</a></form>
   <h4 class="author">published: <input property="entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.entry_status == 2 %}checked="yes"{% endif%}/></h4>{% endif %}
   <p>&nbsp;</p>
   
   <hr />
   
-  <h4>Articles</h4>
+  <h4>Other articles by {{ a.author_nickname }}</h4>
   <dl>
   {% for e in a_entries %}
-  <dt><a href="/or/{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
+  <dt><a href="{{ andor }}{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
   <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
   {% endfor %}
   </dl>
 
   <h4>Comments</h4>
-  <dl>
+  <ul>
   {% for c in a_comments %}
-    <dt>{{ c.comment_author }} on <a href ="/or/">Title of entry</a></dt>
-    <dd>{{ c.comment_created_on|date:"F j, Y f A" }}</dd>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.entry_uri }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
   {% endfor %}
-  </dl>
+  </ul>
   <hr />
   
   <h4>Other writers</h4>
   <ul>
-  {% for a in authors %}
+  {% for a in main_authors %}
     <li>{{ a.author_nickname }}</li>
   {% endfor %}
   </ul>
@@ -113,8 +112,8 @@
 </div>
 <div class="post grid_5">
   <p class="byline">
-  {% if e.previous %}<a href="/or/{{ e.previous.entry_slug }}">Previous</a>{% endif %}
-  {% if e.next %}  / <a href="/or/{{ e.next.entry_slug }}">Next</a>{% endif %}
+  {% if e.previous %}<a href="{{ andor }}{{ e.previous.entry_slug }}">Previous</a>{% endif %}
+  {% if e.next %}  / <a href="{{ andor }}{{ e.next.entry_slug }}">Next</a>{% endif %}
   </p>
   <div>
     <div class="article grid_3 alpha omega suffix_2">
@@ -143,7 +142,7 @@
   <h4>Latest articles</h4>
   <dl>
   {% for e in recent_entries %}
-  <dt><a href="/or/{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
+  <dt><a href="{{ andor }}{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
   <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
   {% endfor %}
   </dl>
@@ -152,7 +151,7 @@
   <h4>Latest Comments</h4>
   <ul>
   {% for c in recent_comments %}
-    <li><strong>{{ c.comment_author }}:</strong> {{ c.comment_text|striptags|truncatewords:10 }} <a href="/or/" title="full comment on: Title of entry">read more</a></li>
+    <li><strong>{{ c.comment_author }}:</strong> {{ c.comment_text|striptags|truncatewords:10 }} <a href="{{ c.comment_entry.entry_uri }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
   {% endfor %}
   </ul>
 
