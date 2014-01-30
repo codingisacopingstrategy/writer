@@ -10,10 +10,14 @@ entry_resource = MtEntryResource()
 comment_resource = MtCommentResource()
 
 urlpatterns = patterns('',
+    url(r'^or/login$', 'django.contrib.auth.views.login',  {'template_name': 'login.html'}, name='login'),
+    url(r'^or/logout$', 'django.contrib.auth.views.logout',{'template_name': 'logout.html'}, name='logout'),
+    
     url(r'^$', RedirectView.as_view(url='/or/')),
     url(r'^or/$', 'write.views.wall', name='wall'),
     url(r'^is/(?P<slug>[\w-]+)$', 'write.views.entry_read', name='entry'),
     url(r'^or/(?P<slug>[\w-]+)$', 'write.views.entry_write', name='entry'),
+    
     url(r'^admin/', include(admin.site.urls)),
     (r'^api/', include(entry_resource.urls)),
     (r'^api/', include(comment_resource.urls)),

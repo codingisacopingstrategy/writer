@@ -30,7 +30,8 @@
     
     <li class="current">latest</li>
     <li><a href="/and/about">about</a></li>
-    <li><a href="/and/archives">index</a></li>
+    <li><a href="/and/archives">index</a></li>{% if EDITING %}
+    <li><a href="{% url 'logout' %}">logout</a></li>{% endif %}
   </ul>
   </div>
   <div class="grid_2">

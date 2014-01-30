@@ -4,9 +4,11 @@ from datetime import datetime
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Template, Context
+from django.contrib.auth.decorators import login_required
 
 from write.models import (MtEntry, MtTemplate, MtAuthor, MtAsset, MtComment)
 
+@login_required(login_url='/or/login')
 def wall(request):
     tpl_params = {}
     tpl_params['entries'] = MtEntry.objects.all()
@@ -75,5 +77,6 @@ def entry(request, slug, editing=False):
 def entry_read(request, slug):
     return entry(request, slug, False)
 
+@login_required(login_url='/or/login')
 def entry_write(request, slug):
     return entry(request, slug, True)
