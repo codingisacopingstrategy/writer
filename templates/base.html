@@ -23,12 +23,12 @@
 {% block header %}
 <div id="header" class="container_7">
   <div class="grid_2">
-  <h1><a href="/and/">i . like tight pants . net</a></h1>
+  <h1><a href="{{ andor }}">i . like tight pants . net</a></h1>
   </div>
   <div class="grid_3">
   <ul>
     
-    <li class="current">latest</li>
+    <li {% if e and e.entry_id == latest_entry.entry_id %}class="current">latest{% else %}><a href="{{ andor }}{{ latest_entry.entry_slug }}">latest</a>{% endif %}</li>
     <li><a href="/and/about">about</a></li>
     <li><a href="/and/archives">index</a></li>{% if EDITING %}
     <li><a href="{% url 'logout' %}">logout</a></li>{% endif %}

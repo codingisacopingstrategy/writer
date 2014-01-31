@@ -1,13 +1,13 @@
 Date.prototype.getWeek = function() {
     var onejan = new Date(this.getFullYear(),0,1);
     return Math.ceil((((this - onejan) / 86400000) + onejan.getDay()+1)/7);
-}
+};
 
 Date.prototype.toISOish = function() {
     // like http://stackoverflow.com/questions/2573521/how-do-i-output-an-iso-8601-formatted-string-in-javascript
     // but we explicitly don’t want to use UTC time
     // ( maybe we should, at some time? )
-    function pad(n) { return n < 10 ? '0' + n : n }
+    function pad(n) { return n < 10 ? '0' + n : n; }
     return this.getFullYear() + '-'
         + pad(this.getMonth() + 1) + '-'
         + pad(this.getDate()) + 'T'
@@ -18,8 +18,8 @@ Date.prototype.toISOish = function() {
 
 var parseNum = function(n){
     var result = parseInt(n);
-    return isNaN(result) ? null : result
-}
+    return isNaN(result) ? null : result;
+};
 
 var Entry = function() {
     this.entry_allow_comments = 1;
@@ -44,11 +44,11 @@ var Entry = function() {
     this.entry_excerpt =        function(){
                                     /** The Facebook description */
                                    return $("meta[property=og:description").attr("content");
-    }
+    };
     this.entry_keywords =       function( ){
                                     /** Actually used for the Facebook preview image*/
                                     return $("meta[property=og:image]").attr("content");
-                                }
+                                };
     this.entry_status =         function() {
                                     if ($("[property=entry_status]").is(':checked')) {
                                         // published:
@@ -56,7 +56,7 @@ var Entry = function() {
                                     } else {
                                         return 1;
                                     }
-                                }
+                                };
     this.entry_id =             function() {
                                     if ($("[property=entry_id]").length == 0) {
                                         return false;
@@ -77,22 +77,22 @@ var Entry = function() {
     this.entry_authored_on =    function() {
                                     return $("[property=entry_authored_on]").
                                             attr("content");
-                                },
+                                };
     this.entry_modified_on =    function() {
                                     return $("meta[property=entry_modified_on]")
                                     .attr("content");
-                                },
+                                };
     this.entry_week_number =    function() {
-                                    var d = new Date(this.entry_authored_on())
+                                    var d = new Date(this.entry_authored_on());
                                     var year = d.getFullYear();
                                     var week = d.getWeek();
                                     var weekNumber = year.toString() + week;
                                     return parseInt(weekNumber);
-                                }
+                                };
     this.entry_comment_count =  function() {
-                                    return $("div.comment").length
-                                }
-}
+                                    return $("div.comment").length;
+                                };
+};
 
 var Comment = function(el, text) {
     this.el =         el;
@@ -141,8 +141,8 @@ var Comment = function(el, text) {
                                     if (this.el.parents(".comments-parent-container").length === 0) {
                                         return null;
                                     };
-                                return new Comment(this.el.parents(".comments-parent-container").first().prev(), "").comment_id()
-                                }
+                                    return new Comment(this.el.parents(".comments-parent-container").first().prev(), "").comment_id();
+                                };
     this.comment_text = text;
     this.comment_url =          function() {
                                     if (this.el.find("select").length === 0) {
@@ -158,7 +158,7 @@ var Comment = function(el, text) {
                                     }
                                     return "/api/comment/";
                                 };
-}
+};
 
 Entry.prototype.toHash = Comment.prototype.toHash = function() {
     var result = {};
@@ -217,10 +217,10 @@ Comment.prototype.update = function() {
         console.log("creating a new Comment object");
         console.log("to be implemented");
         
-        var postData = this.toHash()
-        delete postData.comment_id
-        delete postData.resource_uri
-        delete postData.el
+        var postData = this.toHash();
+        delete postData.comment_id;
+        delete postData.resource_uri;
+        delete postData.el;
         
         var url = this.resource_uri();
         
@@ -250,7 +250,7 @@ Comment.prototype.update = function() {
             },
         });
     }
-}
+};
 
 
 

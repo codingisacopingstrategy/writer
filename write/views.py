@@ -12,9 +12,11 @@ from write.models import (MtEntry, MtTemplate, MtAuthor, MtAsset, MtComment)
 def wall(request):
     tpl_params = {}
     tpl_params['entries'] = MtEntry.objects.all()
+    tpl_params['latest_entry'] = tpl_params['entries'].filter(entry_status=2)[0]
     entries_hash = [e.entry_event() for e in MtEntry.objects.all()]
     tpl_params['entries_json'] = json.dumps(entries_hash, indent=2, ensure_ascii=False)
     tpl_params['EDITING'] = True
+    tpl_params['andor'] = '/or/'
     return render_to_response("wall.html", tpl_params, context_instance = RequestContext(request))
 
 def entry(request, slug, editing=False):
@@ -69,6 +71,7 @@ def entry(request, slug, editing=False):
         tpl_params['author_ids'] = author_ids
         tpl_params['main_authors'] = main_authors
         tpl_params['recent_entries'] = MtEntry.objects.filter(entry_status=2)[:10]
+        tpl_params['latest_entry'] = tpl_params['recent_entries'][0]
         tpl_params['recent_comments'] = MtComment.objects.filter(comment_visible=1)[:10]
         tpl_params['parent'] = None
 
