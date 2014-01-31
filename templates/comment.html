@@ -8,16 +8,9 @@
 </div>
 <p class="byline" property="comment_email" content="{{ c.comment_email }}">
   {% if c.comment_commenter_id in author_ids %}<img src="/and/assets/that/are/pictures/of/author/{{ c.comment_author }}.png" width="18" height="18" />{% endif %} 
-  by {% if c.comment_commenter_id in author_ids %}
-    {% if EDITING %}<select>
-     {% for author in authors %}
-         <option value="{{ author.author_id }}"{% if author.author_id == c.comment_commenter_id %} selected="true"{% endif %}>{{ author.author_nickname }}</option>
-     {% endfor %}
-     </select>
-     {% else %}
-     <span property="comment_author" contenteditable="true"><a href="{{ c.comment_url }}" property="comment_url">{{ c.comment_author }}</a></span>
-     {% endif %}{% else %}<span property="comment_author"><a href="{{ c.comment_url }}" property="comment_url">{{ c.comment_author }}</a></span>{% endif %} - <a href="{{ andor }}{{ e.entry_basename }}#comment-{{ c.comment_id }}"><span property="comment_created_on" content="{{ c.comment_created_on|date:"Y-m-d\TH:i:s" }}">{{ c.comment_created_on|date:"F j, Y f A" }}</span></a><br />
-  <a title="Reply" href="#reply">Reply</a>
+  by {% if c.comment_commenter_id in author_ids and EDITING %}<select>{% for author in authors %}<option value="{{ author.author_id }}"{% if author.author_id == c.comment_commenter_id %} selected="true"{% endif %}>{{ author.author_nickname }}</option>{% endfor %}</select>
+     {% else %}<span property="comment_author"><a href="{{ c.comment_url }}" property="comment_url">{{ c.comment_author }}</a></span>{% endif %} - <a href="{{ andor }}{{ e.entry_basename }}#comment-{{ c.comment_id }}"><span property="comment_created_on" content="{{ c.comment_created_on|date:"Y-m-d\TH:i:s" }}">{{ c.comment_created_on|date:"F j, Y f A" }}</span></a><br />
+  <a title="Reply" href="{% if EDITING %}javascript:void(0);{% else %}#reply{% endif %}" {% if not EDITING %}onclick="mtReplyCommentOnClick({{ c.comment_id }}, '{{ c.comment_author }}')"{% endif %}>Reply</a>
 </p>
 </div>
   <div class="comments-parent-container" style="margin-left: 20px;">

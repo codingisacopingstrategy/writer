@@ -257,23 +257,23 @@ Comment.prototype.update = function() {
 var entry;
 
 var smartUpdate = function(jQueryEvent, eventArgument) {
-    console.log(jQueryEvent, eventArgument)
+    console.log(jQueryEvent, eventArgument);
 
     $("[property=entry_modified_on]").attr("content", new Date().toISOish());
 
     var e = eventArgument.editable;
     if (e.obj.hasClass("entry")) {
-        console.log("started updating an Entry object")
+        console.log("started updating an Entry object");
         
         var entryId = entry.entry_id();
         
         if (entryId) {
-            console.log("it is an existing Entry object")
+            console.log("it is an existing Entry object");
             
-            var postData = entry.makeHash(['entry_title', 'entry_status', 'entry_author_id', 'entry_authored_on', 'entry_modified_on', 'entry_week_number', 'entry_comment_count'] )
+            var postData = entry.makeHash(['entry_title', 'entry_status', 'entry_author_id', 'entry_authored_on', 'entry_modified_on', 'entry_week_number', 'entry_comment_count'] );
             postData.entry_text = cleanWhiteSpace(Aloha.activeEditable.originalObj[0], { indentationLevel : 2 }, document).innerHTML;
             
-            console.log(JSON.stringify(postData))
+            console.log(JSON.stringify(postData));
             
             var request = jQuery.ajax({
                 url: "/api/entry/" + entryId + "/",
@@ -292,13 +292,13 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
                 });
         } else {
             
-            console.log('creating a new entry object')
+            console.log('creating a new entry object');
             
-            var postData = entry.toHash()
-            postData.entry_text = Aloha.activeEditable.getContents()
-            delete postData.entry_id
+            var postData = entry.toHash();
+            postData.entry_text = Aloha.activeEditable.getContents();
+            delete postData.entry_id;
             
-            console.log(JSON.stringify(postData))
+            console.log(JSON.stringify(postData));
             
             var request = jQuery.ajax({
                 url: "/api/entry/",
@@ -326,7 +326,7 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
             
         }
     } else if (e.obj.hasClass("comment-editor")) {
-        console.log("started updating a Comment object")
+        console.log("started updating a Comment object");
         comment = new Comment(  e.obj.parents(".comment").first(), 
                                 Aloha.activeEditable.getContents()  );
         comment.update();

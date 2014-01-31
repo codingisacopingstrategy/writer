@@ -115,28 +115,84 @@
   {% if e.previous %}<a href="{{ andor }}{{ e.previous.entry_slug }}">Previous</a>{% endif %}
   {% if e.next %}  / <a href="{{ andor }}{{ e.next.entry_slug }}">Next</a>{% endif %}
   </p>
-  <div>
-    <div class="article grid_3 alpha omega suffix_2">
+  <div class="article grid_3 alpha omega suffix_2">
     <h4 property="entry_title" contenteditable="true">{{ e.entry_title }}</h4>
-    <article{% if e.entry_id %} property="entry_id" content="{{ e.entry_id }}"{% endif %} class="entry" id="entry-{{ e.entry_id }}">
+    <article {% if e.entry_id %} property="entry_id" content="{{ e.entry_id }}"{% endif %} class="entry" id="entry-{{ e.entry_id }}">
     {{ e.entry_text|safe }}
     </article>
     <h4 class="comments-header">{% if e_comments %}{{ e_comments.count }} Comments{% else %}No Comments{% endif %}</h4>
 
-    <div class="comments-content">
-      {% if e_comments %}
-        {% include "comment.html" %}
-      {% endif %}
-        <a title="Reply" href="#reply">Reply</a>
 
-    </div>
+    
+    <div id="comments" class="comments">
+    
+        <div class="comments-content">
+          {% if e_comments %}
+            {% include "comment.html" %}
+          {% endif %}
+            <a title="Reply" href="#reply">Reply</a>
+        </div>
+        {% if not EDITING %}
+        <div class="comments-open" id="comments-open">
+            <h4 class="comments-open-header">Leave a comment</h4>
+            <div class="comments-open-content">
+                <div id="comment-greeting"></div>
+                
+                    <form method="post" action="http://mt.schr.fr/comments.cgi" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
+                        <input type="hidden" name="static" value="1" />
+                        <input type="hidden" name="entry_id" value="{{ e.entry_id }}" />
+                        <input type="hidden" name="__lang" value="en" />
+                        <input type="hidden" name="parent_id" id="comment-parent-id" />
+                        <input type="hidden" name="armor" value="1" />
+                        <input type="hidden" name="preview" value="" />
+                        <input type="hidden" name="sid" value="" />
+                        <div id="comments-open-data">
+                            <div id="comment-form-name">
+                              <div class="alpha grid_1"><label for="comment-author" class="span-4">Name</label></div>
+                                <div class="omega grid_2"><input id="comment-author" name="author" size="30" value="" onfocus="mtCommentFormOnFocus()" /></div>
+                            </div>
+                            <div id="comment-form-email">
+                                <div class="alpha grid_1"><label for="comment-email" class="span-4">Email Address</label></div>
+                                <div class="omega grid_2"><input id="comment-email" name="email" size="30" value="" onfocus="mtCommentFormOnFocus()" /></div>
+                            </div>
+                            <div id="comment-form-url">
+                                <div class="alpha grid_1"><label for="comment-url" class="span-4">URL</label></div>
+                                <div class="omega grid_2"><input id="comment-url" name="url" size="30" value="" onfocus="mtCommentFormOnFocus()" /></div>
+                            </div>
+                            <div id="comment-form-remember-me">
+                                <input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="mtRememberMeOnClick(this)" value="1" accesskey="r" />
+                                <label for="comment-bake-cookie">Remember personal info?</label>
+                            </div>
+                        </div>
+                        <div id="comment-form-reply" style="display:none">
+                            <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="mtSetCommentParentID()" />
+                            <label for="comment-reply" id="comment-reply-label"></label>
+                        </div>
+                        <div id="comments-open-text">
+                            <label for="comment-text">Comments</label><br />
+                            <textarea id="comment-text" name="text" rows="15" style="width:100%;" onfocus="mtCommentFormOnFocus()"></textarea>
+                        </div>
+                        <div id="comments-open-captcha"></div>
+                        <div id="comments-open-footer">
+                           <!-- <input type="submit" accesskey="v" name="preview_button" id="comment-preview" value="Preview" onclick="this.form.preview.value='1';" /> -->
+                            <input type="submit" accesskey="s" name="post" id="comment-submit" value="Submit" />
+                        </div>
+                    </form>
 
-
-    </div>
-  </div>
+                
+            </div>
+        </div>
+    
+        <script type="text/javascript">
+            mtAttachEvent("load", mtEntryOnLoad);
+            mtAttachEvent("unload", mtEntryOnUnload);
+        </script>
+        {% endif %}
+    
+    </div><!-- / comments -->
+  </div> <!-- / article grid_3 -->
   <hr />
-
-</div>
+</div> <!-- / post grid_5-->
 
 <div class="sidebar grid_1">
   <h4>Latest articles</h4>
