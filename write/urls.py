@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     
     url(r'^$', RedirectView.as_view(url='/or/')),
     url(r'^or/$', 'write.views.wall', name='wall'),
+    url(r'^or/authors$', 'write.views.authors', name='authors'),
     url(r'^is/(?P<slug>[\w-]+)$', 'write.views.entry_read', name='entry'),
     url(r'^or/(?P<slug>[\w-]+)$', 'write.views.entry_write', name='entry'),
     

@@ -75,9 +75,38 @@ def entry(request, slug, editing=False):
 
         return render_to_response("entry.html", tpl_params, context_instance = RequestContext(request))
 
+
 def entry_read(request, slug):
     return entry(request, slug, False)
 
 @login_required(login_url='/or/login')
 def entry_write(request, slug):
     return entry(request, slug, True)
+
+    """
+    3 = glit
+    4 = jenseits
+    5 = habitus
+    6 = tellyou
+    7 = baseline
+    8 = bnf
+    
+    """
+
+def authors(request):
+    tpl_params = {}
+    
+    tpl_params['glit_entries'] = MtEntry.objects.filter(entry_author_id=3).filter(entry_status=2)
+    tpl_params['glit_comments'] = MtComment.objects.filter(comment_visible=1).filter(comment_commenter_id=3)[:5]
+    tpl_params['jenseits_entries'] = MtEntry.objects.filter(entry_author_id=4).filter(entry_status=2)
+    tpl_params['jenseits_comments'] = MtComment.objects.filter(comment_visible=1).filter(comment_commenter_id=4)[:5]
+    tpl_params['habitus_entries'] = MtEntry.objects.filter(entry_author_id=5).filter(entry_status=2)
+    tpl_params['habitus_comments'] = MtComment.objects.filter(comment_visible=1).filter(comment_commenter_id=5)[:5]
+    tpl_params['tellyou_entries'] = MtEntry.objects.filter(entry_author_id=6).filter(entry_status=2)
+    tpl_params['tellyou_comments'] = MtComment.objects.filter(comment_visible=1).filter(comment_commenter_id=6)[:5]
+    tpl_params['baseline_entries'] = MtEntry.objects.filter(entry_author_id=7).filter(entry_status=2)
+    tpl_params['baseline_comments'] = MtComment.objects.filter(comment_visible=1).filter(comment_commenter_id=7)[:5]
+    tpl_params['bnf_entries'] = MtEntry.objects.filter(entry_author_id=8).filter(entry_status=2)
+    tpl_params['bnf_comments'] = MtComment.objects.filter(comment_visible=1).filter(comment_commenter_id=8)[:5]
+    
+    return render_to_response("authors.html", tpl_params, context_instance = RequestContext(request))
