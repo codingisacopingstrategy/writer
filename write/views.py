@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext, Template, Context
 from django.contrib.auth.decorators import login_required
 
-from write.models import (MtEntry, MtTemplate, MtAuthor, MtAsset, MtComment)
+from write.models import MtEntry, MtAuthor, MtComment
 
 @login_required(login_url='/or/login')
 def wall(request):
@@ -53,7 +53,6 @@ def entry(request, slug, editing=False):
         author_ids = (3, 4, 5, 6, 7, 8) # the i.liketightpant contributors
         authors = MtAuthor.objects.all()
         main_authors = MtAuthor.objects.filter(author_id__in=author_ids)
-        a_thumbnail = MtAsset.objects.get(pk = author.author_userpic_asset_id)
         
         tpl_params = {}
         
@@ -63,7 +62,6 @@ def entry(request, slug, editing=False):
         tpl_params['e'] = entry
         tpl_params['e_comments'] = MtComment.objects.filter(comment_visible=1).filter(comment_entry_id=entry.entry_id).order_by('comment_created_on')
         tpl_params['a'] = author
-        tpl_params['a_thumbnail_url'] = a_thumbnail.asset_url % "http://mt.schr.fr/lib"
         tpl_params['a_entries'] = MtEntry.objects.filter(entry_author_id=author.author_id).filter(entry_status=2).exclude(pk=entry.entry_id)
         tpl_params['a_comments'] = MtComment.objects.filter(comment_visible=1).filter(comment_commenter_id=author.author_id)[:10]
         
