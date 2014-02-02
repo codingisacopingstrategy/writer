@@ -34,7 +34,7 @@ from django.template.defaultfilters import striptags
 from django.test.client import Client
 
 from screenshots import screenshot
-from write.settings import PREVIEW_ROOT, PUBLIC_PATH
+from write.settings import PUBLIC_PATH
 
 REPO = Repo(PUBLIC_PATH)
 
