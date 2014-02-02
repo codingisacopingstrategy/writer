@@ -15,6 +15,12 @@ from fabric.contrib.console import confirm
 
 env.hosts = ['s@schr.fr:599']
 env.path = '/home/s/apps/i.liketightpants.net/public/and/'
+env.django_path = '/home/s/apps/i.liketightpants.net/writer/'
+
+def deploy():
+    with cd(env.django_path):
+        run('git pull origin master')
+        sudo('supervisorctl restart tightpants')
 
 def status():
     """
