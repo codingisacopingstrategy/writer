@@ -7,6 +7,7 @@
 # Also note: You'll have to insert the output of 'django-admin.py sqlcustom [appname]'
 # into your database.
 
+import os
 import re
 import os
 
@@ -22,14 +23,20 @@ local_static_files = set(local_static_files)
 rex = re.compile(r'\W+')
 match_mentioned_files = re.compile('"(\/[^"]+)"')
 
+from dulwich.repo import Repo
+
 from django.db import models
 
 # Because we’ll be calling out for screenshots
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.defaultfilters import striptags
+from django.test.client import Client
 
 from screenshots import screenshot
+from write.settings import PREVIEW_ROOT, PUBLIC_PATH
+
+REPO = Repo(PUBLIC_PATH)
 
 class MtAsset(models.Model):
     asset_id = models.IntegerField(primary_key=True)
@@ -380,6 +387,24 @@ class MtEntry(models.Model):
             if prev:
                 return prev[0]
         return False
+    
+    def commit(self, message, commiter_name, commiter_mail):
+        # Props to https://github.com/mtigas/django-medusa for the excellent idea
+        # of using Django’s test client for the job.
+        c = Client()
+        response = c.get(u"/is/%s" % self.entry_slug())
+        
+        if response.status_code != 200:
+            raise Exception(response.status_code)
+        
+        path = os.path.join(PUBLIC_PATH, u"%s.html" % self.entry_slug())
+        with open(path, 'w') as f:
+            f.write(response.content)
+        
+        repo.stage([path])
+        
+        commiter = u"%s <%s>" % (commiter_name, commiter_email)
+        commit_id = repo.do_commit(message, committer=commiter)
 
     def __unicode__(self):
         return self.entry_title
