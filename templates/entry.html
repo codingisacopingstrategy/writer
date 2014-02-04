@@ -50,22 +50,18 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry-ui.js"></script>
 {% endif %}
-    <meta property="og:title" content="I like tight pants and {{ e.entry_title|lower }}"/>
+    <meta property="og:title dc:title" content="I like tight pants and {{ e.entry_title|lower }}"/>
     <meta property="og:type" content="article"/>
     <meta property="og:url" content="http://i.liketightpants.net/and/{{ e.entry_slug }}"/>
     
     <meta property="og:image" content="{{ e.entry_keywords }}"/>
     <meta property="og:site_name" content="I like tight pants and mathematics"/>
-    <meta property="og:description"
+    <meta property="og:description dc:description"
           content="{{ e.entry_excerpt }}"/>
     <meta property="fb:admins" content="1488294875"/>
 
-<meta property="entry_basename" content="{{ e.entry_basename }}" />
-<meta property="entry_created_on" content="{{ e.entry_created_on|date:"Y-m-d\TH:i:s" }}" />
-<meta property="entry_keywords" content="{{ e.entry_keywords }}" />
-
-<meta property="entry_modified_by" content="1" />
-<meta property="entry_modified_on" content="{{ e.entry_modified_on|date:"Y-m-d\TH:i:s" }}" />
+    <meta property="mt:entry_basename" content="{{ e.entry_basename }}" />
+    <meta property="dc:modified" content="{{ e.entry_modified_on }}" />
 
 {% endblock %}
 
@@ -74,14 +70,13 @@
   
   <img src="{{ a_thumbnail_url }}" style="width:100px;height:100px;" alt="" />
   
-  {% if EDITING %}<select property="entry_author_id">
+  {% if EDITING %}<select property="mt:entry_author_id">
   {% for author in authors %}
     <option value="{{ author.author_id }}"{% if author.author_id == e.entry_author_id %} selected="true"{% endif %}>{{ author.author_nickname }}</option>
-  {% endfor %}{% else %}<h4 class="author">{{ a.author_nickname }}</h4>
-  </select>{% endif %}<!--
-  <h4 class="author" property="entry_authored_on" content="{{ e.entry_authored_on|date:"Y-m-d\TH:i:s" }}">{{ e.entry_authored_on|date:"F j, Y f A" }}</h4>-->{% if EDITING %}
-  <form action="" id="entry-authored-input"><input type="date" value="{{ e.entry_authored_on|date:"o-m-d" }}" /><input type="time" value="{{ e.entry_authored_on|date:"H:i" }}" /><a href="">OK</a></form>
-  <h4 class="author">published: <input property="entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.entry_status == 2 %}checked="yes"{% endif%}/></h4>{% endif %}
+  {% endfor %}</select>{% else %}<h4 class="author"><a href="/and/authors#{{ a.author_nickname }}" property="dc:creator">{{ a.author_nickname }}</a></h4>
+  {% endif %}
+  <h4 class="author" property="dc:created" content="{{ e.entry_authored_on|date:"Y-m-d\TH:i:s+01:00" }}">{{ e.entry_authored_on|date:"F j, Y f A" }}</h4>{% if EDITING %}
+  <h4 class="author">published: <input property="mt:entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.entry_status == 2 %}checked="yes"{% endif%}/></h4>{% endif %}
   <p>&nbsp;</p>
   
   <hr />
@@ -116,8 +111,8 @@
   {% if e.next %}  / <a href="{{ andor }}{{ e.next.entry_slug }}">Next</a>{% endif %}
   </p>
   <div class="article grid_3 alpha omega suffix_2">
-    <h4 property="entry_title" contenteditable="true">{{ e.entry_title }}</h4>
-    <article {% if e.entry_id %} property="entry_id" content="{{ e.entry_id }}"{% endif %} class="entry" id="entry-{{ e.entry_id }}">
+    <h4 property="mt:entry_title" contenteditable="true">{{ e.entry_title }}</h4>
+    <article {% if e.entry_id %} property="mt:entry_id" content="{{ e.entry_id }}"{% endif %} class="entry" id="entry-{{ e.entry_id }}">
     {{ e.entry_text|safe }}
     </article>
     <h4 class="comments-header">{% if e_comments %}{{ e_comments.count }} Comments{% else %}No Comments{% endif %}</h4>

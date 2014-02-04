@@ -34,25 +34,4 @@ $(function() {
         el.attr("content","");
     });
     
-    /* Add a widget to change the date of the entry, from the edit view */
-    
-    var entryDate = $("[property=entry_authored_on]");
-    var entryDateForm = $("#entry-authored-input");
-    
-    entryDateForm.hide();
-    $("[property=entry_authored_on]").on("click", function(e) {
-        console.log('clicked on date');
-        e.stopPropagation();
-        entryDateForm.show();
-        entryDate.hide();
-    });
-    
-    $("#entry-authored-input a").on("click", function(e) {
-        e.preventDefault();
-        d = new Date($("input[type=date]").val() + 'T' + $("input[type=time]").val() + '+01:00'); // Updating this strictly in Berlin/Brussels/ParisAmsterdam time for now :)
-        entryDate.attr("content", d.toISOish()).text(d.toLocaleString());
-        entryDate.show();
-        entryDateForm.hide();
-        // smartUpdate(); (we can’t do this, depends on Aloha editable for now)
-    });
 });
