@@ -9,7 +9,6 @@
 
 import os
 import re
-import os
 
 static_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'static', 'assets')
 
@@ -290,6 +289,12 @@ class MtComment(models.Model):
     comment_text = models.TextField(blank=True)
     comment_url = models.CharField(max_length=765, blank=True)
     comment_visible = models.IntegerField(null=True, blank=True)
+    def get_commenter_url(self):
+        if self.comment_commenter_id in [3, 4, 5, 6, 7, 8]:
+            return u"http://i.liketightpants.net/authors#%s" % self.comment_author
+        if self.comment_url:
+            return self.comment_url
+        return ""
     def comment_entry(self):
         return MtEntry.objects.get(pk=self.comment_entry_id)
     def __unicode__(self):

@@ -98,18 +98,18 @@ var Entry = function() {
 var Comment = function(el, text) {
     this.el =         el;
     this.comment_id =          function() {
-                                    if (this.el.attr('property') === 'comment_id') {
+                                    if (this.el.attr('property') === 'mt:comment_id') {
                                         return parseInt(this.el.
                                             attr('content'));
                                     }
                                     return false;
                                 };
     this.comment_author =      function() {
-                                    if (this.el.find("[property=comment_author]").length === 0) {
+                                    if (this.el.find('[property="dc:creator"]').length === 0) {
                                         return this.el.find("select option:selected").
                                                 text();
                                     }
-                                    return this.el.find("[property=comment_author]").
+                                    return this.el.find('[property="dc:creator"]').
                                                 text();
                                 };
     this.comment_blog_id = 1;
@@ -123,11 +123,11 @@ var Comment = function(el, text) {
 
     this.comment_created_by = this.comment_commenter_id;
     this.comment_created_on =   function() {
-                                    return this.el.find("[property=comment_created_on]").
-                                            attr("content");
+                                    return new Date(this.el.find('[property="dc:created"]').
+                                            attr("content")).toISOish();
                                 };
     this.comment_email =    function() {
-                                    return this.el.find("[property=comment_email]").
+                                    return this.el.find('[property="mt:comment_email"]').
                                             attr("content");
                                 };
     this.comment_entry_id = entry.entry_id;
@@ -144,13 +144,9 @@ var Comment = function(el, text) {
                                     };
                                     return new Comment(this.el.parents(".comments-parent-container").first().prev(), "").comment_id();
                                 };
-    this.comment_text = text;
-    this.comment_url =          function() {
-                                    if (this.el.find("select").length === 0) {
-                                        return this.el.find("[property=comment_url]").
-                                                    attr('href');
-                                    }
-                                    return "";
+    this.comment_text = text || function() {
+                                    return this.el.find('[property="mt:comment_text"]').
+                                        html();
                                 };
     this.comment_visible = 1;
     this.resource_uri =         function() {
@@ -253,7 +249,19 @@ Comment.prototype.update = function() {
     }
 };
 
-
+Comment.prototype.delete = function() {
+    var that = this;
+    if (this.comment_id()) {
+        $.ajax({
+            url: this.resource_uri(),
+            type: 'DELETE',
+            success: function(result) {
+                console.log('deleted', result)
+                that.el.remove();
+            }
+        });
+    }
+};
 
 var entry;
 

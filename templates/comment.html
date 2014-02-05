@@ -2,15 +2,15 @@
 
 {% for c in e_comments %}
 {% if c.comment_parent_id == parent %}
-<div property="comment_id" content="{{ c.comment_id }}" id="comment-{{ c.comment_id }}" class="comment{% if c.comment_parent_id %} comment-reply{% endif %}">
-<div class="comment-editor" property="comment_text">
+<div property="mt:comment_id" content="{{ c.comment_id }}" id="comment-{{ c.comment_id }}" resource="/and/{{ e.entry_basename }}#comment-{{ c.comment_id }}" class="comment{% if c.comment_parent_id %} comment-reply{% endif %}">
+<div class="comment-editor" property="mt:comment_text">
 {{ c.comment_text|safe }}
 </div>
-<p class="byline" property="comment_email" content="{{ c.comment_email }}">
+<p class="byline" {% if EDITING %}property="mt:comment_email" content="{{ c.comment_email }}"{% endif %}>
   {% if c.comment_commenter_id in author_ids %}<img src="/and/assets/that/are/pictures/of/author/{{ c.comment_author }}.png" width="18" height="18" />{% endif %} 
-  by {% if c.comment_commenter_id in author_ids and EDITING %}<select>{% for author in authors %}<option value="{{ author.author_id }}"{% if author.author_id == c.comment_commenter_id %} selected="true"{% endif %}>{{ author.author_nickname }}</option>{% endfor %}</select>
-     {% else %}<span property="comment_author"><a href="{{ c.comment_url }}" property="comment_url">{{ c.comment_author }}</a></span>{% endif %} - <a href="{{ andor }}{{ e.entry_basename }}#comment-{{ c.comment_id }}"><span property="comment_created_on" content="{{ c.comment_created_on|date:"Y-m-d\TH:i:s" }}">{{ c.comment_created_on|date:"F j, Y f A" }}</span></a><br />
-  <a title="Reply" href="{% if EDITING %}#reply{% else %}javascript:void(0);{% endif %}" {% if not EDITING %}onclick="mtReplyCommentOnClick({{ c.comment_id }}, '{{ c.comment_author }}')"{% endif %}>Reply</a>
+  by {% if c.comment_commenter_id in author_ids and EDITING %}<select>{% for author in authors %}<option value="{{ author.author_id }}" {% if author.author_id == c.comment_commenter_id %} selected="true"{% endif %}>{{ author.author_nickname }}</option>{% endfor %}</select>
+     {% else %}<a property="dc:creator" href="{{ c.get_commenter_url }}">{{ c.comment_author }}</a>{% endif %} - <a href="{{ andor }}{{ e.entry_basename }}#comment-{{ c.comment_id }}"><span property="dc:created" content="{{ c.comment_created_on|date:"Y-m-d\TH:i:s+01:00" }}">{{ c.comment_created_on|date:"F j, Y f A" }}</span></a><br />
+  <a title="Reply" href="{% if EDITING %}#reply{% else %}javascript:void(0);{% endif %}" {% if not EDITING %}onclick="mtReplyCommentOnClick({{ c.comment_id }}, '{{ c.comment_author }}')"{% endif %}>Reply</a>{% if EDITING %} <a href="#delete"><b>×</b></a>{% endif%}
 </p>
 </div>
   <div class="comments-parent-container" style="margin-left: 20px;">
