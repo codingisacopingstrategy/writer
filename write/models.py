@@ -393,7 +393,7 @@ class MtEntry(models.Model):
                 return prev[0]
         return False
     
-    def commit(self, message, commiter_name, commiter_mail):
+    def generate(self):
         # Props to https://github.com/mtigas/django-medusa for the excellent idea
         # of using Django’s test client for the job.
         c = Client()
@@ -402,9 +402,12 @@ class MtEntry(models.Model):
         if response.status_code != 200:
             raise Exception(response.status_code)
         
+        return response.content
+    
+    def commit(self, message, commiter_name, commiter_mail):
         path = os.path.join(PUBLIC_PATH, u"%s.html" % self.entry_slug())
         with open(path, 'w') as f:
-            f.write(response.content)
+            f.write(self.generate())
         
         repo.stage([path])
         
