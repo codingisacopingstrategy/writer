@@ -19,6 +19,15 @@ def wall(request):
     tpl_params['andor'] = '/or/'
     return render_to_response("wall.html", tpl_params, context_instance = RequestContext(request))
 
+def archives(request):
+    tpl_params = {}
+    tpl_params['entries'] = MtEntry.objects.filter(entry_status=2)
+    tpl_params['latest_entry'] = tpl_params['entries'].filter(entry_status=2)[0]
+    tpl_params['EDITING'] = False
+    tpl_params['andor'] = '/and/'
+    return render_to_response("archives.html", tpl_params, context_instance = RequestContext(request))
+
+    
 def entry(request, slug, editing=False):
     """
     Strictly speaking, the following is *not* a good idea.

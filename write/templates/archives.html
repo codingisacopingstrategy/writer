@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% for e in entries %}
+    <div class="grid_1">
+          <a href="/and/{{ e.entry_slug }}">
+            <img src="/and/assets/as/screenshots/of/{{ e.entry_slug }}.png" style="width:150px;height:110px;" alt="I like tight pants and {{ e.entry_title|lower }}">
+          </a>
+          <p class="byline">{{ e.entry_title }}</p>
+    </div>
+{% if forloop.counter|divisibleby:7 %}</div>
+<div class="clear"></div>
+<div class="content container_7">{% endif %}
+{% endfor %}
+{% endblock %}
