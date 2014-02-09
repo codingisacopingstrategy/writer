@@ -70,13 +70,12 @@
   
   <img src="/and/assets/that/are/pictures/of/author/{{ a.author_nickname }}.png" style="width:100px;height:100px;" alt="" />
   
+  <h4 class="author" property="dc:created" content="{{ e.entry_authored_on|date:"Y-m-d\TH:i:s+01:00" }}">{{ e.entry_authored_on|date:"F j, Y" }}</h4>
   {% if EDITING %}<select property="mt:entry_author_id">
   {% for author in authors %}
     <option value="{{ author.author_id }}"{% if author.author_id == e.entry_author_id %} selected="true"{% endif %}>{{ author.author_nickname }}</option>
-  {% endfor %}</select>{% else %}<h4 class="author"><a href="/and/authors#{{ a.author_nickname }}" property="dc:creator">{{ a.author_nickname }}</a></h4>
+  {% endfor %}</select>{% else %}<h4 class="author">by <span property="dc:creator">{{ a.author_nickname }}</span></h4>
   {% endif %}
-  <h4 class="author" property="dc:created" content="{{ e.entry_authored_on|date:"Y-m-d\TH:i:s+01:00" }}">{{ e.entry_authored_on|date:"F j, Y f A" }}</h4>{% if EDITING %}
-  <h4 class="author">published: <input property="mt:entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.entry_status == 2 %}checked="yes"{% endif%}/></h4>{% endif %}
   <p>&nbsp;</p>
   
   <hr />
@@ -89,7 +88,7 @@
   {% endfor %}
   </dl>
 
-  <h4>Comments</h4>
+  <h4>{{ a.author_nickname }}’s comments</h4>
   <ul>
   {% for c in a_comments %}
     <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.entry_uri }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
