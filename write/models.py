@@ -104,7 +104,7 @@ class MtComment(models.Model):
         return u"%s: %s" % (self.comment_author, text)
     class Meta:
         db_table = u'mt_comment'
-        ordering = ('-comment_id',)
+        ordering = ('-comment_created_on',)
 
 
 class MtEntry(models.Model):
