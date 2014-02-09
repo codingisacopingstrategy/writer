@@ -7,7 +7,9 @@
 
 {% block extrajs %}
 <script type="text/javascript">
+//<![CDATA[
     var events = {{ entries_json|safe }};
+//]]>
 </script>
 <script type="text/javascript" src="/and/js/calendar-view.js"></script>
 {% endblock %}
