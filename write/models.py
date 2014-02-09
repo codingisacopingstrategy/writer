@@ -163,13 +163,13 @@ class MtEntry(models.Model):
     # http://stackoverflow.com/questions/2214852/next-previous-links-from-a-query-set-generic-views
     def next(self):
         if self.entry_id:
-            next = MtEntry.objects.filter(entry_id__gt=self.entry_id)
+            next = MtEntry.objects.filter(entry_status=2).filter(entry_id__gt=self.entry_id)
             if next:
                 return next[0]
         return False
     def previous(self):
         if self.entry_id:
-            prev = MtEntry.objects.filter(entry_id__lt=self.entry_id)
+            prev = MtEntry.objects.filter(entry_status=2).filter(entry_id__lt=self.entry_id)
             if prev:
                 return prev[0]
         return False
