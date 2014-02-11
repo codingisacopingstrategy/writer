@@ -96,6 +96,7 @@ def entry_read(request, slug):
 def entry_write(request, slug):
     return entry(request, slug, True)
 
+def about(request):
     """
     3 = glit
     4 = jenseits
@@ -105,8 +106,6 @@ def entry_write(request, slug):
     8 = bnf
     
     """
-
-def authors(request):
     tpl_params = {}
     
     tpl_params['glit_entries'] = MtEntry.objects.filter(entry_author_id=3).filter(entry_status=2)
@@ -122,4 +121,4 @@ def authors(request):
     tpl_params['bnf_entries'] = MtEntry.objects.filter(entry_author_id=8).filter(entry_status=2)
     tpl_params['bnf_comments'] = MtComment.objects.filter(comment_visible=1).filter(comment_commenter_id=8)[:5]
     
-    return render_to_response("authors.html", tpl_params, context_instance = RequestContext(request))
+    return render_to_response("about.html", tpl_params, context_instance = RequestContext(request))
