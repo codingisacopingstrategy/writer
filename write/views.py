@@ -73,7 +73,7 @@ def entry(request, slug, editing=False):
         tpl_params['andor'] = '/or/' if editing else '/and/'
         
         tpl_params['e'] = entry
-        tpl_params['e_comments'] = visible_comments.filter(comment_entry_id=entry.entry_id).order_by('comment_created_on')
+        tpl_params['e_comments'] = MtComment.objects.filter(comment_entry_id=entry.entry_id).filter(comment_visible=1).order_by('comment_created_on')
         tpl_params['a'] = author
         tpl_params['a_entries'] = published_entries.filter(entry_author_id=author.author_id).exclude(pk=entry.entry_id)
         tpl_params['a_comments'] = visible_comments.filter(comment_commenter_id=author.author_id)[:10]
