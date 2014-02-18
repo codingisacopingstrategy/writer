@@ -41,11 +41,11 @@ var Entry = function() {
     // find properties set in body (user editable)
     this.entry_excerpt =        function(){
                                     /** The Facebook description */
-                                   return $('meta[property="og:description"]').attr("content");
+                                   return $('meta[property~="og:description"]').attr("content");
     };
     this.entry_keywords =       function( ){
                                     /** Actually used for the Facebook preview image*/
-                                    return $('meta[property="og:image"]').attr("content");
+                                    return $('meta[property~="og:image"]').attr("content");
                                 };
     this.entry_status =         function() {
                                     if ($('[property="mt:entry_status"]').is(':checked')) {
@@ -279,7 +279,7 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
         if (entryId) {
             console.log("it is an existing Entry object");
             
-            var postData = entry.makeHash(['entry_title', 'entry_status', 'entry_author_id', 'entry_authored_on', 'entry_modified_on', 'entry_week_number', 'entry_comment_count'] );
+            var postData = entry.makeHash(['entry_title', 'entry_status', 'entry_author_id', 'entry_authored_on', 'entry_modified_on', 'entry_week_number', 'entry_comment_count', 'entry_excerpt', 'entry_keywords'] );
             postData.entry_text = cleanWhiteSpace(Aloha.activeEditable.originalObj[0], { indentationLevel : 2 }, document).innerHTML;
             
             console.log(JSON.stringify(postData));

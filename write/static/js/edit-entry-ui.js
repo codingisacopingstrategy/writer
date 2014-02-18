@@ -37,9 +37,22 @@ $(function() {
     $(".comments-content").on("click", "a[href=#delete]", function(e){
         var parent = $(this).parents(".comment").first();
         var c = new Comment(parent);
-        var confirmed = confirm("Delete?")
+        var confirmed = confirm("Delete?");
         if (confirmed) {
             c.delete();
         }
     });
+    
+    $("#set-excerpt").on("click", function(e) {
+    	e.preventDefault();
+    	var aboutPrompt = prompt("The about value", entry.entry_excerpt());
+		$('meta[property~="og:description"]').attr("content", aboutPrompt);
+    });
+
+    $("#set-thumbnail-uri").on("click", function(e) {
+    	e.preventDefault();
+    	var thumbPrompt = prompt("The thumbnail uri", entry.entry_keywords());
+		$('meta[property~="og:image"]').attr("content", thumbPrompt);
+    });
+
 });

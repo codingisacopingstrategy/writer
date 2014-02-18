@@ -74,7 +74,13 @@
   {% if EDITING %}<select property="mt:entry_author_id">
   {% for author in authors %}
     <option value="{{ author.author_id }}"{% if author.author_id == e.entry_author_id %} selected="true"{% endif %}>{{ author.author_nickname }}</option>
-  {% endfor %}</select>{% else %}<h4 class="author">by <span property="dc:creator">{{ a.author_nickname }}</span></h4>
+  {% endfor %}</select>
+  <h4>Excerpt</h4>
+  <p><a href="#" id="set-excerpt">Set excerpt</a></p>
+  <h4>Thumbnail uri</h4>  
+  <p><a href="#" id="set-thumbnail-uri">Set thumbnail uri</a></p>
+  {% else %}<h4 class="author">by <span property="dc:creator">{{ a.author_nickname }}</span></h4>
+
   {% endif %}
   <p>&nbsp;</p>
   
