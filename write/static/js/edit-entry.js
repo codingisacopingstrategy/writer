@@ -348,7 +348,7 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
     } else if (e.obj.hasClass("comment-editor")) {
         console.log("started updating a Comment object");
         comment = new Comment(  e.obj.parents(".comment").first(), 
-                                Aloha.activeEditable.getContents()  );
+                                cleanWhiteSpace(Aloha.activeEditable.originalObj[0], { indentationLevel : 1 }, document).innerHTML  );
         comment.update();
     }
     

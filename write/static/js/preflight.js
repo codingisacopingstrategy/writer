@@ -15,12 +15,12 @@ var cleanWhiteSpace = function (node, options, replacementDocument) {
     
     var inlineTags = ['span', 'em', 'strong', 'b', 'i', 'a', 'code', 'br'];
     var whitespace = function (indentationLevel) {
-        output = ''
+        output = '';
         for (var i = 0; i < indentationLevel; i++) {
             output += indentationString;
         }
         return output;
-    }
+    };
     var processNode = function (node) {
         /* Process all child elements of this node. */
         for (var i = 0; i < node.childNodes.length; i++) {
