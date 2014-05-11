@@ -304,7 +304,8 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
             console.log('creating a new entry object');
             
             var postData = entry.toHash();
-            postData.entry_text = Aloha.activeEditable.getContents();
+            postData.entry_text = Aloha.activeEditable.getContents() +
+                document.getElementById("aside") ? document.getElementById("aside").outerHTML : ""; // don’t forget the aside (CRUTCH!)
             delete postData.entry_id;
             
             console.log(JSON.stringify(postData));
