@@ -93,6 +93,18 @@ var Entry = function() {
     this.entry_comment_count =  function() {
                                     return $("div.comment").length;
                                 };
+    this.entry_text =           function() {
+                                    var txt;
+                                    if (Aloha.activeEditable) {
+                                        txt = cleanWhiteSpace(Aloha.activeEditable.originalObj[0], { indentationLevel : 2 }, document).innerHTML;
+                                    } // this has the side-effect of running cleanWhiteSpace on the DOM on the page
+                                    else {
+                                        txt = $("article").html();
+                                    }
+                                    // actually, we had moved the aside out of the editor, so we need to add it back in again:
+                                    txt += $("#aside").length > 0 ? $("#aside").clone().removeClass("grid_2")[0].outerHTML : "";
+                                    return txt;
+                                };
 };
 
 var Comment = function(el, text) {
@@ -256,7 +268,7 @@ Comment.prototype.delete = function() {
             url: this.resource_uri(),
             type: 'DELETE',
             success: function(result) {
-                console.log('deleted', result)
+                console.log('deleted', result);
                 that.el.remove();
             }
         });
@@ -279,8 +291,7 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
         if (entryId) {
             console.log("it is an existing Entry object");
             
-            var postData = entry.makeHash(['entry_title', 'entry_status', 'entry_author_id', 'entry_authored_on', 'entry_modified_on', 'entry_week_number', 'entry_comment_count', 'entry_excerpt', 'entry_keywords'] );
-            postData.entry_text = cleanWhiteSpace(Aloha.activeEditable.originalObj[0], { indentationLevel : 2 }, document).innerHTML;
+            var postData = entry.makeHash(['entry_title', 'entry_status', 'entry_author_id', 'entry_authored_on', 'entry_modified_on', 'entry_week_number', 'entry_comment_count', 'entry_excerpt', 'entry_keywords', 'entry_text'] );
             
             console.log(JSON.stringify(postData));
             
@@ -304,8 +315,7 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
             console.log('creating a new entry object');
             
             var postData = entry.toHash();
-            postData.entry_text = Aloha.activeEditable.getContents() +
-                document.getElementById("aside") ? document.getElementById("aside").outerHTML : ""; // don’t forget the aside (CRUTCH!)
+            
             delete postData.entry_id;
             
             console.log(JSON.stringify(postData));
