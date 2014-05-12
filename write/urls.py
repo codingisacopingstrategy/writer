@@ -14,8 +14,10 @@ urlpatterns = patterns('',
     url(r'^or/logout$', 'django.contrib.auth.views.logout',{'template_name': 'logout.html'}, name='logout'),
     
     url(r'^$', RedirectView.as_view(url='/or/')),
-    url(r'^or/$', 'write.views.wall', name='wall'),
+    url(r'^or/$', 'write.views.latest_entry_write', name='latest-entry-write'),
+    url(r'^or/wall/$', 'write.views.wall', name='wall'),
 
+    url(r'^is/$', 'write.views.latest_entry_read', name='latest-entry-read'),
     url(r'^is/about$', 'write.views.about', name='about'),
     url(r'^is/archives$', 'write.views.archives', name='archives'),    
     url(r'^is/(?P<slug>[\w-]+)$', 'write.views.entry_read', name='entry-read'),

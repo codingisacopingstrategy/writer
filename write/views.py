@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 
 from django.http import HttpResponse, Http404
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext, Template, Context
 from django.contrib.auth.decorators import login_required
 
@@ -18,6 +18,14 @@ def wall(request):
     tpl_params['EDITING'] = True
     tpl_params['andor'] = '/or/'
     return render_to_response("wall.html", tpl_params, context_instance = RequestContext(request))
+
+def latest_entry_read(request):
+    e = MtEntry.objects.filter(entry_status=2)[0]
+    return redirect('entry-read', slug=e.entry_slug()) 
+
+def latest_entry_write(request):
+    e = MtEntry.objects.all()[0]
+    return redirect('entry-write', slug=e.entry_slug())
 
 def archives(request):
     tpl_params = {}
