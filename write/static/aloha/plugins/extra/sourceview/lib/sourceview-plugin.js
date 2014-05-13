@@ -10,6 +10,8 @@
 define([
 	'aloha',
 	'jquery',
+	'../../../../test/unit/testutils',
+	'../../../../test/unit/htmlbeautifier',
 	'css!sourceview/css/sourceview'
 ], function (Aloha, jQuery, TestUtils) {
 	

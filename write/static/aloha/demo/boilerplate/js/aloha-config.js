@@ -115,7 +115,13 @@
 				cellConfig: [
 					{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
 					{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
-				]
+				],
+				// allow resizing the table width (default: false)
+				tableResize: true,
+				// allow resizing the column width (default: false)
+				colResize: true,
+				// allow resizing the row height (default: false)
+				rowResize: true
 			},
 			image: {
 				config:{
@@ -129,16 +135,9 @@
 						'oneTab': true
 					}
 				},
-				'fixedAspectRatio' : false,
-				'maxWidth'         : 600,
-				'minWidth'         : 20,
-				'maxHeight'        : 600,
-				'minHeight'        : 20,
-				'globalselector'   : '.global',
-				'ui': {
-					'oneTab' : true,
-					'align'  : false,
-					'margin' : false
+				editables: {
+					// deactivae image plugin for editable with id #top-text
+					'#top-text' : []
 				}
 			},
 			cite: {
@@ -187,7 +186,19 @@
 			},
 			'wai-lang': {
 				flags: true
+			},
+			'textcolor': {
+				// configure a set of colors for all editables
+				config: ['#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF', 'greenborder'],
+				editables: {
+					// configure a different set of colors for editable #one
+					'#top-text' : []
+				}
 			}
 		}
+	};
+
+	Aloha.settings.contentHandler = {
+		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ]
 	};
 } )( window );

@@ -60,14 +60,20 @@ td.aloha-table-selectrow {
 	cursor: text !important;
 }
 .aloha-table tr.aloha-table-selectcolumn td {
-	cursor: url(../img/down.cur),default;
+	cursor: url(../img/down.cur),s-resize;
 }
-/* :tODO: make custom cursors visible in IE */
 .aloha-table td.aloha-table-selectrow {
-	cursor: url(../img/left.cur),default;
+	cursor: url(../img/left.cur),e-resize;
 }
 
 /* wai indicator */
+input.aloha-wai-green {
+	background: url(../img/wai-green.png) no-repeat scroll 2px 2px;
+}
+
+input.aloha-wai-red {
+	background: url(../img/wai-red.png) no-repeat scroll 2px 2px;
+}
 .aloha-table-wrapper div.aloha-wai-red {
 	background-image: url(../img/wai-red.png);
 }
@@ -119,4 +125,8 @@ td.aloha-table-selectrow {
 
 .aloha-table-label {
 	margin-left:5px;
+}
+
+.aloha .ui-state-default .aloha-icon-table-naturalfit {
+	background-position: -432px 0px;
 }

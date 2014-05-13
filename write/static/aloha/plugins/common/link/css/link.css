@@ -1,4 +1,4 @@
-.aloha-link-pointer {
+.aloha-link-pointer a {
 	cursor: pointer;
 }
 
@@ -15,7 +15,8 @@
 	width:auto !important;
 }
 
-.aloha-link-title-container {
+.aloha-link-title-container,
+.aloha-link-href-lang-container {
 	padding:5px 5px;
 }
 
@@ -37,19 +38,16 @@
 	padding-bottom: 5px;
 }
 
-.aloha-link-title-container fieldset {
+.aloha-link-title-container fieldset,
+.aloha-link-href-lang-container fieldset{
 	border: 2px groove threedface !important;
 	padding-bottom: 5px;
 }
 
-.aloha-link-title-container fieldset  input[type=text]{
-	width:auto !important;
-	min-width:180px;
-}
-
-.aloha-link-target-container fieldset  input[type=text]{
-	width:auto !important;
-	min-width:180px;
+.aloha-link-target-container fieldset input[type=text],
+.aloha-link-href-lang-container fieldset input[type=text], 
+.aloha-link-title-container fieldset input[type=text] {
+	width: 90%;
 }
 
 .x-form-field.x-form-text.aloha-link-href-field {

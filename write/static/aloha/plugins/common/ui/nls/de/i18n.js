@@ -6,6 +6,8 @@ define({
 	"button.subscript.label": "Tiefgestellt",
 	"button.superscript.label": "Hochgestellt",
 	"button.underline.label": "Unterstrichen",
+	"button.yes.label": "Ja",
+	"button.no.label": "Nein",
 	"button.p.label": "Absatz",
 	"button.h1.label": "Überschrift 1",
 	"button.h2.label": "Überschrift 2",
@@ -41,5 +43,6 @@ define({
 	"tab.table.label": "Tabelle",
 	"tab.col.label": "Tabellenspalte",
 	"tab.row.label": "Tabellenzeile",
+	"tab.cell.label": "Tabellenzelle",
 	"tab.wai-lang.label": "Sprachauszeichnung"
 });
