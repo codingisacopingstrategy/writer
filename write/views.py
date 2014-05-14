@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
+
 import json
 from datetime import datetime
 
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext, Template, Context
 from django.contrib.auth.decorators import login_required
@@ -65,6 +67,13 @@ def entry(request, slug, editing=False):
         entry.entry_title = slug.replace('-',' ').title()
         entry.entry_status = 1 # draft by default
     if request.method == 'GET':
+        # We can not read unpublished entries, except when providing a ‘secret token’
+        # This is not supposed to be a secure: it is more of a low garden fence
+        # than it is a lock
+        if not editing and entry.entry_status != 2 and not request.user.is_authenticated():
+            if request.GET.get('the_secret_question', '') != 'the_secret_answer':
+                return HttpResponseForbidden()
+        
         author = MtAuthor.objects.get(pk=entry.entry_author_id)
         
         author_ids = (3, 4, 5, 6, 7, 8) # the i.liketightpant contributors
