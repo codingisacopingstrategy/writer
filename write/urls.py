@@ -15,7 +15,7 @@ urlpatterns = patterns('',
     
     url(r'^$', RedirectView.as_view(url='/or/')),
     url(r'^or/$', 'write.views.latest_entry_write', name='latest-entry-write'),
-    url(r'^or/wall/$', 'write.views.wall', name='wall'),
+    url(r'^or/archives$', 'write.views.wall', name='wall'),
 
     url(r'^is/$', 'write.views.latest_entry_read', name='latest-entry-read'),
     url(r'^is/about$', 'write.views.about', name='about'),
