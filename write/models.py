@@ -163,6 +163,9 @@ class MtEntry(models.Model):
                  'resource_uri' : "/api/entry/%s/" % self.entry_id,
                  'allDay' : False }
     
+    def entry_author(self):
+        return MtAuthor.objects.get(pk=self.entry_author_id)
+    
     # http://stackoverflow.com/questions/2214852/next-previous-links-from-a-query-set-generic-views
     def next(self):
         if self.entry_id:

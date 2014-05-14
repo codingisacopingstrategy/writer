@@ -19,6 +19,7 @@ urlpatterns = patterns('',
 
     url(r'^is/$', 'write.views.latest_entry_read', name='latest-entry-read'),
     url(r'^is/about$', 'write.views.about', name='about'),
+    url(r'^is/feed/us/recent_entries.xml$', 'write.views.feed', name='feed'),
     url(r'^is/archives$', 'write.views.archives', name='archives'),    
     url(r'^is/(?P<slug>[\w-]+)$', 'write.views.entry_read', name='entry-read'),
     url(r'^or/(?P<slug>[\w-]+)$', 'write.views.entry_write', name='entry-write'),

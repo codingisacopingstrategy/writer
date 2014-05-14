@@ -5,7 +5,7 @@ from datetime import datetime
 
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext, Template, Context
+from django.template import RequestContext, Template, Context, loader
 from django.contrib.auth.decorators import login_required
 
 from write.models import MtEntry, MtAuthor, MtComment
@@ -139,3 +139,12 @@ def about(request):
     tpl_params['bnf_comments'] = MtComment.objects.filter(comment_visible=1).filter(comment_commenter_id=8)[:5]
     
     return render_to_response("about.html", tpl_params, context_instance = RequestContext(request))
+
+def feed(request):
+    tpl_params = {}
+    tpl_params['entries'] = MtEntry.objects.filter(entry_status=2)[:15]
+    
+    t = loader.get_template('recent_entries.xml')
+    c = Context(tpl_params)
+    return HttpResponse(t.render(c), mimetype="application/atom+xml; charset=utf-8")
+
