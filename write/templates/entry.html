@@ -97,7 +97,7 @@
   <h4>{{ a.author_nickname }}’s comments</h4>
   <ul>
   {% for c in a_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.entry_uri }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />
@@ -207,7 +207,7 @@
   <h4>Latest Comments</h4>
   <ul>
   {% for c in recent_comments %}
-    <li><strong>{{ c.comment_author }}:</strong> {{ c.comment_text|striptags|truncatewords:10 }} <a href="{{ c.comment_entry.entry_uri }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li><strong>{{ c.comment_author }}:</strong> {{ c.comment_text|striptags|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
   {% endfor %}
   </ul>
 

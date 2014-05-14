@@ -142,19 +142,22 @@ class MtEntry(models.Model):
         entry_files = set(match_mentioned_files.findall(self.entry_text))
         return list(entry_files & local_static_files)
     
-    def entry_screenshot_url(self):
-        return '/and/assets/as/screenshots/of/%s.png' % self.entry_basename.replace('_','-')
-    
     def entry_slug(self):
         return self.entry_basename.replace('_','-')
     
-    def entry_uri(self):
+    def entry_screenshot_url(self):
+        return '/and/assets/as/screenshots/of/%s.png' % self.entry_slug()
+    
+    def entry_editing_uri(self):
         return '/or/' + self.entry_slug()
+    
+    def get_absolute_url(self):
+        return '/and/' + self.entry_slug()
     
     def entry_event(self):
         return { 'title' : self.entry_title,
                  'start' : self.entry_authored_on.isoformat(),
-                 'url' : self.entry_uri(),
+                 'url' : self.entry_editing_uri(),
                  'id' : self.entry_id,
                  'screenshot_url' : self.entry_screenshot_url(),
                  'resource_uri' : "/api/entry/%s/" % self.entry_id,

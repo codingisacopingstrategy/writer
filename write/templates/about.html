@@ -53,7 +53,7 @@
   <h4>Recent comments</h4>
   <ul>
   {% for c in glit_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.entry_uri }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />
@@ -81,7 +81,7 @@
   <h4>Recent comments</h4>
   <ul>
   {% for c in jenseits_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.entry_uri }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />
@@ -108,7 +108,7 @@
   <h4>Recent comments</h4>
   <ul>
   {% for c in habitus_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.entry_uri }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />
@@ -135,7 +135,7 @@
   <h4>Recent comments</h4>
   <ul>
   {% for c in tellyou_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.entry_uri }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />
@@ -163,7 +163,7 @@
   <h4>Recent comments</h4>
   <ul>
   {% for c in baseline_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.entry_uri }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />
@@ -191,7 +191,7 @@
   <h4>Recent comments</h4>
   <ul>
   {% for c in bnf_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.entry_uri }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />
