@@ -61,7 +61,7 @@
     <meta property="fb:admins" content="1488294875"/>
 
     <meta property="mt:entry_basename" content="{{ e.entry_basename }}" />
-    <meta property="dc:modified" content="{{ e.entry_modified_on }}" />
+    <meta property="dc:modified" content="{{ e.entry_modified_on|date:"Y-m-d\TH:i:s+01:00" }}" />
 
 {% endblock %}
 
