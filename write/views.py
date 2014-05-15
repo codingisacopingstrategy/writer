@@ -148,3 +148,18 @@ def feed(request):
     c = Context(tpl_params)
     return HttpResponse(t.render(c), mimetype="application/atom+xml; charset=utf-8")
 
+def links(request):
+    """
+    Offer the links to integrate with Aloha’s repository API
+    http://www.aloha-editor.org/guides/repository.html
+    """
+    published_entries = MtEntry.objects.filter(entry_status=2)
+    entry_links = []
+    for entry in published_entries:
+        entry_links.append({
+            "link" : entry.get_absolute_url(),
+            "id"   : entry.get_absolute_url(),
+            "name": "I like tight pants and " + entry.entry_title.lower(),
+            "type" : "website"
+        })
+    return HttpResponse(json.dumps(entry_links, indent=2, ensure_ascii=False), mimetype="application/json; charset=utf-8")
