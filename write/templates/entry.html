@@ -49,6 +49,8 @@
 <!-- make all elements <article> editable with Aloha Editor -->
 <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry.js"> </script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry-ui.js"> </script>
+{% else %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/lib/ice.js"></script>
 {% endif %}
     <meta property="og:title dc:title" content="I like tight pants and {{ e.entry_title|lower }}"/>
     <meta property="og:type" content="article"/>
@@ -214,3 +216,60 @@
 </div>
 {% endblock %}
 
+{% block extrajs %}
+{% if not editing %}
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
+<script>
+    var article = document.getElementsByTagName("article")[0];
+    article.setAttribute("contenteditable", "true");
+    var tracker = new ice.InlineChangeEditor({
+        // element to track - ice will make it contenteditable
+        element: article,
+        // tell ice to setup/handle events on the `element`
+        handleEvents: true,
+        // set a user object to associate with each change
+        currentUser: { id: 1, name: 'Miss T' }
+    });
+    // setup and start event handling for track changes
+    tracker.startTracking();
+</script>
+<style>
+    .del {
+        text-decoration: line-through;
+    }
+    .ins {
+        text-decoration: underline;
+    }
+    .cts-1 {
+        color: green;
+    }
+    .cts-2 {
+        color: #C02000;
+    }
+    
+    .cts-3 {
+        color: #004090;
+    }
+    
+    .cts-4 {
+        color: #F06000;
+    }
+    
+    .cts-5 {
+        color: purple;
+    }
+    
+    .cts-6 {
+        color: #801080;
+    }
+    
+    .cts-7 {
+            color: #1080B0;
+    }
+    
+    .ice-avoid {
+        color: red;
+    }
+</style>
+{% endif %}
+{% endblock %}
