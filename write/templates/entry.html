@@ -77,7 +77,7 @@
   {% for author in authors %}
     <option value="{{ author.author_id }}"{% if author.author_id == e.entry_author_id %} selected="true"{% endif %}>{{ author.author_nickname }}</option>
   {% endfor %}</select>
-    <h4 class="author">published: <input property="mt:entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.entry_status == 2 %}checked="yes"{% endif%}/></h4>{% endif %}
+    <h4 class="author">published: <input property="mt:entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.entry_status == 2 %}checked="yes"{% endif%}/></h4>
   <h4>Excerpt</h4>
   <p><a href="#" id="set-excerpt">Set excerpt</a></p>
   <h4>Thumbnail uri</h4>  
