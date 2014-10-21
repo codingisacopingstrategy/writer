@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     url(r'^or/archives$', 'write.views.wall', name='wall'),
     url(r'^or/links.json$', 'write.views.links', name='links-json'),
 
+    url(r'^is/index.php$', 'write.views.index_php', name='index-php'),
     url(r'^is/$', 'write.views.latest_entry_read', name='latest-entry-read'),
     url(r'^is/about$', 'write.views.about', name='about'),
     url(r'^is/feed/us/recent_entries.xml$', 'write.views.feed', name='feed'),

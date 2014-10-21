@@ -21,6 +21,12 @@ def wall(request):
     tpl_params['andor'] = '/or/'
     return render_to_response("wall.html", tpl_params, context_instance = RequestContext(request))
 
+def index_php(request):
+    e = MtEntry.objects.filter(entry_status=2)[0]
+    return HttpResponse("""<?php
+header('Location: %s');
+?>""" % e.get_absolute_url(), content_type="text/plain; charset=utf-8")
+
 def latest_entry_read(request):
     e = MtEntry.objects.filter(entry_status=2)[0]
     return redirect('entry-read', slug=e.entry_slug()) 
