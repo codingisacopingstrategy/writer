@@ -56,7 +56,7 @@ def entry(request, slug, editing=False):
         entry = MtEntry.objects.get(entry_basename=basename)
     except MtEntry.DoesNotExist:
         if not editing:
-            return Http404
+            raise Http404
         entry = MtEntry(entry_basename=basename)
         entry.entry_authored_on = entry.entry_created_on = datetime.now()
         entry.entry_created_by = entry.entry_author_id= 3 # glit by default
