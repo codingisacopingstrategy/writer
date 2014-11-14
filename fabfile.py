@@ -41,7 +41,7 @@ def publish():
     Rebuild the pages on the server
     """
     with cd(env.path):
-        run('/home/s/apps/mt.schr.fr/melody/tools/re') # rebuild pages
+        run('/home/s/apps/i.liketightpants.net/writer-venv/bin/python /home/s/apps/i.liketightpants.net/writer/management.py publish') # rebuild pages
         """ I disabled making screenshots because even if the other pages don’t change,
             their new screenshots are never identical, so in git all these little png’s have
             to be updated.
@@ -68,7 +68,7 @@ def archive():
         run('git push origin master') # push to github
 
 """
-For reference, the script that is used on the server to update
+For reference, the script that used to be used on the server to update
 the blog:
 
 #!/usr/bin/perl
