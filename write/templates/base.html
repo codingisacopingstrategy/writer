@@ -201,6 +201,25 @@ div#bar, div#header {
 <div id="bar">&nbsp;</div>
 {% block extrajs %}
 {% endblock %}
+<!-- Piwik, Open Source Analytics,
+let’s not give Google more data then necessary! Eric --> 
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://var.schr.fr/piwik/" : "http://var.schr.fr/piwik/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script><noscript><p><img src="http://var.schr.fr/piwik/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Code -->
+
+<!--[if !(lt IE 8)]><!-->
+   <script type="text/javascript">
+     (function(){var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src=document.location.protocol+"//d1agz031tafz8n.cloudfront.net/thedaywefightback.js/widget.min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)})()
+   </script>
+<!--<![endif]-->
 </body>
 </html>
 
