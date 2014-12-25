@@ -72,45 +72,45 @@ def entry(request, slug, editing=False):
         
         entry.entry_title = slug.replace('-',' ').title()
         entry.entry_status = 1 # draft by default
-    if request.method == 'GET':
-        # We can not read unpublished entries, except when providing a ‘secret token’
-        # This is not supposed to be a secure: it is more of a low garden fence
-        # than it is a lock
-        if not editing and entry.entry_status != 2 and not request.user.is_authenticated():
-            if request.GET.get('the_secret_question', '') != 'the_secret_answer':
-                return HttpResponseForbidden()
-        
-        author = MtAuthor.objects.get(pk=entry.entry_author_id)
-        
-        author_ids = (3, 4, 5, 6, 7, 8) # the i.liketightpant contributors
-        authors = MtAuthor.objects.all()
-        main_authors = MtAuthor.objects.filter(author_id__in=author_ids)
-        
-        published_entries = MtEntry.objects.filter(entry_status=2)
-        published_entries_ids = [e.entry_id for e in published_entries]
-        visible_comments = MtComment.objects.filter(comment_visible=1).filter(comment_entry_id__in=published_entries_ids)
-        
-        tpl_params = {}
-        
-        tpl_params['EDITING'] = editing
-        tpl_params['andor'] = '/or/' if editing else '/and/'
-        
-        tpl_params['e'] = entry
-        tpl_params['e_comments'] = MtComment.objects.filter(comment_entry_id=entry.entry_id).filter(comment_visible=1).order_by('comment_created_on')
-        tpl_params['a'] = author
-        tpl_params['a_entries'] = published_entries.filter(entry_author_id=author.author_id).exclude(pk=entry.entry_id)
-        tpl_params['a_comments'] = visible_comments.filter(comment_commenter_id=author.author_id)[:10]
-        
-        tpl_params['authors'] = authors
-        tpl_params['author_ids'] = author_ids
-        tpl_params['main_authors'] = main_authors
-        tpl_params['recent_entries'] = published_entries.filter(entry_status=2)[:10]
-        tpl_params['latest_entry'] = tpl_params['recent_entries'][0]
-        tpl_params['recent_comments'] = visible_comments[:10]
-        tpl_params['parent'] = None
+    
+    # We can not read unpublished entries, except when providing a ‘secret token’
+    # This is not supposed to be a secure: it is more of a low garden fence
+    # than it is a lock
+    if not editing and entry.entry_status != 2 and not request.user.is_authenticated():
+        if request.GET.get('the_secret_question', '') != 'the_secret_answer':
+            return HttpResponseForbidden()
+    
+    author = MtAuthor.objects.get(pk=entry.entry_author_id)
+    
+    author_ids = (3, 4, 5, 6, 7, 8) # the i.liketightpant contributors
+    authors = MtAuthor.objects.all()
+    main_authors = MtAuthor.objects.filter(author_id__in=author_ids)
+    
+    published_entries = MtEntry.objects.filter(entry_status=2)
+    published_entries_ids = [e.entry_id for e in published_entries]
+    visible_comments = MtComment.objects.filter(comment_visible=1).filter(comment_entry_id__in=published_entries_ids)
+    
+    tpl_params = {}
+    tpl_params['EDITING'] = editing
+    tpl_params['andor'] = '/or/' if editing else '/and/'
+    
+    tpl_params['e'] = entry
+    tpl_params['e_comments'] = MtComment.objects.filter(comment_entry_id=entry.entry_id).filter(comment_visible=1).order_by('comment_created_on')
+    tpl_params['a'] = author
+    tpl_params['a_entries'] = published_entries.filter(entry_author_id=author.author_id).exclude(pk=entry.entry_id)
+    tpl_params['a_comments'] = visible_comments.filter(comment_commenter_id=author.author_id)[:10]
+    
+    tpl_params['authors'] = authors
+    tpl_params['author_ids'] = author_ids
+    tpl_params['main_authors'] = main_authors
+    tpl_params['recent_entries'] = published_entries.filter(entry_status=2)[:10]
+    tpl_params['latest_entry'] = tpl_params['recent_entries'][0]
+    tpl_params['recent_comments'] = visible_comments[:10]
+    tpl_params['parent'] = None
 
-        return render_to_response("entry.html", tpl_params, context_instance = RequestContext(request))
-
+    return render_to_response("entry.html", tpl_params, context_instance = RequestContext(request))
+    
+        
 
 def entry_read(request, slug):
     return entry(request, slug, False)
