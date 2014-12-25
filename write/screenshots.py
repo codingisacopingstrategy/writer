@@ -14,16 +14,22 @@ import subprocess
 APP_PATH = os.path.abspath(os.path.dirname(__file__))
 PHANTOM_PATH = subprocess.Popen(['which','phantomjs'], stdout=subprocess.PIPE).communicate()[0].strip() 
 
+from write.settings import PUBLIC_PATH
+try:
+    from write.settings import DEV_SERVER
+except ImportError:
+    DEV_SERVER = 'http://127.0.0.1:8000/'
+
 def screenshot(slugs=[]):
     posts = {}
     for i in slugs:
-        posts[i] = 'http://127.0.0.1:7999/or/' + i
+        posts[i] = DEV_SERVER + i
     
     for post, url in posts.iteritems():
         print "taking a screenshot of post", post, url
         # append a random query string to the uri so webkit doesn’t use a cached result
         url = "%s?id=%s" % (url, randint(222222, 777777))
-        fullfile = os.path.join(APP_PATH, "static", "assets", "as", "screenshots", "of", "%s-full.png" % post)
+        fullfile = os.path.join(PUBLIC_PATH, "assets", "as", "screenshots", "of", "%s-full.png" % post)
         finalfile = fullfile.replace('-full', '')
         pipe = subprocess.Popen([PHANTOM_PATH, os.path.join(APP_PATH, 'rasterise.js'), url, fullfile])
         if pipe.wait() != 0:
