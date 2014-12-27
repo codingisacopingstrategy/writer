@@ -16,7 +16,7 @@ APP_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', 
 def fetch(entry):
     c = Client()
     
-    print "fetching", entry.entry_title
+    print "fetching", entry.entry_title.encode('utf-8')
     response = c.get(u"/is/%s" % entry.entry_slug())
     
     if response.status_code != 200:
