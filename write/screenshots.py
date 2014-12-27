@@ -28,7 +28,8 @@ def screenshot(slugs=[]):
     for post, url in posts.iteritems():
         print "taking a screenshot of post", post, url
         # append a random query string to the uri so webkit doesn’t use a cached result
-        url = "%s?id=%s" % (url, randint(222222, 777777))
+        # also: add the ‘secret’ key to view unpublished articles
+        url = "%s?id=%s&the_secret_question=the_secret_answer" % (url, randint(222222, 777777))
         fullfile = os.path.join(PUBLIC_PATH, "assets", "as", "screenshots", "of", "%s-full.png" % post)
         finalfile = fullfile.replace('-full', '')
         pipe = subprocess.Popen([PHANTOM_PATH, os.path.join(APP_PATH, 'rasterise.js'), url, fullfile])
