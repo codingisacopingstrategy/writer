@@ -1,8 +1,3 @@
-Date.prototype.getWeek = function() {
-    var onejan = new Date(this.getFullYear(),0,1);
-    return Math.ceil((((this - onejan) / 86400000) + onejan.getDay()+1)/7);
-};
-
 Date.prototype.toISOish = function() {
     // like http://stackoverflow.com/questions/2573521/how-do-i-output-an-iso-8601-formatted-string-in-javascript
     // Yet there’s some problem with timezones we do naieve timezones for now.
@@ -15,47 +10,26 @@ Date.prototype.toISOish = function() {
         + pad(this.getSeconds()); // <-- naive | aware --> + '+01:00';
 };
 
-var parseNum = function(n){
-    var result = parseInt(n);
-    return isNaN(result) ? null : result;
-};
-
 var Entry = function() {
-    this.entry_allow_comments = 1;
-    this.entry_allow_pings = 1;
-    this.entry_atom_id = "";
-    this.entry_basename = $('meta[property="mt:entry_basename"]').attr("content");
-    this.entry_blog_id = 1;
-    this.entry_category_id = null;
-    this.entry_class = "entry";
-    this.entry_convert_breaks = 0;
-    this.entry_created_by = 3;
-    this.entry_current_revision = 0;
-    this.entry_modified_by = 1;
-    this.entry_ping_count = 0;
-    this.entry_pinged_urls = "";
-    this.entry_tangent_cache = "";
-    this.entry_template_id = null;
-    this.entry_text_more = "";
-    this.entry_to_ping_urls = "";
+    this.slug = $('meta[property="mt:entry_basename"]').attr("content");
     // find properties set in body (user editable)
-    this.entry_excerpt =        function(){
+    this.excerpt =              function(){
                                     /** The Facebook description */
                                    return $('meta[property~="og:description"]').attr("content");
     };
-    this.entry_keywords =       function( ){
+    this.preview_image =        function( ){
                                     /** Actually used for the Facebook preview image*/
                                     return $('meta[property~="og:image"]').attr("content");
                                 };
-    this.entry_status =         function() {
+    this.published =            function() {
                                     if ($('[property="mt:entry_status"]').is(':checked')) {
                                         // published:
-                                        return 2;
+                                        return true;
                                     } else {
-                                        return 1;
+                                        return false;
                                     }
                                 };
-    this.entry_id =             function() {
+    this.id =                   function() {
                                     if ($('[property="mt:entry_id"]').length == 0) {
                                         return false;
                                     } else {
@@ -63,37 +37,24 @@ var Entry = function() {
                                                 attr("content"));
                                     }
                                 };
-    this.entry_title =          function() {
+    this.title =                function() {
                                     return $('[property="mt:entry_title"]').
                                             text();
                                 };
-    this.entry_author_id =      function() {
+    this.author =               function() {
                                     return parseInt($('[property="mt:entry_author_id"]').
                                             find("option:selected").
                                                 attr('value'));
                                 };
-    this.entry_created_on = this.entry_authored_on =    function() {
-                                    return new Date($('[property="dc:created"]').
-                                            attr("content")).toISOish();
+    this.created_on =           function() {
+                                    return $('[property="dc:created"]').
+                                            attr("content");
                                 };
-    this.entry_modified_on =    function() {
-                                    return new Date($('[property="dc:modified"]').
-                                            attr("content")).toISOish();
+    this.modified_on =          function() {
+                                    return $('[property="dc:modified"]').
+                                            attr("content");
                                 };
-    this.entry_week_number =    function() {
-                                    var d = new Date(this.entry_authored_on());
-                                    var year = d.getFullYear();
-                                    var week = d.getWeek();
-                                    if (week < 10) {
-                                        week = '0' + week;
-                                    }
-                                    var weekNumber = year.toString() + week;
-                                    return parseInt(weekNumber);
-                                };
-    this.entry_comment_count =  function() {
-                                    return $("div.comment").length;
-                                };
-    this.entry_text =           function() {
+    this.body =                 function() {
                                     var txt;
                                     if (Aloha.activeEditable) {
                                         txt = cleanWhiteSpace(Aloha.activeEditable.originalObj[0], { indentationLevel : 2 }, document).innerHTML;
@@ -108,15 +69,15 @@ var Entry = function() {
 };
 
 var Comment = function(el, text) {
-    this.el =         el;
-    this.comment_id =          function() {
+    this.el =                   el;
+    this.id =                   function() {
                                     if (this.el.attr('property') === 'mt:comment_id') {
                                         return parseInt(this.el.
                                             attr('content'));
                                     }
                                     return false;
                                 };
-    this.comment_author =      function() {
+    this.author =               function() {
                                     if (this.el.find('[property="dc:creator"]').length === 0) {
                                         return this.el.find("select option:selected").
                                                 text();
@@ -124,8 +85,7 @@ var Comment = function(el, text) {
                                     return this.el.find('[property="dc:creator"]').
                                                 text();
                                 };
-    this.comment_blog_id = 1;
-    this.comment_commenter_id = function() {
+    this.mt_author =            function() {
                                     if (this.el.find("select").length === 0) {
                                         return null;
                                     }
@@ -133,37 +93,33 @@ var Comment = function(el, text) {
                                                 attr('value'));
                                 };
 
-    this.comment_created_by = this.comment_commenter_id;
-    this.comment_created_on =   function() {
-                                    return new Date(this.el.find('[property="dc:created"]').
-                                            attr("content")).toISOish();
+    this.created_on =           function() {
+                                    return this.el.find('[property="dc:created"]').
+                                            attr("content");
                                 };
-    this.comment_email =    function() {
+    this.email =                function() {
                                     return this.el.find('[property="mt:comment_email"]').
                                             attr("content");
                                 };
-    this.comment_entry_id = entry.entry_id;
-    this.comment_ip = "192.168.0.1";
-    this.comment_junk_log = "";
-    this.comment_junk_score = null;
-    this.comment_junk_status = 1;
-    this.comment_last_moved_on = "2000-01-01T00:00:00";
-    this.comment_modified_by = null;
-    this.comment_modified_on = null;
-    this.comment_parent_id =    function() {
+    this.entry =                entry.id;
+    this.ip =                   "192.168.0.1";
+    this.parent =               function() {
                                     if (this.el.parents(".comments-parent-container").length === 0) {
                                         return null;
                                     };
-                                    return new Comment(this.el.parents(".comments-parent-container").first().prev(), "").comment_id();
+                                    return new Comment(this.el.parents(".comments-parent-container").first().prev(), "").id();
                                 };
-    this.comment_text = text || function() {
+    this.text =                 text || function() {
                                     return this.el.find('[property="mt:comment_text"]').
                                         html();
                                 };
-    this.comment_visible = 1;
+    this.url =                  function() {
+                                    return this.el.find('[property="dc:creator"]').attr('href');
+                                };
+    this.visible =              true;
     this.resource_uri =         function() {
-                                    if (this.comment_id()) { 
-                                        return "/api/comment/" + this.comment_id() + "/";
+                                    if (this.id()) {
+                                        return "/api/comment/" + this.id() + "/";
                                     }
                                     return "/api/comment/";
                                 };
@@ -185,7 +141,7 @@ Entry.prototype.toHash = Comment.prototype.toHash = function() {
 
 Entry.prototype.makeHash = Comment.prototype.makeHash = function(keys) {
     var result = {};
-    for (i=0; i < keys.length; i++) {
+    for (var i=0; i < keys.length; i++) {
         var property = keys[i];
         if (this.hasOwnProperty(property))
             if (typeof this[property] == "function") {
@@ -197,11 +153,11 @@ Entry.prototype.makeHash = Comment.prototype.makeHash = function(keys) {
     return result;
 };
 
-Comment.prototype.update = function() {
-    if (this.comment_id()) {
+Comment.prototype.update = function(created) {
+    if (this.id()) {
         console.log("it is an existing Comment object");
-        var postData = this.makeHash(["comment_author", "comment_commenter_id", "comment_created_by", "comment_text", "comment_created_on", "comment_email",
- "comment_parent_id", "comment_url"]);
+        var postData = this.makeHash(["id", "entry", "author", "mt_author", "created_on", "email", "ip", "parent",
+                                      "text", "url", "visible"]);
  
          console.log(JSON.stringify(postData));
          var url = this.resource_uri();
@@ -214,7 +170,8 @@ Comment.prototype.update = function() {
             contentType: "application/json",
             processData: false,
             success: function(data) {
-                console.log("Succesfully updated Comment nr " + comment.comment_id());
+                console.log(JSON.stringify(data, null, 2));
+                console.log("Succesfully updated Comment nr ");
             },
             error: function(xhr, status, error) {
                 console.log("error!");
@@ -227,7 +184,7 @@ Comment.prototype.update = function() {
         console.log("to be implemented");
         
         var postData = this.toHash();
-        delete postData.comment_id;
+        delete postData.id;
         delete postData.resource_uri;
         delete postData.el;
         
@@ -243,15 +200,11 @@ Comment.prototype.update = function() {
         contentType: "application/json",
         processData: false,
         success: function(data, textStatus, jqXHR) {
-            console.log("Succesfully created Comment" + postData.comment_id);
+            var url = jqXHR.getResponseHeader('Location');
+            var id = parseInt(/comment\/([0-9]+)\//.exec(url)[1]);
+            console.log("Succesfully created Comment " + id);
             console.log(jqXHR.getResponseHeader('Location'));
-            // I’m seeing some weird errors which I think are related to the
-            // fact that we’re using a non-standard primary key (`comment_id`)
-            // the url returned by the API doesn’t contain an id
-            // (i.e. /api/comment/None/). So we can’t learn the id.
-            // should reproduce on a smaller model and file a bug.
-            // for now we reload the page when a new post is created.
-            location.reload(true);
+            created(id);
         },
         error: function(xhr, status, error) {
             console.log("error!");
@@ -263,7 +216,7 @@ Comment.prototype.update = function() {
 
 Comment.prototype.delete = function() {
     var that = this;
-    if (this.comment_id()) {
+    if (this.id()) {
         $.ajax({
             url: this.resource_uri(),
             type: 'DELETE',
@@ -286,12 +239,13 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
     if (e.obj.hasClass("entry")) {
         console.log("started updating an Entry object");
         
-        var entryId = entry.entry_id();
+        var entryId = entry.id();
         
         if (entryId) {
             console.log("it is an existing Entry object");
             
-            var postData = entry.makeHash(['entry_title', 'entry_status', 'entry_author_id', 'entry_authored_on', 'entry_modified_on', 'entry_week_number', 'entry_comment_count', 'entry_excerpt', 'entry_keywords', 'entry_text'] );
+            var postData = entry.makeHash(['author', 'title', 'slug', 'published', 'created_on', 'modified_on',
+                                           'excerpt', 'preview_image', 'body'] );
             
             console.log(JSON.stringify(postData));
             
@@ -303,7 +257,7 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
                 contentType: "application/json",
                 processData: false,
                 success: function(data) {
-                    console.log("Succesfully updated " + entry.entry_title());
+                    console.log("Succesfully updated " + entry.title());
                 },
                 error: function(xhr, status, error) {
                     console.log("error!");
@@ -316,7 +270,7 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
             
             var postData = entry.toHash();
             
-            delete postData.entry_id;
+            delete postData.id;
             
             console.log(JSON.stringify(postData));
             
@@ -328,7 +282,7 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
                 contentType: "application/json",
                 processData: false,
                 success: function(data, textStatus, jqXHR) {
-                    console.log("Succesfully created " + entry.entry_title());
+                    console.log("Succesfully created " + entry.title());
                     console.log(jqXHR.getResponseHeader('Location'));
                     // I’m seeing some weird errors which I think are related to the
                     // fact that we’re using a non-standard primary key (`entry_id`)
@@ -347,7 +301,7 @@ var smartUpdate = function(jQueryEvent, eventArgument) {
         }
     } else if (e.obj.hasClass("comment-editor")) {
         console.log("started updating a Comment object");
-        comment = new Comment(  e.obj.parents(".comment").first(), 
+        var comment = new Comment(  e.obj.parents(".comment").first(),
                                 cleanWhiteSpace(Aloha.activeEditable.originalObj[0], { indentationLevel : 1 }, document).innerHTML  );
         comment.update();
     }

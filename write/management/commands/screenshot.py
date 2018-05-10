@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 from write.models import MtEntry
 from write.screenshots import screenshot
 
+
 class Command(BaseCommand):
     help = 'Takes screenshots of unpublished entries'
 

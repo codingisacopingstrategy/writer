@@ -10,12 +10,15 @@ static html files, handling public comments and trackbacks.
 
 import os.path
 from pipes import quote
-from fabric.api import run, local, put, cd, sudo, env
+from fabric.api import run, local, put, cd, sudo, env, settings
 from fabric.contrib.console import confirm
 
-env.hosts = ['s@schr.fr:599']
+env.hosts = ['s@89.31.102.24:599']
 env.path = '/home/s/apps/i.liketightpants.net/public/and/'
 env.django_path = '/home/s/apps/i.liketightpants.net/writer/'
+
+class FabricException(Exception):
+    pass
 
 def deploy():
     with cd(env.django_path):
@@ -50,15 +53,31 @@ def publish():
         """
         # run('python screenshots.py') # generate screenshots for the archive
 
-def commit(message):
+def commit(slug=None, message=None):
     """
     Commit on the server
     Specify the message in a command line argument as such:
     fab publish:message="This is the commit message"
     """
-    with cd(env.path):
-        run('git add .')
-        run('git commit -m %s' % quote(message))
+    with cd(env.path), settings(abort_exception = FabricException):
+        # Add all posts’ html
+        run('ls *.html | grep -v googled | xargs git add') # don’t add the Google Webmaster verification file goolge123afb.html
+        if slug:
+            # Add assets for this specific post
+            run('''cat ''' + slug + '''.html | python -c 'import re; import fileinput; r = re.compile(""""\/and\/(assets\/[^"]+)""" + chr(34)); print "\\n".join(["\\n".join(s.replace("/and/","") for s in r.findall(line)) for line in fileinput.input() if len(r.findall(line)) > 0])' | xargs git add ''')
+            # Screenshot this post, add it to git
+            #run('/home/s/apps/i.liketightpants.net/writer-venv/bin/python manage.py screenshot %s' % slug)
+            run('git add assets/as/screenshots/of/%s.png' % slug)
+            if message:
+                run('git commit -m %s' % quote(message))
+            else:
+                try:
+                    run('git ls-files --error-unmatch %s.html' % slug)
+                    run('git commit -m "Modified post %s"' % slug)
+                except FabricException:
+                    run('git commit -m Added post %s"' % slug)
+        elif message:
+            run('git commit -m %s' % quote(message))
 
 def archive():
     """
