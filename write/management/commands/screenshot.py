@@ -22,4 +22,4 @@ class Command(BaseCommand):
         if len(args) == 0:
             args = [i.entry_slug() for i in MtEntry.objects.filter(entry_status = 1)]
         screenshot(args)
-        self.stdout.write('Created screenshots of unpublished entries')
+        #self.stdout.write('Created screenshots of unpublished entries')
