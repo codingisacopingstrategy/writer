@@ -12,7 +12,8 @@ import os
 import subprocess
 
 APP_PATH = os.path.abspath(os.path.dirname(__file__))
-PHANTOM_PATH = subprocess.Popen(['which','phantomjs'], stdout=subprocess.PIPE).communicate()[0].strip() 
+# PHANTOM_PATH = subprocess.Popen(['which','phantomjs'], stdout=subprocess.PIPE).communicate()[0].strip() 
+PHANTOM_PATH = '/home/s/bin/phantomjs'
 
 from write.settings import PUBLIC_PATH
 try:
@@ -26,7 +27,7 @@ def screenshot(slugs=[]):
         posts[i] = DEV_SERVER + i
     
     for post, url in posts.iteritems():
-        print "taking a screenshot of post", post, url
+        # print "taking a screenshot of post", post, url
         # append a random query string to the uri so webkit doesn’t use a cached result
         # also: add the ‘secret’ key to view unpublished articles
         url = "%s?id=%s&the_secret_question=the_secret_answer" % (url, randint(222222, 777777))
