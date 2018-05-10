@@ -27,11 +27,11 @@ $(function() {
             $(".comments-content").append(el);
         }
         c = new Comment(el,el.find(".comment-editor").html());
-        console.log(c.comment_created_on());
-        c.update();
-        // how to find id?
-        el.attr("property","comment_id");
-        el.attr("content","");
+        console.log(c.created_on());
+        c.update(function(id) {
+            el.attr("property","mt:comment_id");
+            el.attr("content", id);
+        });
     });
     
     $(".comments-content").on("click", "a[href=#delete]", function(e){
@@ -44,15 +44,15 @@ $(function() {
     });
     
     $("#set-excerpt").on("click", function(e) {
-    	e.preventDefault();
-    	var aboutPrompt = prompt("The about value", entry.entry_excerpt());
-		$('meta[property~="og:description"]').attr("content", aboutPrompt);
+        e.preventDefault();
+        var aboutPrompt = prompt("The about value", entry.excerpt());
+        $('meta[property~="og:description"]').attr("content", aboutPrompt);
     });
 
     $("#set-thumbnail-uri").on("click", function(e) {
-    	e.preventDefault();
-    	var thumbPrompt = prompt("The thumbnail uri", entry.entry_keywords());
-		$('meta[property~="og:image"]').attr("content", thumbPrompt);
+        e.preventDefault();
+        var thumbPrompt = prompt("The thumbnail uri", entry.preview_image());
+        $('meta[property~="og:image"]').attr("content", thumbPrompt);
     });
 
 });

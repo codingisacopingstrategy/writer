@@ -1,25 +1,24 @@
 {# recursive template! http://blog.elsdoerfer.name/2008/01/22/recursion-in-django-templates/ #}
 
 {% for c in e_comments %}
-{% if c.comment_parent_id == parent %}
-<div property="mt:comment_id" content="{{ c.comment_id }}" id="comment-{{ c.comment_id }}" resource="/and/{{ e.entry_basename }}#comment-{{ c.comment_id }}" class="comment{% if c.comment_parent_id %} comment-reply{% endif %}">
+{% if c.parent.pk == parent %}
+<div property="mt:comment_id" content="{{ c.pk }}" id="comment-{{ c.pk }}" resource="/and/{{ e.slug }}#comment-{{ c.pk }}" class="comment{% if c.parent %} comment-reply{% endif %}">
 <div class="comment-editor" property="mt:comment_text">
-{{ c.comment_text|safe }}
+{{ c.text|safe }}
 </div>
-<p class="byline" {% if EDITING %}property="mt:comment_email" content="{{ c.comment_email }}"{% endif %}>
-  {% if c.comment_commenter_id in author_ids %}<img src="/and/assets/that/are/pictures/of/author/{{ c.comment_author }}.png" width="18" height="18" />{% endif %} 
-  by {% if c.comment_commenter_id in author_ids and EDITING %}<select>{% for author in authors %}<option value="{{ author.author_id }}" {% if author.author_id == c.comment_commenter_id %} selected="true"{% endif %}>{{ author.author_nickname }}</option>{% endfor %}</select>
-     {% else %}<a property="dc:creator" href="{{ c.get_commenter_url }}">{{ c.comment_author }}</a>{% endif %} - <a href="{{ andor }}{{ e.entry_slug }}#comment-{{ c.comment_id }}"><span property="dc:created" content="{{ c.comment_created_on|date:"Y-m-d\TH:i:s+01:00" }}">{{ c.comment_created_on|date:"F j, Y f A" }}</span></a><br />
-  <a title="Reply" href="{% if EDITING %}#reply{% else %}javascript:void(0);{% endif %}" {% if not EDITING %}onclick="mtReplyCommentOnClick({{ c.comment_id }}, '{{ c.comment_author }}')"{% endif %}>Reply</a>{% if EDITING %} <a href="#delete"><b>×</b></a>{% endif%}
+<p class="byline" {% if EDITING %}property="mt:comment_email" content="{{ c.email }}"{% endif %}>
+  {% if c.mt_author and c.mt_author.pk in author_ids %}<img src="/and/assets/that/are/pictures/of/author/{{ c.mt_author }}.png" width="18" height="18" />{% endif %} 
+  by {% if c.mt_author and c.mt_author.pk in author_ids and EDITING %}<select>{% for author in authors %}<option value="{{ author.pk }}" {% if author.pk == c.mt_author.pk %} selected="true"{% endif %}>{{ author }}</option>{% endfor %}</select>
+     {% else %}<a property="dc:creator" href="{{ c.get_commenter_url }}">{{ c.author }}</a>{% endif %} - <a href="{{ andor }}{{ e.slug }}#comment-{{ c.pk }}"><span property="dc:created" content="{{ c.created_on|date:"c" }}">{{ c.created_on|date:"F j, Y f A" }}</span></a><br />
+  <a title="Reply" href="{% if EDITING %}#reply{% else %}javascript:void(0);{% endif %}" {% if not EDITING %}onclick="mtReplyCommentOnClick({{ c.pk }}, '{{ c.author }}')"{% endif %}>Reply</a>{% if EDITING %} <a href="#delete"><b>×</b></a>{% endif%}
 </p>
 </div>
   <div class="comments-parent-container" style="margin-left: 20px;">
   {% with "comment.html" as filename %}
-  {% with c.comment_id as parent %}
+  {% with c.pk as parent %}
     {% include filename %}
   {% endwith %}
   {% endwith %}
   </div>
 {% endif %}
 {% endfor %}
-

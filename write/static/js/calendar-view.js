@@ -30,8 +30,8 @@ $("#time").fullCalendar({
     },
     eventDrop: function(event) {
             event.start.roundAboutTen();
-            postData = { entry_id : event.id,
-                         entry_authored_on : event.start.toISOish() };
+            postData = { id : event.id,
+                         created_on : event.start.toISOish() };
             console.log(postData);
             var request = jQuery.ajax({
                 url: event.resource_uri,

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}{{ e.entry_title|lower }}{% endblock %}
+{% block title %}{{ e.title|lower }}{% endblock %}
 
 
 {% block head %}
 
     <meta property="og:title" content="I like tight pants and authors"/>
     <meta property="og:type" content="article"/>
-    <meta property="og:url" content="http://i.liketightpants.net/and/{{ e.entry_slug }}"/>
+    <meta property="og:url" content="http://i.liketightpants.net/and/{{ e.slug }}"/>
     
     <meta property="og:image" content=""/>
     <meta property="og:site_name" content="I like tight pants and mathematics"/>
@@ -45,15 +45,15 @@
   <h4>Articles by glit</h4>
   <dl>
   {% for e in glit_entries %}
-  <dt><a href="{{ andor }}{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
-  <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
+  <dt><a href="{{ andor }}{{ e.slug }}">{{ e.title }}</a></dt>
+  <dd>{{ e.created_on|date:"F j, Y f A" }}</dd>
   {% endfor %}
   </dl>
 
   <h4>Recent comments</h4>
   <ul>
   {% for c in glit_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />
@@ -73,15 +73,15 @@
   <h4>Articles by jenseits</h4>
   <dl>
   {% for e in jenseits_entries %}
-  <dt><a href="{{ andor }}{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
-  <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
+  <dt><a href="{{ andor }}{{ e.slug }}">{{ e.title }}</a></dt>
+  <dd>{{ e.created_on|date:"F j, Y f A" }}</dd>
   {% endfor %}
   </dl>
 
   <h4>Recent comments</h4>
   <ul>
   {% for c in jenseits_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />
@@ -100,15 +100,15 @@
   <h4>Articles by habitus</h4>
   <dl>
   {% for e in habitus_entries %}
-  <dt><a href="{{ andor }}{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
-  <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
+  <dt><a href="{{ andor }}{{ e.slug }}">{{ e.title }}</a></dt>
+  <dd>{{ e.created_on|date:"F j, Y f A" }}</dd>
   {% endfor %}
   </dl>
 
   <h4>Recent comments</h4>
   <ul>
   {% for c in habitus_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />
@@ -127,15 +127,15 @@
   <h4>Articles by tellyou</h4>
   <dl>
   {% for e in tellyou_entries %}
-  <dt><a href="{{ andor }}{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
-  <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
+  <dt><a href="{{ andor }}{{ e.slug }}">{{ e.title }}</a></dt>
+  <dd>{{ e.created_on|date:"F j, Y f A" }}</dd>
   {% endfor %}
   </dl>
 
   <h4>Recent comments</h4>
   <ul>
   {% for c in tellyou_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />
@@ -155,15 +155,15 @@
   <h4>Articles by baseline</h4>
   <dl>
   {% for e in baseline_entries %}
-  <dt><a href="{{ andor }}{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
-  <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
+  <dt><a href="{{ andor }}{{ e.slug }}">{{ e.title }}</a></dt>
+  <dd>{{ e.created_on|date:"F j, Y f A" }}</dd>
   {% endfor %}
   </dl>
 
   <h4>Recent comments</h4>
   <ul>
   {% for c in baseline_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />
@@ -183,15 +183,15 @@
   <h4>Articles by bnf</h4>
   <dl>
   {% for e in bnf_entries %}
-  <dt><a href="{{ andor }}{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
-  <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
+  <dt><a href="{{ andor }}{{ e.slug }}">{{ e.title }}</a></dt>
+  <dd>{{ e.created_on|date:"F j, Y f A" }}</dd>
   {% endfor %}
   </dl>
 
   <h4>Recent comments</h4>
   <ul>
   {% for c in bnf_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />

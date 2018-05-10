@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}{{ e.entry_title|lower }}{% endblock %}
+{% block title %}{{ e.title|lower }}{% endblock %}
 
-{% block main_style_sheet %}<link rel="stylesheet" type="text/css" href="/and/style/in/{{ a.author_name}}.css" />{% endblock %}
+{% block main_style_sheet %}<link rel="stylesheet" type="text/css" href="/and/style/in/{{ e.author }}.css" />{% endblock %}
 
 {% block head %}
 {% if EDITING %}<script>
@@ -50,57 +50,57 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry.js"> </script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry-ui.js"> </script>
 {% endif %}
-    <meta property="og:title dc:title" content="I like tight pants and {{ e.entry_title|lower }}"/>
+    <meta property="og:title dc:title" content="I like tight pants and {{ e.title|lower }}"/>
     <meta property="og:type" content="article"/>
-    <meta property="og:url" content="http://i.liketightpants.net/and/{{ e.entry_slug }}"/>
+    <meta property="og:url" content="http://i.liketightpants.net/and/{{ e.slug }}"/>
     
-    <meta property="og:image" content="{{ e.entry_keywords }}"/>
+    <meta property="og:image" content="{{ e.preview_image }}"/>
     <meta property="og:site_name" content="I like tight pants and mathematics"/>
     <meta property="og:description dc:description"
-          content="{{ e.entry_excerpt }}"/>
+          content="{{ e.excerpt }}"/>
     <meta name="description"
-          content="{{ e.entry_excerpt }}"/>
+          content="{{ e.excerpt }}"/>
     <meta property="fb:admins" content="1488294875"/>
 
-    <meta property="mt:entry_basename" content="{{ e.entry_basename }}" />
-    <meta property="dc:modified" content="{{ e.entry_modified_on|date:"Y-m-d\TH:i:s+01:00" }}" />
+    <meta property="mt:entry_basename" content="{{ e.slug }}" />
+    <meta property="dc:modified" content="{{ e.modified_on|date:"c" }}" />
 
 {% endblock %}
 
 {% block content %}
 <div class="sidebar grid_1">
   
-  <img src="/and/assets/that/are/pictures/of/author/{{ a.author_nickname }}.png" style="width:100px;height:100px;" alt="" />
+  <img src="/and/assets/that/are/pictures/of/author/{{ e.author }}.png" style="width:100px;height:100px;" alt="" />
   
-  <h4 class="author" property="dc:created" content="{{ e.entry_authored_on|date:"Y-m-d\TH:i:s+01:00" }}">{{ e.entry_authored_on|date:"F j, Y" }}</h4>
+  <h4 class="author" property="dc:created" content="{{ e.created_on|date:"c" }}">{{ e.created_on|date:"F j, Y" }}</h4>
   {% if EDITING %}<select property="mt:entry_author_id">
   {% for author in authors %}
-    <option value="{{ author.author_id }}"{% if author.author_id == e.entry_author_id %} selected="true"{% endif %}>{{ author.author_nickname }}</option>
+    <option value="{{ author.pk }}"{% if author.pk == e.author.pk %} selected="true"{% endif %}>{{ author }}</option>
   {% endfor %}</select>
-    <h4 class="author">published: <input property="mt:entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.entry_status == 2 %}checked="yes"{% endif%}/></h4>
+    <h4 class="author">published: <input property="mt:entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.published %}checked="yes"{% endif%}/></h4>
   <h4>Excerpt</h4>
   <p><a href="#" id="set-excerpt">Set excerpt</a></p>
   <h4>Thumbnail uri</h4>  
   <p><a href="#" id="set-thumbnail-uri">Set thumbnail uri</a></p>
-  {% else %}<h4 class="author">by <span property="dc:creator">{{ a.author_nickname }}</span></h4>
+  {% else %}<h4 class="author">by <span property="dc:creator">{{ e.author }}</span></h4>
 
   {% endif %}
   <p>&nbsp;</p>
   
   <hr />
   
-  <h4>Other articles by {{ a.author_nickname }}</h4>
+  <h4>Other articles by {{ e.author }}</h4>
   <dl>
   {% for e in a_entries %}
-  <dt><a href="{{ andor }}{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
-  <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
+  <dt><a href="{{ andor }}{{ e.slug }}">{{ e.title }}</a></dt>
+  <dd>{{ e.created_on|date:"F j, Y f A" }}</dd>
   {% endfor %}
   </dl>
 
-  <h4>{{ a.author_nickname }}’s comments</h4>
+  <h4>{{ e.author }}’s comments</h4>
   <ul>
   {% for c in a_comments %}
-    <li>{{ c.comment_text|striptags|safe|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li>{{ c.text|striptags|safe|truncatewords:10 }} <a href="{{ c.entry.get_absolute_url }}#comment-{{ c.pk }}" title="full comment on: {{ c.entry.title }}">read more</a></li>
   {% endfor %}
   </ul>
   <hr />
@@ -108,20 +108,20 @@
   <h4>Other writers</h4>
   <ul>
   {% for a in main_authors %}
-    <li>{{ a.author_nickname }}</li>
+    <li>{{ a }}</li>
   {% endfor %}
   </ul>
     
 </div>
 <div class="post grid_5">
   <p class="byline">
-  {% if e.previous %}<a href="{{ andor }}{{ e.previous.entry_slug }}">Previous</a>{% endif %}
-  {% if e.next %}  / <a href="{{ andor }}{{ e.next.entry_slug }}">Next</a>{% endif %}
+  {% if e.previous %}<a href="{{ andor }}{{ e.previous.slug }}">Previous</a>{% endif %}
+  {% if e.next %}  / <a href="{{ andor }}{{ e.next.slug }}">Next</a>{% endif %}
   </p>
   <div class="article grid_3 alpha omega suffix_2">
-    <h4 property="mt:entry_title">{{ e.entry_title }}</h4>
-    <article {% if e.entry_id %} property="mt:entry_id" content="{{ e.entry_id }}"{% endif %} class="entry" id="entry-{{ e.entry_id }}">
-    {{ e.entry_text|safe }}
+    <h4 property="mt:entry_title">{{ e.title }}</h4>
+    <article {% if e.pk %} property="mt:entry_id" content="{{ e.pk }}"{% endif %} class="entry" id="entry-{{ e.pk }}">
+    {{ e.body|safe }}
     </article>
     <h4 class="comments-header">{% if e_comments %}{{ e_comments.count }} Comments{% else %}No Comments{% endif %}</h4>
 
@@ -141,14 +141,9 @@
             <div class="comments-open-content">
                 <div id="comment-greeting"></div>
                 
-                    <form method="post" action="http://mt.schr.fr/comments.cgi" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
-                        <input type="hidden" name="static" value="1" />
-                        <input type="hidden" name="entry_id" value="{{ e.entry_id }}" />
-                        <input type="hidden" name="__lang" value="en" />
-                        <input type="hidden" name="parent_id" id="comment-parent-id" />
-                        <input type="hidden" name="armor" value="1" />
-                        <input type="hidden" name="preview" value="" />
-                        <input type="hidden" name="sid" value="" />
+                    <form method="post" action="/comments.cgi" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)" enctype="multipart/form-data">
+                        <input type="hidden" name="entry" value="{{ e.pk }}" />
+                        <input type="hidden" name="parent" id="comment-parent-id" />
                         <div id="comments-open-data">
                             <div id="comment-form-name">
                               <div class="alpha grid_1"><label for="comment-author" class="span-4">Name</label></div>
@@ -161,10 +156,6 @@
                             <div id="comment-form-url">
                                 <div class="alpha grid_1"><label for="comment-url" class="span-4">URL</label></div>
                                 <div class="omega grid_2"><input id="comment-url" name="url" size="30" value="" onfocus="mtCommentFormOnFocus()" /></div>
-                            </div>
-                            <div id="comment-form-remember-me">
-                                <input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="mtRememberMeOnClick(this)" value="1" accesskey="r" />
-                                <label for="comment-bake-cookie">Remember personal info?</label>
                             </div>
                         </div>
                         <div id="comment-form-reply" style="display:none">
@@ -203,8 +194,8 @@
   <h4>Latest articles</h4>
   <dl>
   {% for e in recent_entries %}
-  <dt><a href="{{ andor }}{{ e.entry_slug }}">{{ e.entry_title }}</a></dt>
-  <dd>{{ e.entry_authored_on|date:"F j, Y f A" }}</dd>
+  <dt><a href="{{ andor }}{{ e.slug }}">{{ e.title }}</a></dt>
+  <dd>{{ e.created_on|date:"F j, Y f A" }}</dd>
   {% endfor %}
   </dl>
 
@@ -212,7 +203,7 @@
   <h4>Latest Comments</h4>
   <ul>
   {% for c in recent_comments %}
-    <li><strong>{{ c.comment_author }}:</strong> {{ c.comment_text|striptags|truncatewords:10 }} <a href="{{ c.comment_entry.get_absolute_url }}" title="full comment on: {{ c.comment_entry.entry_title }}">read more</a></li>
+    <li><strong>{{ c.author }}:</strong> {{ c.text|striptags|truncatewords:10 }} <a href="{{ c.entry.get_absolute_url }}#comment-{{ c.pk }}" title="full comment on: {{ c.entry.title }}">read more</a></li>
   {% endfor %}
   </ul>
 

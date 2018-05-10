@@ -13,20 +13,22 @@ from write.settings import PUBLISH_DIR
 
 APP_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', 'static', 'js', 'preflight_app.js')
 
+
 def fetch(entry):
     c = Client()
     
-    print "fetching", entry.entry_title.encode('utf-8')
-    response = c.get(u"/is/%s" % entry.entry_slug())
+    print "fetching", entry.title.encode('utf-8')
+    response = c.get(u"/is/%s" % entry.slug)
     
     if response.status_code != 200:
         raise Exception(response.status_code)
     
-    path = os.path.join(PUBLISH_DIR, '%s.html' % entry.entry_slug())
+    path = os.path.join(PUBLISH_DIR, '%s.html' % entry.slug)
     with open(path, 'wb') as f:
         f.write(response.content)
     
     print "generated", path
+
 
 class Command(BaseCommand):
     help = 'Saves html version'
@@ -45,9 +47,8 @@ class Command(BaseCommand):
         
         elif len(args) == 1:
             slug = args[0]
-            basename = slug.replace('-','_')
             try:
-                entry = MtEntry.objects.get(entry_basename=basename)
+                entry = MtEntry.objects.get(slug=slug)
             except MtEntry.DoesNotExist:
                 print "post %s not found" % slug
                 return
@@ -55,7 +56,7 @@ class Command(BaseCommand):
             fetch(entry)
         
         else:
-            for entry in MtEntry.objects.filter(entry_status = 2):
+            for entry in MtEntry.objects.filter(published=True):
                 fetch(entry)
             
             response = c.get('/is/index.php')
@@ -75,5 +76,3 @@ class Command(BaseCommand):
             xml_path = os.path.join(path, 'recent_entries.xml')
             with open(xml_path, 'wb') as f:
                 f.write(response.content)
-        
-        

@@ -5,9 +5,8 @@
 Create screenshots for the archive page
 """
 
-from glob import iglob
 from random import randint
-from sys import argv, exit
+from sys import exit
 import os
 import subprocess
 

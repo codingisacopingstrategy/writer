@@ -10,6 +10,7 @@ from write.models import MtEntry
 
 APP_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', 'static', 'js', 'checkout_app.js')
 
+
 class Command(BaseCommand):
     help = 'Fixes up html of blog entries'
 
