@@ -44,7 +44,7 @@ def publish():
     Rebuild the pages on the server
     """
     with cd(env.path):
-        run('/home/s/apps/i.liketightpants.net/writer-venv/bin/python /home/s/apps/i.liketightpants.net/writer/management.py publish') # rebuild pages
+        run('/home/s/apps/i.liketightpants.net/writer-venv/bin/python /home/s/apps/i.liketightpants.net/writer/manage.py publish') # rebuild pages
         """ I disabled making screenshots because even if the other pages don’t change,
             their new screenshots are never identical, so in git all these little png’s have
             to be updated.
