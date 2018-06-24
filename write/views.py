@@ -53,7 +53,7 @@ def archives(request):
     return render_to_response("archives.html", tpl_params, context_instance=RequestContext(request))
 
 
-def entry(request, slug, editing=False):
+def entry(request, slug, editing=False, comment_form=None):
     try:
         entry = MtEntry.objects.get(slug=slug)
     except MtEntry.DoesNotExist:
@@ -74,6 +74,11 @@ def entry(request, slug, editing=False):
     if not editing and not entry.published and not request.user.is_authenticated():
         if request.GET.get('the_secret_question', '') != 'the_secret_answer':
             return HttpResponseForbidden()
+
+    if comment_form:
+        form = comment_form
+    else:
+        form = CommentForm(initial={'entry': entry})
 
     author_ids = (3, 4, 5, 6, 7, 8)  # the i.liketightpant contributors
     authors = User.objects.all()
@@ -101,7 +106,7 @@ def entry(request, slug, editing=False):
     tpl_params['recent_comments'] = visible_comments[:10]
     tpl_params['parent'] = None
 
-    tpl_params['form'] = CommentForm
+    tpl_params['form'] = form
 
     return render_to_response("entry.html", tpl_params, context_instance=RequestContext(request))
 
@@ -114,22 +119,21 @@ def entry_read(request, slug):
 def handle_comment(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
+        post = request.POST.copy()
         # create a form instance and populate it with data from the request:
-        form = CommentForm(request.POST)
+        form = CommentForm(post)
         form.data['ip'] = request.META['REMOTE_ADDR']
         if not form.data['captcha_code'].strip().lower() in ['bowie', 'jones', 'duke']:
             print "VERIFIICCATION ERRRORRRR"
             return HttpResponseForbidden()
         # check whether it's valid:
         if not form.is_valid():
-            print form.errors.as_json()
-            print form.non_field_errors()
             return HttpResponseForbidden()
 
         comment = form.save(commit=False)
         comment.visible = True
         comment.save()
-        comment.entry.generate()
+        comment.entry.commit()
         return redirect('entry-read', slug=comment.entry.slug)
 
     # if a GET (or any other method):

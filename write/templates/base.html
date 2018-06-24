@@ -14,7 +14,6 @@
 {% if EDITING %}<script type="text/javascript" src="/and/js/lib/jquery/jquery-ui-1.10.2.custom.min.js"></script> <!-- In app’s static folder -->{% endif %}
 
 <script type="text/javascript" src="/and/scripts/being/scripts.js"></script>
-<script type="text/javascript" src="/and/mt.js"></script>
     <title>I like tight pants and {% block title %}mathematics{% endblock %}</title>
 {% block head %}
 {% endblock %}
@@ -29,7 +28,7 @@
   <div class="grid_3">
   <ul>
 
-    <li {% if e and e.entry_id == latest_entry.entry_id %}class="current">latest{% else %}><a href="{{ andor }}{{ latest_entry.slug }}">latest</a>{% endif %}</li>
+    <li {% if e and e.pk == latest_entry.pk %}class="current">latest{% else %}><a href="{{ andor }}{{ latest_entry.slug }}">latest</a>{% endif %}</li>
     <li><a href="/and/about">about</a></li>
     <li {% if request.path == "/is/archives"  %}class="current">index{% else %}><a href="{{ andor }}archives">index</a>{% endif %}</li>{% if EDITING %}
     <li><a href="{% url 'logout' %}">logout</a></li>{% endif %}

@@ -138,22 +138,24 @@
             <h4 class="comments-open-header">Leave a comment</h4>
             <div class="comments-open-content">
                 <div id="comment-greeting"></div>
-                
-                    <form method="post" action="/comments.cgi" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)" enctype="multipart/form-data">
-                        <input type="hidden" name="entry" value="{{ e.pk }}" />
-                        <input type="hidden" name="parent" id="comment-parent-id" />
+                <form method="post" action="{%  url 'comments' %}">
+                  {% csrf_token %}
+
+                    {{ form.non_field_errors }}
+                    {{ form.parent }}
+                    {{ form.entry }}
                         <div id="comments-open-data">
                             <div id="comment-form-name">
-                              <div class="alpha grid_1"><label for="comment-author" class="span-4">Name</label></div>
-                                <div class="omega grid_2"><input id="comment-author" name="author" size="30" value="" onfocus="mtCommentFormOnFocus()" /></div>
+                                <div class="alpha grid_1"><label for="{{ form.author.id_for_label }}" class="span-4">Name</label></div>
+                                <div class="omega grid_2">{{ form.author.errors }}{{ form.author }}</div>
                             </div>
                             <div id="comment-form-email">
-                                <div class="alpha grid_1"><label for="comment-email" class="span-4">Email Address</label></div>
-                                <div class="omega grid_2"><input id="comment-email" name="email" size="30" value="" onfocus="mtCommentFormOnFocus()" /></div>
+                                <div class="alpha grid_1"><label for="{{ form.email.id_for_label }}" class="span-4">Email address</label></div>
+                                <div class="omega grid_2">{{ form.email.errors }}{{ form.email }}</div>
                             </div>
                             <div id="comment-form-url">
-                                <div class="alpha grid_1"><label for="comment-url" class="span-4">URL</label></div>
-                                <div class="omega grid_2"><input id="comment-url" name="url" size="30" value="" onfocus="mtCommentFormOnFocus()" /></div>
+                                <div class="alpha grid_1"><label for="{{ form.url.id_for_label }}" class="span-4">URL</label></div>
+                                <div class="omega grid_2">{{ form.url.errors }}{{ form.url }}</div>
                             </div>
                         </div>
                         <div id="comment-form-reply" style="display:none">
@@ -161,26 +163,26 @@
                             <label for="comment-reply" id="comment-reply-label"></label>
                         </div>
                         <div id="comments-open-text">
-                            <label for="comment-text">Comments</label><br />
+                            {{ form.text.label_tag }}<br />
                             <p class="byline">For formatting your post, you can use html tags like &lt;p&gt; and &lt;br /&gt;. Whitespace for now is eaten up, like in HTML. we are sorry—we will have a more friendly commenting option in place shortly!</p>
-                            <textarea id="comment-text" name="text" rows="15" style="width:100%;" onfocus="mtCommentFormOnFocus()"></textarea>
+                            {{ form.text.errors }}{{ form.text }}
+                            <!-- <textarea id="comment-text" name="text" rows="15" style="width:100%;" onfocus="mtCommentFormOnFocus()"></textarea> -->
                         </div>
                         <p class="byline" id="comments-open-license">By submitting your comment, you agree to license it under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution Share-Alike license</a>, the same license used for the text of the blog.</p>
-                        <div id="comments-open-captcha"></div>
+                        <div id="comments-open-captcha">
+                            <div class="alpha grid_1">{{ form.captcha_code.label_tag }}</div>
+                            <div class="omega grid_2">{{ form.captcha_code.errors }}{{ form.captcha_code }}</div>
+                        </div>
                         <div id="comments-open-footer">
                            <!-- <input type="submit" accesskey="v" name="preview_button" id="comment-preview" value="Preview" onclick="this.form.preview.value='1';" /> -->
                             <input type="submit" accesskey="s" name="post" id="comment-submit" value="Submit" />
                         </div>
                     </form>
+                </form>
 
-                
             </div>
         </div>
     
-        <script type="text/javascript">
-            mtAttachEvent("load", mtEntryOnLoad);
-            mtAttachEvent("unload", mtEntryOnUnload);
-        </script>
         {% endif %}
     
     </div><!-- / comments -->
