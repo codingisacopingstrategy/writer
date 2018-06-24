@@ -26,7 +26,7 @@ urlpatterns = patterns('',
     url(r'^is/(?P<slug>[\w-]+)$', 'write.views.entry_read', name='entry-read'),
     url(r'^or/(?P<slug>[\w-]+)$', 'write.views.entry_write', name='entry-write'),
 
-    url(r'^comments.cgi$', 'write.views.handle_comment'),
+    url(r'^comments.cgi$', 'write.views.handle_comment', name='comments'),
 
     url(r'^admin/', include(admin.site.urls)),
     (r'^api/', include(entry_resource.urls)),
