@@ -136,55 +136,7 @@
             <a title="Reply" href="#reply">Reply</a>
         </div>
         {% if not EDITING %}
-        <div class="comments-open" id="comments-open">
-            <h4 class="comments-open-header">Leave a comment</h4>
-            <div class="comments-open-content">
-                <div id="comment-greeting"></div>
-                <form method="post" action="{%  url 'comments' %}">
-                  {% csrf_token %}
-
-                    {{ form.non_field_errors }}
-                    {{ form.parent }}
-                    {{ form.entry }}
-                        <div id="comments-open-data">
-                            <div id="comment-form-name">
-                                <div class="alpha grid_1"><label for="{{ form.author.id_for_label }}" class="span-4">Name</label></div>
-                                <div class="omega grid_2">{{ form.author.errors }}{{ form.author }}</div>
-                            </div>
-                            <div id="comment-form-email">
-                                <div class="alpha grid_1"><label for="{{ form.email.id_for_label }}" class="span-4">Email address</label></div>
-                                <div class="omega grid_2">{{ form.email.errors }}{{ form.email }}</div>
-                            </div>
-                            <div id="comment-form-url">
-                                <div class="alpha grid_1"><label for="{{ form.url.id_for_label }}" class="span-4">URL</label></div>
-                                <div class="omega grid_2">{{ form.url.errors }}{{ form.url }}</div>
-                            </div>
-                        </div>
-                        <div id="comment-form-reply" style="display:none">
-                            <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="mtSetCommentParentID()" />
-                            <label for="comment-reply" id="comment-reply-label"></label>
-                        </div>
-                        <div id="comments-open-text">
-                            {{ form.text.label_tag }}<br />
-                            <p class="byline">For formatting your post, you can use html tags like &lt;p&gt; and &lt;br /&gt;. Whitespace for now is eaten up, like in HTML. we are sorry—we will have a more friendly commenting option in place shortly!</p>
-                            {{ form.text.errors }}{{ form.text }}
-                            <!-- <textarea id="comment-text" name="text" rows="15" style="width:100%;" onfocus="mtCommentFormOnFocus()"></textarea> -->
-                        </div>
-                        <p class="byline" id="comments-open-license">By submitting your comment, you agree to license it under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution Share-Alike license</a>, the same license used for the text of the blog.</p>
-                        <div id="comments-open-captcha">
-                            <div class="alpha grid_1">{{ form.captcha_code.label_tag }}</div>
-                            <div class="omega grid_2">{{ form.captcha_code.errors }}{{ form.captcha_code }}</div>
-                        </div>
-                        <div id="comments-open-footer">
-                           <!-- <input type="submit" accesskey="v" name="preview_button" id="comment-preview" value="Preview" onclick="this.form.preview.value='1';" /> -->
-                            <input type="submit" accesskey="s" name="post" id="comment-submit" value="Submit" />
-                        </div>
-                    </form>
-                </form>
-
-            </div>
-        </div>
-    
+        {% include "comment_form.html" %}
         {% endif %}
     
     </div><!-- / comments -->

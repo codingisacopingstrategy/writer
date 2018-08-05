@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="sidebar grid_1">
+</div>
+
+<div class="post grid_5">
+  <div class="article grid_3 alpha omega suffix_2">
+
+    <div id="comments" class="comments">
+
+        {% include "comment_form.html" %}
+
+    </div><!-- / comments -->
+  </div> <!-- / article grid_3 -->
+  <hr />
+</div> <!-- / post grid_5-->
+
+<div class="sidebar grid_1">
+</div>
+{% endblock %}

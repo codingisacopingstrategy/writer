@@ -123,12 +123,8 @@ def handle_comment(request):
         # create a form instance and populate it with data from the request:
         form = CommentForm(post)
         form.data['ip'] = request.META['REMOTE_ADDR']
-        if not form.data['captcha_code'].strip().lower() in ['bowie', 'jones', 'duke']:
-            print "VERIFIICCATION ERRRORRRR"
-            return HttpResponseForbidden()
-        # check whether it's valid:
-        if not form.is_valid():
-            return HttpResponseForbidden()
+        if not form.is_valid() or not form.data['captcha_code'].strip().lower() in ['bowie', 'jones', 'duke']:
+            return render_to_response("verify_comment.html", {'form': form}, context_instance=RequestContext(request))
 
         comment = form.save(commit=False)
         comment.visible = True
