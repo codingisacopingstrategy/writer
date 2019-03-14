@@ -4,25 +4,25 @@
     <link rel="alternate" type="text/html" href="http://i.liketightpants.net/and/" />
     <link rel="self" type="application/atom+xml" href="http://i.liketightpants.net/and/feed/us/recent_entries.xml" />
     <id>tag:i.liketightpants.net,2010-05-27:/and//1</id>
-    <updated>{{ entries.0.entry_modified_on|date:"c" }}</updated>
+    <updated>{{ entries.0.modified_on|date:"c" }}</updated>
 
     <generator uri="http://www.sixapart.com/movabletype/">Melody 1.0.0</generator>
 {% for entry in entries %}
 <entry>
     <title>{{ entry.entry_title }}</title>
     <link rel="alternate" type="text/html" href="http://i.liketightpants.net{{ entry.get_absolute_url }}" />
-    <id>tag:i.liketightpants.net,{{ entry.entry_authored_on|date:"Y" }}:/and//1.{{ entry.entry_id }}</id>
+    <id>tag:i.liketightpants.net,{{ entry.entry_authored_on|date:"Y" }}:/and//1.{{ entry.pk }}</id>
 
-    <published>{{ entry.entry_authored_on|date:"c" }}</published>
-    <updated>{{ entry.entry_modified_on|date:"c" }}</updated>
+    <published>{{ entry.created_on|date:"c" }}</published>
+    <updated>{{ entry.modified_on|date:"c" }}</updated>
 
-    <summary>{{ entry.entry_excerpt|striptags }}</summary>
+    <summary>{{ entry.excerpt|striptags }}</summary>
     <author>
-        <name>{{ entry.entry_author.author_nickname }}</name>
+        <name>{{ entry.author }}</name>
     </author>
     <content type="html" xml:lang="en" xml:base="http://i.liketightpants.net/and/">
         <![CDATA[
-        {{ entry.entry_text|safe }}
+        {{ entry.body|safe }}
         ]]>
     </content>
 </entry>
