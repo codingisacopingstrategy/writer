@@ -176,7 +176,7 @@ def feed(request):
 
     t = loader.get_template('recent_entries.xml')
     c = Context(tpl_params)
-    return HttpResponse(t.render(c), mimetype="application/atom+xml; charset=utf-8")
+    return HttpResponse(t.render(c), content_type="application/atom+xml; charset=utf-8")
 
 
 def links(request):

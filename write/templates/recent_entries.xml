@@ -9,7 +9,7 @@
     <generator uri="http://www.sixapart.com/movabletype/">Melody 1.0.0</generator>
 {% for entry in entries %}
 <entry>
-    <title>{{ entry.entry_title }}</title>
+    <title>{{ entry.title }}</title>
     <link rel="alternate" type="text/html" href="http://i.liketightpants.net{{ entry.get_absolute_url }}" />
     <id>tag:i.liketightpants.net,{{ entry.entry_authored_on|date:"Y" }}:/and//1.{{ entry.pk }}</id>
 
