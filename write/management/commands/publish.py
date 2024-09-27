@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
-import subprocess
 
 from django.core.management.base import BaseCommand
 from django.test.client import Client
@@ -37,10 +35,7 @@ class Command(BaseCommand):
         """
         """
         c = Client()
-        #print len(args)
-        #print args
-        #return
-    
+
         if len(args) > 1:
             print "usage: python manage.py publish               # publish all posts"
             print "usage: python manage.py publish slug-of-post  # publish one post"

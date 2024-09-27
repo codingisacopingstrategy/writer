@@ -1,14 +1,16 @@
+#!/usr/bin/env
+# -*- coding: utf-8 -*-
+
 from django.conf.urls import include, url
 from django.views.generic import RedirectView
-
 from django.contrib import admin
-admin.autodiscover()
 
 import django.contrib.auth.views
 
 from write.api import MtEntryResource, MtCommentResource
-
 import write.views
+
+admin.autodiscover()
 
 entry_resource = MtEntryResource()
 comment_resource = MtCommentResource()

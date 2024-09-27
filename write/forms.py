@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from django.forms import ModelForm, CharField, ValidationError, EmailInput, URLInput, TextInput, Textarea, HiddenInput
 from write.models import MtComment
 

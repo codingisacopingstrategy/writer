@@ -17,6 +17,7 @@ local_settings.py
 
 *~
 .project
+.idea
 
 # Virtual environment #
 #######################

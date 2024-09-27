@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# This is an auto-generated Django model module.
-# Feel free to rename the models, but don't rename db_table values or field names.
-#
-# Also note: You'll have to insert the output of 'django-admin.py sqlcustom [appname]'
-# into your database.
-
 import os
 import re
 
@@ -21,7 +15,6 @@ from django.dispatch import receiver
 from django.template.defaultfilters import striptags
 from django.test.client import Client
 
-from screenshots import screenshot
 from write.settings import PUBLIC_PATH
 
 REPO = Repo(PUBLIC_PATH)
@@ -50,7 +43,7 @@ class MtComment(models.Model):
         return ""
 
     def __unicode__(self):
-        text = rex.sub( ' ', striptags(self.text) )
+        text = rex.sub(' ', striptags(self.text))
         return u"%s: %s" % (self.author, text)
 
     class Meta:
@@ -81,13 +74,13 @@ class MtEntry(models.Model):
         return '/and/' + self.slug
     
     def event(self):
-        return { 'title' : self.title,
-                 'start' : self.created_on.isoformat(),
-                 'url' : self.editing_uri(),
-                 'id' : self.id,
-                 'screenshot_url' : self.screenshot_url(),
-                 'resource_uri' : "/api/entry/%s/" % self.pk,
-                 'allDay' : False }
+        return {'title': self.title,
+                'start': self.created_on.isoformat(),
+                'url': self.editing_uri(),
+                'id': self.id,
+                'screenshot_url': self.screenshot_url(),
+                'resource_uri': "/api/entry/%s/" % self.pk,
+                'allDay': False}
         
     # http://stackoverflow.com/questions/2214852/next-previous-links-from-a-query-set-generic-views
     def next(self):

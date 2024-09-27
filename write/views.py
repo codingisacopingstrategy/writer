@@ -1,10 +1,11 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import json
 import os.path
 
 from django.http import HttpResponse, Http404, HttpResponseForbidden
-from django.shortcuts import render_to_response, redirect, render
+from django.shortcuts import redirect, render
 from django.template import Context, loader
 from django.contrib.staticfiles.views import serve
 from django.contrib.auth.decorators import login_required

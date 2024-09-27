@@ -8,22 +8,23 @@ the movable type software is installed that takes care of publishing
 static html files, handling public comments and trackbacks.
 """
 
-import os.path
 from pipes import quote
-from fabric.api import run, local, put, cd, sudo, env, settings
-from fabric.contrib.console import confirm
+from fabric.api import run, cd, sudo, env, settings
 
 env.hosts = ['s@89.31.102.24:599']
 env.path = '/home/s/apps/i.liketightpants.net/public/and/'
 env.django_path = '/home/s/apps/i.liketightpants.net/writer/'
 
+
 class FabricException(Exception):
     pass
+
 
 def deploy():
     with cd(env.django_path):
         run('git pull origin master')
         sudo('supervisorctl restart tightpants')
+
 
 def status():
     """
@@ -32,12 +33,14 @@ def status():
     with cd(env.path):
         run('git status')
 
+
 def pull():
     """
     Pull from GitHub to server
     """
     with cd(env.path):
         run('git pull origin master')
+
 
 def publish():
     """
@@ -53,15 +56,16 @@ def publish():
         """
         # run('python screenshots.py') # generate screenshots for the archive
 
+
 def commit(slug=None, message=None):
     """
     Commit on the server
     Specify the message in a command line argument as such:
     fab publish:message="This is the commit message"
     """
-    with cd(env.path), settings(abort_exception = FabricException):
+    with cd(env.path), settings(abort_exception=FabricException):
         # Add all posts’ html
-        run('ls *.html | grep -v googled | xargs git add') # don’t add the Google Webmaster verification file goolge123afb.html
+        run('ls *.html | grep -v googled | xargs git add')  # skip the Google Webmaster verification file google*.html
         if slug:
             # Add assets for this specific post
             run('''cat ''' + slug + '''.html | python -c 'import re; import fileinput; r = re.compile(""""\/and\/(assets\/[^"]+)""" + chr(34)); print "\\n".join(["\\n".join(s.replace("/and/","") for s in r.findall(line)) for line in fileinput.input() if len(r.findall(line)) > 0])' | xargs git add ''')
@@ -78,6 +82,7 @@ def commit(slug=None, message=None):
                     run('git commit -m Added post %s"' % slug)
         elif message:
             run('git commit -m %s' % quote(message))
+
 
 def archive():
     """
