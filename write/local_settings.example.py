@@ -16,3 +16,8 @@ STATICFILES_DIRS = (
 )
 
 USE_TZ = True
+
+# Through the fabfile.py we can launch actions on an external install
+FABRIC_HOSTS = ['foo@bar.be']
+FABRIC_PATH = '/the/path/to/external/public/path'
+FABRIC_DJANGO_PATH = '/where/do/we/find/this/repo/external/'

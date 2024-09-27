@@ -11,9 +11,11 @@ static html files, handling public comments and trackbacks.
 from pipes import quote
 from fabric.api import run, cd, sudo, env, settings
 
-env.hosts = ['s@89.31.102.24:599']
-env.path = '/home/s/apps/i.liketightpants.net/public/and/'
-env.django_path = '/home/s/apps/i.liketightpants.net/writer/'
+from write.local_settings import FABRIC_HOSTS, FABRIC_PATH, FABRIC_DJANGO_PATH
+
+env.hosts = FABRIC_HOSTS
+env.path = FABRIC_PATH
+env.django_path = FABRIC_DJANGO_PATH
 
 
 class FabricException(Exception):
