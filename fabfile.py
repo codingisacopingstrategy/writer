@@ -44,7 +44,7 @@ def publish():
     Rebuild the pages on the server
     """
     with cd(env.path):
-        run('/home/s/apps/i.liketightpants.net/writer-venv/bin/python /home/s/apps/i.liketightpants.net/writer/manage.py publish') # rebuild pages
+        run('/home/s/apps/i.liketightpants.net/writer-venv/bin/python /home/s/apps/i.liketightpants.net/writer/manage.py publish')  # rebuild pages
         """ I disabled making screenshots because even if the other pages don’t change,
             their new screenshots are never identical, so in git all these little png’s have
             to be updated.
@@ -66,7 +66,7 @@ def commit(slug=None, message=None):
             # Add assets for this specific post
             run('''cat ''' + slug + '''.html | python -c 'import re; import fileinput; r = re.compile(""""\/and\/(assets\/[^"]+)""" + chr(34)); print "\\n".join(["\\n".join(s.replace("/and/","") for s in r.findall(line)) for line in fileinput.input() if len(r.findall(line)) > 0])' | xargs git add ''')
             # Screenshot this post, add it to git
-            #run('/home/s/apps/i.liketightpants.net/writer-venv/bin/python manage.py screenshot %s' % slug)
+            # run('/home/s/apps/i.liketightpants.net/writer-venv/bin/python manage.py screenshot %s' % slug)
             run('git add assets/as/screenshots/of/%s.png' % slug)
             if message:
                 run('git commit -m %s' % quote(message))
@@ -84,7 +84,8 @@ def archive():
     Push from the server to GitHub
     """
     with cd(env.path):
-        run('git push origin master') # push to github
+        run('git push origin master')  # push to github
+
 
 """
 For reference, the script that used to be used on the server to update

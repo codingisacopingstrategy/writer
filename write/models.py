@@ -29,14 +29,15 @@ rex = re.compile(r'\W+')
 
 
 class MtComment(models.Model):
-    entry = models.ForeignKey('MtEntry')
+    entry = models.ForeignKey('MtEntry', on_delete=models.CASCADE)  # CASCADE used to be the default, it means that when
+    # the referenced model is deleted this object will also be deleted
     author = models.CharField(max_length=300, blank=True)
-    mt_author = models.ForeignKey('auth.User', null=True, blank=True, default=None)
+    mt_author = models.ForeignKey('auth.User', null=True, blank=True, default=None, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True, blank=True, null=True)
     email = models.CharField(max_length=381, blank=True)
     ip = models.CharField(max_length=150, default='127.0.0.1')
-    parent = models.ForeignKey('self', null=True, blank=True)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
     text = models.TextField()
     url = models.CharField(max_length=765, blank=True)
     visible = models.BooleanField(default=False)
@@ -57,7 +58,7 @@ class MtComment(models.Model):
 
 
 class MtEntry(models.Model):
-    author = models.ForeignKey('auth.User')
+    author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     title = models.CharField(max_length=765)
     slug = models.SlugField(max_length=765)
     published = models.BooleanField(default=False)

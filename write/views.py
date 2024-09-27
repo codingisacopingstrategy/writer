@@ -2,11 +2,10 @@
 
 import json
 import os.path
-from datetime import datetime
 
 from django.http import HttpResponse, Http404, HttpResponseForbidden
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext, Template, Context, loader
+from django.shortcuts import render_to_response, redirect, render
+from django.template import Context, loader
 from django.contrib.staticfiles.views import serve
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -25,7 +24,7 @@ def wall(request):
     tpl_params['entries_json'] = json.dumps(entries_hash, indent=2, ensure_ascii=False)
     tpl_params['EDITING'] = True
     tpl_params['andor'] = '/or/'
-    return render_to_response("wall.html", tpl_params, context_instance=RequestContext(request))
+    return render(request, "wall.html", tpl_params)
 
 
 def index_php(request):
@@ -50,7 +49,7 @@ def archives(request):
     tpl_params['latest_entry'] = tpl_params['entries'].filter(published=True)[0]
     tpl_params['EDITING'] = False
     tpl_params['andor'] = '/and/'
-    return render_to_response("archives.html", tpl_params, context_instance=RequestContext(request))
+    return render(request, "archives.html", tpl_params)
 
 
 def entry(request, slug, editing=False, comment_form=None):
@@ -108,7 +107,7 @@ def entry(request, slug, editing=False, comment_form=None):
 
     tpl_params['form'] = form
 
-    return render_to_response("entry.html", tpl_params, context_instance=RequestContext(request))
+    return render(request, "entry.html", tpl_params)
 
 
 def entry_read(request, slug):
@@ -124,7 +123,7 @@ def handle_comment(request):
         form = CommentForm(post)
         form.data['ip'] = request.META['REMOTE_ADDR']
         if not form.is_valid() or not form.data['captcha_code'].strip().lower() in ['bowie', 'jones', 'duke']:
-            return render_to_response("verify_comment.html", {'form': form}, context_instance=RequestContext(request))
+            return render(request, "verify_comment.html", {'form': form})
 
         comment = form.save(commit=False)
         comment.visible = True
@@ -167,7 +166,7 @@ def about(request):
     tpl_params['bnf_entries'] = MtEntry.objects.filter(author__pk=8).filter(published=True)
     tpl_params['bnf_comments'] = MtComment.objects.filter(visible=True).filter(mt_author__pk=8)[:5]
 
-    return render_to_response("about.html", tpl_params, context_instance=RequestContext(request))
+    return render(request, "about.html", tpl_params)
 
 
 def feed(request):
