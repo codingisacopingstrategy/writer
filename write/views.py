@@ -142,7 +142,7 @@ def handle_comment(request):
         # create a form instance and populate it with data from the request:
         form = CommentForm(post)
         form.data['ip'] = request.META['REMOTE_ADDR']
-        if not form.is_valid() or not form.data['captcha_code'].strip().lower() in ['bowie', 'jones', 'duke']:
+        if not form.is_valid() or not form.data['captcha_code'].strip().lower() in ['bruxelles', 'brussel', 'brussels']:
             return render(request, "verify_comment.html", {'form': form})
 
         comment = form.save(commit=False)
