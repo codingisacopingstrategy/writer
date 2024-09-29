@@ -205,8 +205,7 @@ def feed(request):
     tpl_params['entries'] = MtEntry.objects.filter(published=True)[:15]
 
     t = loader.get_template('recent_entries.xml')
-    c = Context(tpl_params)
-    return HttpResponse(t.render(c), content_type="application/atom+xml; charset=utf-8")
+    return HttpResponse(t.render(tpl_params), content_type="application/atom+xml; charset=utf-8")
 
 
 def links(request):
