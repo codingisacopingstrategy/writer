@@ -20,34 +20,11 @@ from write.settings import PUBLIC_PATH
 REPO = Repo(PUBLIC_PATH)
 rex = re.compile(r'\W+')
 
+"""
+A simple data model: Authors, Articles (entries), Comments.
 
-class MtComment(models.Model):
-    entry = models.ForeignKey('MtEntry', on_delete=models.CASCADE)  # CASCADE used to be the default, it means that when
-    # the referenced model is deleted this object will also be deleted
-    author = models.CharField(max_length=300, blank=True)
-    mt_author = models.ForeignKey('auth.User', null=True, blank=True, default=None, on_delete=models.CASCADE)
-    created_on = models.DateTimeField(auto_now_add=True)
-    modified_on = models.DateTimeField(auto_now=True, blank=True, null=True)
-    email = models.CharField(max_length=381, blank=True)
-    ip = models.CharField(max_length=150, default='127.0.0.1')
-    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
-    text = models.TextField()
-    url = models.CharField(max_length=765, blank=True)
-    visible = models.BooleanField(default=False)
-
-    def get_commenter_url(self):
-        if self.mt_author:
-            return u"http://i.liketightpants.net/authors#%s" % self.author
-        if self.url:
-            return self.url
-        return ""
-
-    def __unicode__(self):
-        text = rex.sub(' ', striptags(self.text))
-        return u"%s: %s" % (self.author, text)
-
-    class Meta:
-        ordering = ('-created_on',)
+For the authors the standard Django user model is used, django.contrib.auth.models.User
+"""
 
 
 class MtEntry(models.Model):
@@ -97,6 +74,9 @@ class MtEntry(models.Model):
                 return prev[0]
         return False
     
+    """
+    Returns a string with the HTML content for this page
+    """
     def generate(self):
         # Props to https://github.com/mtigas/django-medusa for the excellent idea
         # of using Django’s test client for the job.
@@ -108,6 +88,9 @@ class MtEntry(models.Model):
         
         return response.content
     
+    """
+    Generate the HTML of the page and commit it to the Git repository
+    """
     def commit(self, message=False, commiter_name=False, commiter_email=False):
         filename = u"%s.html" % self.slug
         absolute_path = os.path.join(PUBLIC_PATH, filename)
@@ -143,6 +126,35 @@ class MtEntry(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    class Meta:
+        ordering = ('-created_on',)
+
+
+class MtComment(models.Model):
+    entry = models.ForeignKey('MtEntry', on_delete=models.CASCADE)  # CASCADE used to be the default, it means that when
+    # the referenced model is deleted this object will also be deleted
+    author = models.CharField(max_length=300, blank=True)
+    mt_author = models.ForeignKey('auth.User', null=True, blank=True, default=None, on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_now_add=True)
+    modified_on = models.DateTimeField(auto_now=True, blank=True, null=True)
+    email = models.CharField(max_length=381, blank=True)
+    ip = models.CharField(max_length=150, default='127.0.0.1')
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+    text = models.TextField()
+    url = models.CharField(max_length=765, blank=True)
+    visible = models.BooleanField(default=False)
+
+    def get_commenter_url(self):
+        if self.mt_author:
+            return u"http://i.liketightpants.net/authors#%s" % self.author
+        if self.url:
+            return self.url
+        return ""
+
+    def __unicode__(self):
+        text = rex.sub(' ', striptags(self.text))
+        return u"%s: %s" % (self.author, text)
 
     class Meta:
         ordering = ('-created_on',)

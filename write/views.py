@@ -16,8 +16,39 @@ from write.models import MtEntry, MtComment
 from write.forms import CommentForm
 
 
+def latest_entry_read(request):
+    """
+    /and/ redirects to /and/the-latest-article
+    """
+    e = MtEntry.objects.filter(published=True).first()
+    return redirect('entry-read', slug=e.slug)
+
+
+def latest_entry_write(request):
+    """
+    /or/ redirects to /or/the-latest-article
+    """
+    e = MtEntry.objects.all().first()
+    return redirect('entry-write', slug=e.slug)
+
+
+def archives(request):
+    """
+    A page that shows all the posts
+    """
+    tpl_params = {}
+    tpl_params['entries'] = MtEntry.objects.filter(published=True)
+    tpl_params['latest_entry'] = tpl_params['entries'].filter(published=True)[0]
+    tpl_params['EDITING'] = False
+    tpl_params['andor'] = '/and/'
+    return render(request, "archives.html", tpl_params)
+
+
 @login_required(login_url='/or/login')
 def wall(request):
+    """
+    An interface similar to calendar apps to allow to schedule post publishing
+    """
     tpl_params = {}
     tpl_params['entries'] = MtEntry.objects.all()
     tpl_params['latest_entry'] = tpl_params['entries'].filter(published=True).first()
@@ -28,32 +59,15 @@ def wall(request):
     return render(request, "wall.html", tpl_params)
 
 
-def index_php(request):
-    e = MtEntry.objects.filter(published=True).first()
-    return HttpResponse("""<?php header('Location: %s'); ?>""" % e.get_absolute_url(),
-                        content_type="text/plain; charset=utf-8")
-
-
-def latest_entry_read(request):
-    e = MtEntry.objects.filter(published=True).first()
-    return redirect('entry-read', slug=e.slug)
-
-
-def latest_entry_write(request):
-    e = MtEntry.objects.all().first()
-    return redirect('entry-write', slug=e.slug)
-
-
-def archives(request):
-    tpl_params = {}
-    tpl_params['entries'] = MtEntry.objects.filter(published=True)
-    tpl_params['latest_entry'] = tpl_params['entries'].filter(published=True)[0]
-    tpl_params['EDITING'] = False
-    tpl_params['andor'] = '/and/'
-    return render(request, "archives.html", tpl_params)
-
-
 def entry(request, slug, editing=False, comment_form=None):
+    """
+    The main view, a blog article (the same view is reused for editing and static mode)
+    :param request: A Django HTTP Request object
+    :param slug:
+    :param editing: Add the editing interface.
+    :param comment_form: Does this do something right now ?
+    :return:
+    """
     try:
         entry = MtEntry.objects.get(slug=slug)
     except MtEntry.DoesNotExist:
@@ -115,6 +129,11 @@ def entry_read(request, slug):
     return entry(request, slug, False)
 
 
+@login_required(login_url='/or/login')
+def entry_write(request, slug):
+    return entry(request, slug, True)
+
+
 @csrf_exempt
 def handle_comment(request):
     # if this is a POST request we need to process the form data
@@ -137,13 +156,10 @@ def handle_comment(request):
         return HttpResponseForbidden()
 
 
-@login_required(login_url='/or/login')
-def entry_write(request, slug):
-    return entry(request, slug, True)
-
-
 def about(request):
     """
+    An about page that also shows the latest comments / articles for the different authors
+
     3 = glit
     4 = jenseits
     5 = habitus
@@ -153,7 +169,6 @@ def about(request):
     
     """
     tpl_params = {}
-
     tpl_params['glit_entries'] = MtEntry.objects.filter(author__pk=3).filter(published=True)
     tpl_params['glit_comments'] = MtComment.objects.filter(visible=True).filter(mt_author__pk=3)[:5]
     tpl_params['jenseits_entries'] = MtEntry.objects.filter(author__pk=4).filter(published=True)
@@ -170,7 +185,22 @@ def about(request):
     return render(request, "about.html", tpl_params)
 
 
+def index_php(request):
+    """
+    Generate a simple PHP file that will redirect to the latest post.
+    Won’t work through Python, but the publish step saves this as a file, which will work on the simple PHP + statics
+    host where the final set of HTML files will be hosted
+    """
+    e = MtEntry.objects.filter(published=True).first()
+    return HttpResponse("""<?php header('Location: %s'); ?>""" % e.get_absolute_url(),
+                        content_type="text/plain; charset=utf-8")
+
+
 def feed(request):
+    """
+    An RSS feed in atom+xml format.
+    It was designed to be compatible with the Movable Type / Open Melody software that ran the blog before
+    """
     tpl_params = {}
     tpl_params['entries'] = MtEntry.objects.filter(published=True)[:15]
 
