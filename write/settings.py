@@ -83,7 +83,6 @@ SECRET_KEY = '@o_kaq$y1@&amp;kf2$z+@(fz-hto30$+#3lejj!3hxxi!+ekji&amp;*i'
 MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -157,6 +156,6 @@ LOGGING = {
 }
 
 try:
-    from local_settings import *
+    from .local_settings import *
 except ImportError:
     pass

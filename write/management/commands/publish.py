@@ -15,8 +15,8 @@ APP_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', 
 def fetch(entry):
     c = Client()
     
-    print "fetching", entry.title.encode('utf-8')
-    response = c.get(u"/is/%s" % entry.slug)
+    print("fetching", entry.title.encode('utf-8'))
+    response = c.get("/is/%s" % entry.slug)
     
     if response.status_code != 200:
         raise Exception(response.status_code)
@@ -25,7 +25,7 @@ def fetch(entry):
     with open(path, 'wb') as f:
         f.write(response.content)
     
-    print "generated", path
+    print("generated", path)
 
 
 class Command(BaseCommand):
@@ -37,15 +37,15 @@ class Command(BaseCommand):
         c = Client()
 
         if len(args) > 1:
-            print "usage: python manage.py publish               # publish all posts"
-            print "usage: python manage.py publish slug-of-post  # publish one post"
+            print("usage: python manage.py publish               # publish all posts")
+            print("usage: python manage.py publish slug-of-post  # publish one post")
         
         elif len(args) == 1:
             slug = args[0]
             try:
                 entry = MtEntry.objects.get(slug=slug)
             except MtEntry.DoesNotExist:
-                print "post %s not found" % slug
+                print("post %s not found" % slug)
                 return
             
             fetch(entry)

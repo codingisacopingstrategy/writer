@@ -26,7 +26,7 @@ def screenshot(slugs=[]):
     for i in slugs:
         posts[i] = DEV_SERVER + i
     
-    for post, url in posts.iteritems():
+    for post, url in posts.items():
         # print "taking a screenshot of post", post, url
         # append a random query string to the uri so webkit doesn’t use a cached result
         # also: add the ‘secret’ key to view unpublished articles

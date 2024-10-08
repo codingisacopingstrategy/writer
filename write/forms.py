@@ -6,8 +6,8 @@ from write.models import MtComment
 
 
 class CommentForm(ModelForm):
-    captcha_code = CharField(label=u'Anti-Spam: It’s not Strasbourg but the other city where the members of ' +
-                                   u'the Euro parliament hang out',
+    captcha_code = CharField(label='Anti-Spam: It’s not Strasbourg but the other city where the members of ' +
+                                   'the Euro parliament hang out',
                              widget=TextInput(attrs={'size': '30', 'required': 'required'}))
 
     class Meta:

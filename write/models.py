@@ -60,7 +60,7 @@ class MtEntry(models.Model):
                 'allDay': False}
         
     # http://stackoverflow.com/questions/2214852/next-previous-links-from-a-query-set-generic-views
-    def next(self):
+    def __next__(self):
         if self.id:
             next = MtEntry.objects.filter(published=True).filter(id__gt=self.id)
             if next:
@@ -81,7 +81,7 @@ class MtEntry(models.Model):
         # Props to https://github.com/mtigas/django-medusa for the excellent idea
         # of using Django’s test client for the job.
         c = Client()
-        response = c.get(u"/is/%s" % self.slug)
+        response = c.get("/is/%s" % self.slug)
         
         if response.status_code != 200:
             raise Exception(response.status_code)
@@ -92,7 +92,7 @@ class MtEntry(models.Model):
     Generate the HTML of the page and commit it to the Git repository
     """
     def commit(self, message=False, commiter_name=False, commiter_email=False):
-        filename = u"%s.html" % self.slug
+        filename = "%s.html" % self.slug
         absolute_path = os.path.join(PUBLIC_PATH, filename)
 
         with open(absolute_path, 'w') as f:
@@ -147,14 +147,14 @@ class MtComment(models.Model):
 
     def get_commenter_url(self):
         if self.mt_author:
-            return u"http://i.liketightpants.net/authors#%s" % self.author
+            return "http://i.liketightpants.net/authors#%s" % self.author
         if self.url:
             return self.url
         return ""
 
     def __unicode__(self):
         text = rex.sub(' ', striptags(self.text))
-        return u"%s: %s" % (self.author, text)
+        return "%s: %s" % (self.author, text)
 
     class Meta:
         ordering = ('-created_on',)
@@ -184,9 +184,9 @@ This is to be implemented still.
 
 @receiver(post_save, sender=MtEntry)
 def screenshot_handler_entry(sender, instance, created, raw, using, **kwargs):
-    print "Entry %s Saved!" % instance.title
+    print("Entry %s Saved!" % instance.title)
 
 
 @receiver(post_save, sender=MtComment)
 def screenshot_handler_comment(sender, instance, created, raw, using, **kwargs):
-    print "Comment on Entry %s Saved!" % instance.entry.title
+    print("Comment on Entry %s Saved!" % instance.entry.title)
