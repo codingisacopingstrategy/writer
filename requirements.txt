@@ -1,4 +1,4 @@
-Django==2.0
-dulwich==0.19.6
-django-tastypie==0.14
+Django==5.1.1
+dulwich==0.22.1
+django-tastypie==0.14.7
 fabric==1.15.0

@@ -20,6 +20,10 @@ DATABASES = {
     }
 }
 
+# Makes the primary key an integer like in older versions (instead of bigint)
+# https://stackoverflow.com/questions/67783120/warning-auto-created-primary-key-used-when-not-defining-a-primary-key-type-by
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
