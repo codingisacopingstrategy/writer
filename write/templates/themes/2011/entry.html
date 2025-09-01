@@ -1,5 +1,4 @@
-{% extends "base.html" %}
-
+{% extends "themes/2011/base.html" %}
 {% block title %}{{ e.title|lower }}{% endblock %}
 
 {% block main_style_sheet %}<link rel="stylesheet" type="text/css" href="/and/style/in/{{ e.author }}.css" />{% endblock %}
@@ -131,12 +130,12 @@
     
         <div class="comments-content">
           {% if e_comments %}
-            {% include "comment.html" %}
+            {% include "themes/2011/comment.html" %}
           {% endif %}
             <a title="Reply" href="#reply">Reply</a>
         </div>
         {% if not EDITING %}
-        {% include "comment_form.html" %}
+        {% include "themes/2011/comment_form.html" %}
         {% endif %}
     
     </div><!-- / comments -->

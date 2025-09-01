@@ -1,0 +1,38 @@
+{% extends "themes/roxanne/base.html" %}
+{% block title %}Stories by {{ a }}{% endblock %}
+
+{% block main_style_sheet %}<link rel="stylesheet" type="text/css" href="/and/the/style/in/{{ a }}.css" />{% endblock %}
+
+{% block head %}
+    <meta property="og:title dc:title" content="I like tight pants and stories by {{ a }}"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:url" content="http://i.liketightpants.net/and/stories/by/{{ a }}"/>
+
+    <meta property="og:image" content="{{ e.preview_image }}"/>
+    <meta property="og:site_name" content="I like tight pants and mathematics"/>
+    <meta property="og:description dc:description"
+          content="I like tight pants and stories by {{ a }}"/>
+    <meta name="description"
+          content="I like tight pants and stories by {{ a }}"/>
+    <meta property="fb:admins" content="1488294875"/>
+
+    <meta property="dc:modified" content="{{ latest_entry|date:"c" }}" />
+{% endblock %}
+
+{% block content %}
+    <article>
+        <ul class="entry_list">{% for e in a_entries %}
+            <li><a href="/is/{{ e.slug }}">I like tight pants and {{ e.title|lower }}</a></li>
+        {% endfor %}</ul>
+    </article>
+    <nav id="authors">
+    {% for a in main_authors_excluding_current_author %}
+      <a href="/is/stories/by/{{ a }}">
+        <img alt="{{ a }}" src="/and/assets/that/are/logotypes/of/author/{{ a }}.svg" style="width: 386px; height: 57px"/>
+      </a>
+    {% endfor %}
+    </nav>
+{% endblock %}
+
+{% block extrajs %}
+{% endblock %}

@@ -6,7 +6,7 @@ import os.path
 
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.shortcuts import redirect, render
-from django.template import Context, loader
+from django.template import loader
 from django.contrib.staticfiles.views import serve
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -41,7 +41,7 @@ def archives(request):
     tpl_params['latest_entry'] = tpl_params['entries'].filter(published=True)[0]
     tpl_params['EDITING'] = False
     tpl_params['andor'] = '/and/'
-    return render(request, "archives.html", tpl_params)
+    return render(request, "themes/2011/archives.html", tpl_params)
 
 
 @login_required(login_url='/or/login')
@@ -56,7 +56,7 @@ def wall(request):
     tpl_params['entries_json'] = json.dumps(entries_hash, indent=2, ensure_ascii=False)
     tpl_params['EDITING'] = True
     tpl_params['andor'] = '/or/'
-    return render(request, "wall.html", tpl_params)
+    return render(request, "themes/2011/wall.html", tpl_params)
 
 
 def entry(request, slug, editing=False, comment_form=None):
@@ -97,6 +97,7 @@ def entry(request, slug, editing=False, comment_form=None):
     author_ids = (3, 4, 5, 6, 7, 8)  # the i.liketightpant contributors
     authors = User.objects.all()
     main_authors = User.objects.filter(pk__in=author_ids)
+    main_authors_excluding_current_author = main_authors.exclude(pk=entry.author.pk)
 
     published_entries = MtEntry.objects.filter(published=True)
     published_entries_ids = [e.pk for e in published_entries]
@@ -115,6 +116,7 @@ def entry(request, slug, editing=False, comment_form=None):
     tpl_params['authors'] = authors
     tpl_params['author_ids'] = author_ids
     tpl_params['main_authors'] = main_authors
+    tpl_params['main_authors_excluding_current_author'] = main_authors_excluding_current_author
     tpl_params['recent_entries'] = published_entries.filter(published=True)[:10]
     tpl_params['latest_entry'] = tpl_params['recent_entries'][0]
     tpl_params['recent_comments'] = visible_comments[:10]
@@ -122,7 +124,31 @@ def entry(request, slug, editing=False, comment_form=None):
 
     tpl_params['form'] = form
 
-    return render(request, "entry.html", tpl_params)
+    return render(request, "themes/roxanne/entry.html", tpl_params)
+
+
+def entries_by_author(request, author_slug):
+    """
+    Archives by author
+    :param request: A Django HTTP Request object
+    :param author_slug: username for author
+    :return:
+    """
+    author_ids = (3, 4, 5, 6, 7, 8)  # the i.liketightpant contributors
+    main_authors = User.objects.filter(pk__in=author_ids)
+    current_author = User.objects.get(username=author_slug)
+    main_authors_excluding_current_author = main_authors.exclude(pk=current_author.pk)
+
+    published_entries = MtEntry.objects.filter(published=True)
+
+    tpl_params = {}
+    tpl_params['a'] = current_author
+    tpl_params['a_entries'] = published_entries.filter(author=current_author)
+    tpl_params['latest_entry'] = tpl_params['a_entries'][0]
+
+    tpl_params['main_authors_excluding_current_author'] = main_authors_excluding_current_author
+
+    return render(request, "themes/roxanne/entries_by_author.html", tpl_params)
 
 
 def entry_read(request, slug):
@@ -143,7 +169,7 @@ def handle_comment(request):
         form = CommentForm(post)
         form.data['ip'] = request.META['REMOTE_ADDR']
         if not form.is_valid() or not form.data['captcha_code'].strip().lower() in ['bruxelles', 'brussel', 'brussels']:
-            return render(request, "verify_comment.html", {'form': form})
+            return render(request, "themes/2011/verify_comment.html", {'form': form})
 
         comment = form.save(commit=False)
         comment.visible = True
@@ -182,7 +208,7 @@ def about(request):
     tpl_params['bnf_entries'] = MtEntry.objects.filter(author__pk=8).filter(published=True)
     tpl_params['bnf_comments'] = MtComment.objects.filter(visible=True).filter(mt_author__pk=8)[:5]
 
-    return render(request, "about.html", tpl_params)
+    return render(request, "themes/2011/about.html", tpl_params)
 
 
 def index_php(request):

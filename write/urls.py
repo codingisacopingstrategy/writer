@@ -25,8 +25,8 @@ I like tight pants
 """
 urlpatterns = [
     # /or/ -> These urls point to the editable version. You need to be logged to access those.
-    re_path(r'^or/login$',  LoginView.as_view(template_name='login.html'),  name='login'),
-    re_path(r'^or/logout$', LogoutView.as_view(template_name='logout.html'), name='logout'),
+    re_path(r'^or/login$',  LoginView.as_view(template_name='themes/2011/login.html'),  name='login'),
+    re_path(r'^or/logout$', LogoutView.as_view(template_name='themes/2011/logout.html'), name='logout'),
     
     re_path(r'^$', RedirectView.as_view(url='/or/', permanent=False)),
     re_path(r'^or/$', write.views.latest_entry_write, name='latest-entry-write'),
@@ -43,6 +43,7 @@ urlpatterns = [
     re_path(r'^is/about$', write.views.about, name='about'),
     re_path(r'^is/feed/us/recent_entries.xml$', write.views.feed, name='feed'),
     re_path(r'^is/archives$', write.views.archives, name='archives'),
+    re_path(r'^is/stories/by/(?P<author_slug>[\w-]+)$', write.views.entries_by_author, name='entries-by-author'),
 
     # handle the comments (the URL is a shout out to Movable Type / Melody — from the generated HTML you would not
     # know we moved on from this system)

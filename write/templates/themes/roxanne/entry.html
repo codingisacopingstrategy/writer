@@ -1,0 +1,59 @@
+{% extends "themes/roxanne/base.html" %}
+{% block title %}{{ e.title|lower }}{% endblock %}
+
+{% block main_style_sheet %}<link rel="stylesheet" type="text/css" href="/and/the/style/in/{{ e.author }}.css" />{% endblock %}
+
+{% block head %}
+    <meta property="og:title dc:title" content="I like tight pants and {{ e.title|lower }}"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:url" content="http://i.liketightpants.net/and/{{ e.slug }}"/>
+
+    <meta property="og:image" content="{{ e.preview_image }}"/>
+    <meta property="og:site_name" content="I like tight pants and mathematics"/>
+    <meta property="og:description dc:description"
+          content="{{ e.excerpt }}"/>
+    <meta name="description"
+          content="{{ e.excerpt }}"/>
+    <meta property="fb:admins" content="1488294875"/>
+
+    <meta property="mt:entry_basename" content="{{ e.slug }}" />
+    <meta property="dc:modified" content="{{ e.modified_on|date:"c" }}" />
+{% endblock %}
+
+{% block content %}
+    <article>
+        <h2 property="mt:entry_title">{{ e.title }}</h2>
+        {{ e.body|safe }}
+    </article>
+    <nav id="authors">
+    {% for a in main_authors_excluding_current_author %}
+      <a href="/is/stories/by/{{ a }}">
+        <img alt="{{ a }}" src="/and/assets/that/are/logotypes/of/author/{{ a }}.svg" style="width: 386px; height: 57px"/>
+      </a>
+    {% endfor %}
+    </nav>
+{% endblock %}
+
+{% block extrajs %}
+  <script>
+    const paragraphs = document.querySelectorAll("article p");
+
+    paragraphs.forEach(p => {
+      if (
+        p.childNodes.length === 1 &&
+        p.firstChild.nodeType === Node.ELEMENT_NODE &&
+        p.firstChild.tagName === "SPAN"
+      ) {
+        return;
+      }
+
+      const span = document.createElement("span");
+
+      while (p.firstChild) {
+        span.appendChild(p.firstChild);
+      }
+
+      p.appendChild(span);
+    });
+  </script>
+{% endblock %}
