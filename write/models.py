@@ -124,7 +124,7 @@ class MtEntry(models.Model):
         commit_id = commit(REPO, message=message, committer=commiter)
         return commit_id
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:
@@ -152,9 +152,9 @@ class MtComment(models.Model):
             return self.url
         return ""
 
-    def __unicode__(self):
+    def __str__(self):
         text = rex.sub(' ', striptags(self.text))
-        return "%s: %s" % (self.author, text)
+        return "%s: %s" % (self.author, text[:60])
 
     class Meta:
         ordering = ('-created_on',)
