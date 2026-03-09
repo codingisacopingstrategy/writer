@@ -1,8 +1,6 @@
 {% extends "themes/roxanne/base.html" %}
 {% block title %}{{ e.title|lower }}{% endblock %}
 
-{% block main_style_sheet %}<link rel="stylesheet" type="text/css" href="/and/the/style/in/{{ e.author }}.css" />{% endblock %}
-
 {% block head %}
     <meta property="og:title dc:title" content="I like tight pants and {{ e.title|lower }}"/>
     <meta property="og:type" content="article"/>
@@ -21,17 +19,31 @@
 {% endblock %}
 
 {% block content %}
+    <main class="{{ e.author }}">
     <article>
         <h2 property="mt:entry_title">{{ e.title }}</h2>
         {{ e.body|safe }}
+        <h3 class="comments-header">{% if e_comments %}{{ e_comments.count }} Comments{% else %}No Comments{% endif %}</h3>
+        <div id="comments" class="comments">
+            <div class="comments-content">
+              {% if e_comments %}
+                {% include "themes/roxanne/comment.html" %}
+              {% endif %}
+                <a title="Reply" href="#reply">Reply</a>
+            </div>
+        </div><!-- / comments -->
     </article>
     <nav id="authors">
-    {% for a in main_authors_excluding_current_author %}
-      <a href="/is/stories/by/{{ a }}">
-        <img alt="{{ a }}" src="/and/assets/that/are/logotypes/of/author/{{ a }}.svg" style="width: 386px; height: 57px"/>
+    {% for a in main_authors %}
+      <a href="/is/stories/by/{{ a }}" {% if a.pk == e.author.pk %} class="selected-author"{% endif %}>
+        <img alt="{{ a }}" src="/and/assets/that/are/logotypes/of/author/{{ a }}.svg"{% if a.pk != e.author.pk %} style="width: 386px; height: 57px"{% endif %}/>
       </a>
     {% endfor %}
+    {% if not not EDITING %}
+        {% include "themes/2011/comment_form.html" %}
+    {% endif %}
     </nav>
+    </main>
 {% endblock %}
 
 {% block extrajs %}
