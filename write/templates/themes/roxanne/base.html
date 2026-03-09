@@ -30,7 +30,23 @@
             {% block content %}
             <main></main>
             {% endblock %}
-        <footer>{{ e.title | lower }}</footer>
+        <footer>
+            <ul>
+                <li>and {{ e.title | lower }}</li>
+                <li {% if e and e.pk == latest_entry.pk %}class="current">latest{% else %}><a href="{{ andor }}{{ latest_entry.slug }}">latest</a>{% endif %}</li>
+                {% if e.previous %}<li><a href="{{ andor }}{{ e.previous.slug }}">previous</a></li>{% endif %}
+                {% if e.next %}<li><a href="{{ andor }}{{ e.next.slug }}">next</a></li>{% endif %}
+                <li><a href="/and/about">about</a></li>
+                <li {% if request.path == "/is/archives" %}class="current">index{% else %}>
+                        <a href="{{ andor }}archives">index</a>{% endif %}</li>{% if EDITING %}
+                <li>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button id="logout" type="submit">logout</button>
+                    </form>
+                </li>{% endif %}
+            </ul>
+        </footer>
         {% block extrajs %}
         {% endblock %}
         {% include "_analytics_.html" %}

@@ -60,7 +60,7 @@ class MtEntry(models.Model):
                 'allDay': False}
         
     # http://stackoverflow.com/questions/2214852/next-previous-links-from-a-query-set-generic-views
-    def __next__(self):
+    def next(self):
         if self.id:
             next = MtEntry.objects.filter(published=True).filter(id__gt=self.id)
             if next:
