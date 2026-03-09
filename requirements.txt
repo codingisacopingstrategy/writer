@@ -2,3 +2,4 @@ Django==5.1.1
 dulwich==0.22.1
 django-tastypie==0.14.7
 fabric==1.15.0
+playwright==1.58.0

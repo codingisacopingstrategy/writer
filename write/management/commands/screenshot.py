@@ -8,7 +8,7 @@ from write.screenshots import screenshot
 
 
 class Command(BaseCommand):
-    help = 'Takes screenshots of unpublished entries'
+    help = 'Takes screenshots of entries'
 
     def handle(self, *args, **options):
         """
@@ -16,12 +16,11 @@ class Command(BaseCommand):
         
             python manage.py screenshot
         
-        By default it will shoot all unpublished entries.
+        By default it will shoot all published entries.
         If you want to specify an entry, specify it’s slug (multiple entries allowed)
         
             python manage.py screenshot "i-guess-this-is-a-unix-sin" "robin-gareus"
         """
         if len(args) == 0:
-            args = [i.entry_slug() for i in MtEntry.objects.filter(entry_status=1)]
+            args = [i.slug for i in MtEntry.objects.filter(published=True)]
         screenshot(args)
-        # self.stdout.write('Created screenshots of unpublished entries')

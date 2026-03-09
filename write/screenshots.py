@@ -6,39 +6,41 @@ Create screenshots for the archive page
 """
 
 from random import randint
-from sys import exit
 import os
-import subprocess
+from playwright.sync_api import sync_playwright
 
 from write.settings import PUBLIC_PATH
 try:
     from write.settings import DEV_SERVER
 except ImportError:
-    DEV_SERVER = 'http://127.0.0.18000/'
-
-APP_PATH = os.path.abspath(os.path.dirname(__file__))
-# PHANTOM_PATH = subprocess.Popen(['which','phantomjs'], stdout=subprocess.PIPE).communicate()[0].strip() 
-PHANTOM_PATH = '/home/s/bin/phantomjs'
+    DEV_SERVER = 'http://127.0.0.1:8000/'
 
 
 def screenshot(slugs=[]):
     posts = {}
     for i in slugs:
-        posts[i] = DEV_SERVER + i
-    
-    for post, url in posts.items():
-        # print "taking a screenshot of post", post, url
-        # append a random query string to the uri so webkit doesn’t use a cached result
-        # also: add the ‘secret’ key to view unpublished articles
-        url = "%s?id=%s&the_secret_question=the_secret_answer" % (url, randint(222222, 777777))
-        fullfile = os.path.join(PUBLIC_PATH, "assets", "as", "screenshots", "of", "%s-full.png" % post)
-        finalfile = fullfile.replace('-full', '')
-        pipe = subprocess.Popen([PHANTOM_PATH, os.path.join(APP_PATH, 'rasterise.js'), url, fullfile])
-        if pipe.wait() != 0:
-            exit("Aborting")
-        # convert post-full.png to 150 by 110 assets/as/screenshots/of/post.png
-        pipe = subprocess.Popen("convert %s -resize 210x154^ -gravity North -extent 150x110 %s" % (fullfile, finalfile),
-                                shell=True)
-        pipe.wait()
-        # remove post-full.png
-        os.remove(fullfile)
+        posts[i] = DEV_SERVER + '/is/' + i
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        context = browser.new_context(viewport={"width": 1190, "height": 600},
+                                      device_scale_factor=1)
+
+        for post, url in posts.items():
+            # print "taking a screenshot of post", post, url
+            # append a random query string to the uri so webkit doesn’t use a cached result
+            # also: add the ‘secret’ key to view unpublished articles
+            url = "%s?id=%s&the_secret_question=the_secret_answer" % (url, randint(222222, 777777))
+            filename = os.path.join(PUBLIC_PATH, "assets", "as", "screenshots", "of", "%s.png" % post)
+            page = context.new_page()
+            try:
+                page.goto(url, wait_until="networkidle", timeout=15000)
+            except Exception as e:
+                pass
+            # remove open comment form for screenshot
+            page.evaluate("""
+                const el = document.getElementById("comments-open");
+                if (el) el.remove();
+            """)
+            page.locator(".article").screenshot(path=filename)
+            page.close()

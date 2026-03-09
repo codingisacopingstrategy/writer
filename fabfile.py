@@ -8,7 +8,7 @@ the movable type software is installed that takes care of publishing
 static html files, handling public comments and trackbacks.
 """
 
-from pipes import quote
+from shlex import quote
 from fabric.api import run, cd, sudo, env, settings
 
 from write.local_settings import FABRIC_HOSTS, FABRIC_PATH, FABRIC_DJANGO_PATH
