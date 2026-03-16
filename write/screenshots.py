@@ -42,5 +42,6 @@ def screenshot(slugs=[]):
                 const el = document.getElementById("comments-open");
                 if (el) el.remove();
             """)
+            page.add_style_tag(content="header#site { display: none; } footer { position: static !important; }")
             page.locator(".article").screenshot(path=filename)
             page.close()

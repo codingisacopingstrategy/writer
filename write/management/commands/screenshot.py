@@ -10,6 +10,14 @@ from write.screenshots import screenshot
 class Command(BaseCommand):
     help = 'Takes screenshots of entries'
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "slugs",
+            nargs="*",
+            type=str,
+            help="Optional list of entry slugs to screenshot"
+        )
+
     def handle(self, *args, **options):
         """
         Take screenshots of pages as shown on the development server.
@@ -21,6 +29,9 @@ class Command(BaseCommand):
         
             python manage.py screenshot "i-guess-this-is-a-unix-sin" "robin-gareus"
         """
-        if len(args) == 0:
-            args = [i.slug for i in MtEntry.objects.filter(published=True)]
-        screenshot(args)
+        slugs = options["slugs"]
+
+        if len(slugs) == 0:
+            slugs = [i.slug for i in MtEntry.objects.filter(published=True)]
+
+        screenshot(slugs)
