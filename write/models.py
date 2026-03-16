@@ -3,6 +3,7 @@
 
 import os
 import re
+from datetime import datetime
 
 from dulwich.repo import Repo
 from dulwich.porcelain import get_tree_changes, add, commit
@@ -14,6 +15,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.defaultfilters import striptags
 from django.test.client import Client
+from django.utils import timezone
 
 from write.settings import PUBLIC_PATH
 
@@ -49,7 +51,14 @@ class MtEntry(models.Model):
     
     def get_absolute_url(self):
         return '/and/' + self.slug
-    
+
+    def uses_old_style_templates(self):
+        """
+        The 9th of March 2026 we launched the new website
+        """
+        cutoff = timezone.make_aware(datetime(2026, 3, 9))
+        return self.created_on < cutoff
+
     def event(self):
         return {'title': self.title,
                 'start': self.created_on.isoformat(),
@@ -86,7 +95,7 @@ class MtEntry(models.Model):
         if response.status_code != 200:
             raise Exception(response.status_code)
         
-        return response.content
+        return response.content.encode('utf-8')
     
     """
     Generate the HTML of the page and commit it to the Git repository
@@ -95,14 +104,11 @@ class MtEntry(models.Model):
         filename = "%s.html" % self.slug
         absolute_path = os.path.join(PUBLIC_PATH, filename)
 
-        with open(absolute_path, 'w') as f:
+        with open(absolute_path, 'w', encoding="utf-8") as f:
             f.write(self.generate())
 
         # In Git (through Dulwich) we work with relative paths
-        # All lower-level functions in Dulwich take byte strings
-        # rather than unicode strings
-        # REPO.stage([filename.encode('utf-8')])
-        add(REPO, filename.encode('utf-8'))
+        add(REPO, filename)
 
         # If generating the HTML and adding it to the index changes
         # nothing we should not commit.

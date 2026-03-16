@@ -1,0 +1,59 @@
+{% extends "themes/roxanne/base.html" %}
+
+{% block mainclasses %}baseline{% endblock %}
+{% block bodyclasses %}baseline{% endblock %}
+
+{% block header %}<header id="author" class="selected-author">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+    <g id="text-scale">
+      <text id="title" x="0" y="80" font-size="100">
+        ARCHIVES
+      </text>
+    </g>
+  </svg>
+</header>{% endblock %}
+
+{% block content %}
+    <h2>2026–now</h2>
+    <div class="grid" id="grid-after" data-masonry='{ "itemSelector": "#grid-after .grid-item", "columnWidth": 200 }'>
+    {% for e in entries_after %}
+        <div class="grid-item" style="width: 200px;">
+            <p class="byline"><a href="/and/{{ e.slug }}">I like tight pants and {{ e.title | lower }}</a> {{ e.created_on | date:"Y-m-d" }}</p>
+            <a href="/and/{{ e.slug }}">
+            <img src="/and/assets/as/screenshots/of/{{ e.slug }}.png" style="width:200px;" alt="I like tight pants and {{ e.title|lower }}">
+            </a>
+        </div>
+    {% endfor %}
+    </div>
+
+    <h2>2010–2019</h2>
+    <div class="grid" id="grid-before" data-masonry='{ "itemSelector": "#grid-before .grid-item", "columnWidth": 200 }'>
+    {% for e in entries_before %}
+        <div class="grid-item" style="width: 200px;">
+            <p class="byline"><a href="/and/{{ e.slug }}">I like tight pants and {{ e.title | lower }}</a> {{ e.created_on | date:"Y-m-d" }}</p>
+            <a href="/and/{{ e.slug }}">
+            <img src="/and/assets/as/screenshots/of/{{ e.slug }}.png" style="width:200px;" alt="I like tight pants and {{ e.title|lower }}">
+            </a>
+        </div>
+    {% endfor %}
+{% endblock %}
+
+{% block extrajs %}
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.js"></script>
+    <script>
+    document.fonts.ready.then(() => {
+        const text = document.querySelector("#title");
+        const group = document.querySelector("#text-scale");
+
+        const box = text.getBBox();
+
+        const scaleX = 100 / box.width;
+        const scaleY = 100 / box.height;
+
+        group.setAttribute(
+            "transform",
+            `scale(${scaleX}, ${scaleY})`
+        );
+    });
+    </script>
+{% endblock %}

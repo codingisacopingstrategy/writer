@@ -37,13 +37,13 @@ urlpatterns = [
     # /is/ -> These files are the live views from which Django will generate the static files
     #          Some of these (i.e. the post views) have a corresponding edit page,
     #          but others, like the RSS feed, are read only
-    re_path(r'^is/(?P<slug>[\w-]+)$', write.views.entry_read, name='entry-read'),
     re_path(r'^is/index.php$', write.views.index_php, name='index-php'),
     re_path(r'^is/$', write.views.latest_entry_read, name='latest-entry-read'),
     re_path(r'^is/about$', write.views.about, name='about'),
     re_path(r'^is/feed/us/recent_entries.xml$', write.views.feed, name='feed'),
     re_path(r'^is/archives$', write.views.archives, name='archives'),
     re_path(r'^is/stories/by/(?P<author_slug>[\w-]+)$', write.views.entries_by_author, name='entries-by-author'),
+    re_path(r'^is/(?P<slug>[\w-]+)$', write.views.entry_read, name='entry-read'),
 
     # handle the comments (the URL is a shout out to Movable Type / Melody — from the generated HTML you would not
     # know we moved on from this system)

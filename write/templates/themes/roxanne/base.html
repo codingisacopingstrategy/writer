@@ -3,16 +3,13 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=510">
-        {% block main_style_sheet %}
-            <link rel="stylesheet" type="text/css" href="/and/the/style/in/style.css"/>{% endblock %}
+        {% block main_style_sheet %}<link rel="stylesheet" type="text/css" href="/and/the/style/in/style.css"/>{% endblock %}
 
         <link rel="start" href="/and/" title="Home"/>
         <link rel="alternate" type="application/atom+xml" title="Recent Entries" href="/and/feed/us/recent_entries.xml"/>
 
-
         <!-- <script type="text/javascript" src="/and/scripts/being/scripts.js"></script> -->
         <title>I like tight pants and {% block title %}mathematics{% endblock %}</title>
-        <script type="text/javascript" src="/and/scripts/being/jquery-3.7.1.js"></script>
         {% block head %}
         {% endblock %}
     </head>
@@ -26,13 +23,24 @@
             <img class="fourth-tightpants" src="/and/the/style/in/etoile.svg"/>
             <div class="fourth-tightpants">i . like tight pants . net</div>
         </header>
-        <header id="author"><img alt="{{ a }}" src="/and/assets/that/are/logotypes/of/author/{{ a }}.svg"/></header>
-            {% block content %}
-            <main></main>
-            {% endblock %}
+        <main class="{% block mainclasses %}glit{% endblock %} article">
+            {% block header %}{% endblock %}
+            <article {% if e and e.pk %} property="mt:entry_id" content="{{ e.pk }}"{% endif %}>
+                {% block content  %}{% endblock %}
+            </article>
+            <nav id="authors">
+            {% for a in main_authors_excluding_current_author %}
+              <a href="/is/stories/by/{{ a }}" {% if a.pk == e.author.pk %} class="selected-author"{% endif %}>
+                <img alt="{{ a }}" src="/and/assets/that/are/logotypes/of/author/{{ a }}{% if a.pk == e.author.pk %}-cropped{% endif %}.svg"{% if a.pk != e.author.pk %} style="width: 100%"{% endif %}/>
+              </a>
+            {% endfor %}
+            {% block postnav %}{% endblock %}
+            </nav>
+        </main>
+        <div class="bottom-gap" style="height: 22px;"></div>
         <footer>
             <ul>
-                <li>and {{ e.title | lower }}</li>
+                <li>and {{ title | lower }}</li>
                 <li {% if e and e.pk == latest_entry.pk %}class="current">latest{% else %}><a href="{{ andor }}{{ latest_entry.slug }}">latest</a>{% endif %}</li>
                 {% if e.previous %}<li><a href="{{ andor }}{{ e.previous.slug }}">previous</a></li>{% endif %}
                 {% if e.next %}<li><a href="{{ andor }}{{ e.next.slug }}">next</a></li>{% endif %}
@@ -47,6 +55,7 @@
                 </li>{% endif %}
             </ul>
         </footer>
+        <div class="background-canvas {% block bodyclasses %}glit{% endblock %}"></div>
         {% block extrajs %}
         {% endblock %}
         {% include "_analytics_.html" %}

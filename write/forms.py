@@ -8,15 +8,15 @@ from write.models import MtComment
 class CommentForm(ModelForm):
     captcha_code = CharField(label='Anti-Spam: It’s not Strasbourg but the other city where the members of ' +
                                    'the Euro parliament hang out',
-                             widget=TextInput(attrs={'size': '30', 'required': 'required'}))
+                             widget=TextInput(attrs={'size': '30', 'required': 'required', 'placeholder': 'Solution…'}))
 
     class Meta:
         model = MtComment
         widgets = {
-            'author': TextInput(attrs={'size': '30', 'required': 'required'}),
-            'email': EmailInput(attrs={'size': '30', 'required': 'required'}),
-            'url': URLInput(attrs={'size': '30'}),
-            'text': Textarea(attrs={'rows': '15', 'style': 'width:100%', 'required': 'required'}),
+            'author': TextInput(attrs={'size': '30', 'required': 'required', 'placeholder': 'Name (required)'}),
+            'email': EmailInput(attrs={'size': '30', 'required': 'required', 'placeholder': 'Email (required)'}),
+            'url': URLInput(attrs={'size': '30', 'placeholder': 'URL'}),
+            'text': Textarea(attrs={'rows': '15', 'style': 'width:100%', 'required': 'required', 'placeholder': 'Leave a comment'}),
             'parent': HiddenInput(),
             'entry': HiddenInput()
         }
@@ -49,7 +49,7 @@ class CommentForm(ModelForm):
         This is our super basic captcha
         """
         captcha_passed = self.cleaned_data.get("captcha_code")
-        if not captcha_passed.strip().lower() in ['bowie', 'jones', 'duke']:
+        if not captcha_passed.strip().lower() in ['bruxelles', 'brussel', 'brussels']:
             raise ValidationError(
                 "Incorrect response to tight pants captcha riddle.")
         return captcha_passed

@@ -4,6 +4,8 @@
 import json
 import os.path
 
+from datetime import datetime
+
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django.template import loader
@@ -11,6 +13,7 @@ from django.contrib.staticfiles.views import serve
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 
 from write.models import MtEntry, MtComment
 from write.forms import CommentForm
@@ -36,12 +39,16 @@ def archives(request):
     """
     A page that shows all the posts
     """
+    cutoff = timezone.make_aware(datetime(2026, 3, 11))
+
     tpl_params = {}
-    tpl_params['entries'] = MtEntry.objects.filter(published=True)
-    tpl_params['latest_entry'] = tpl_params['entries'].filter(published=True)[0]
+    tpl_params['entries_before'] = MtEntry.objects.filter(published=True, created_on__lt=cutoff)
+    tpl_params['entries_after'] = MtEntry.objects.filter(published=True, created_on__gte=cutoff)
+    tpl_params['latest_entry'] = tpl_params['entries_after'].filter(published=True)[0]
     tpl_params['EDITING'] = False
     tpl_params['andor'] = '/and/'
-    return render(request, "themes/2011/archives.html", tpl_params)
+    tpl_params['title'] = 'Archives'
+    return render(request, "themes/roxanne/archives.html", tpl_params)
 
 
 @login_required(login_url='/or/login')
@@ -75,6 +82,7 @@ def entry(request, slug, editing=False, comment_form=None):
             raise Http404
         entry = MtEntry(slug=slug)
         entry.author = User.objects.get(pk=3)  # glit by default
+        entry.created_on = timezone.make_aware(datetime.now())
         entry.body = """
         <p>Hello dear start the editing process.</p>
         """
@@ -82,12 +90,14 @@ def entry(request, slug, editing=False, comment_form=None):
         entry.entry_title = slug.replace('-', ' ').title()
         entry.published = False  # draft by default
 
+    """
     # We can not read unpublished entries, except when providing a ‘secret token’
     # This is not supposed to be a secure: it is more of a low garden fence
     # than it is a lock
-    if not editing and not entry.published and not request.user.is_authenticated():
+    if not editing and not entry.published and not request.user.is_authenticated:
         if request.GET.get('the_secret_question', '') != 'the_secret_answer':
             return HttpResponseForbidden()
+    """
 
     if comment_form:
         form = comment_form
@@ -109,6 +119,7 @@ def entry(request, slug, editing=False, comment_form=None):
 
     tpl_params['e'] = entry
     tpl_params['e_comments'] = entry.mtcomment_set.filter(visible=True).order_by('created_on')
+    tpl_params['title'] = entry.title
     tpl_params['a'] = entry.author
     tpl_params['a_entries'] = published_entries.filter(author=entry.author).exclude(pk=entry.pk)
     tpl_params['a_comments'] = visible_comments.filter(mt_author=entry.author)[:10]
@@ -124,7 +135,10 @@ def entry(request, slug, editing=False, comment_form=None):
 
     tpl_params['form'] = form
 
-    return render(request, "themes/roxanne/entry.html", tpl_params)
+    template = "themes/roxanne/entry.html"
+    if entry.uses_old_style_templates():
+        template = "themes/2011/entry.html"
+    return render(request, template, tpl_params)
 
 
 def entries_by_author(request, author_slug):
@@ -142,9 +156,11 @@ def entries_by_author(request, author_slug):
     published_entries = MtEntry.objects.filter(published=True)
 
     tpl_params = {}
+    tpl_params['andor'] = '/and/'
     tpl_params['a'] = current_author
     tpl_params['a_entries'] = published_entries.filter(author=current_author)
     tpl_params['latest_entry'] = tpl_params['a_entries'][0]
+    tpl_params['title'] = "Stories by " + str(current_author)
 
     tpl_params['main_authors_excluding_current_author'] = main_authors_excluding_current_author
 
@@ -168,13 +184,14 @@ def handle_comment(request):
         # create a form instance and populate it with data from the request:
         form = CommentForm(post)
         form.data['ip'] = request.META['REMOTE_ADDR']
-        if not form.is_valid() or not form.data['captcha_code'].strip().lower() in ['bruxelles', 'brussel', 'brussels']:
-            return render(request, "themes/2011/verify_comment.html", {'form': form})
+        print(form.data['captcha_code'].strip().lower())
+        if not form.is_valid():
+            return render(request, "themes/roxanne/verify_comment.html", {'form': form})
 
         comment = form.save(commit=False)
         comment.visible = True
         comment.save()
-        comment.entry.commit()
+        #comment.entry.commit()
         return redirect('entry-read', slug=comment.entry.slug)
 
     # if a GET (or any other method):
@@ -184,31 +201,9 @@ def handle_comment(request):
 
 def about(request):
     """
-    An about page that also shows the latest comments / articles for the different authors
-
-    3 = glit
-    4 = jenseits
-    5 = habitus
-    6 = tellyou
-    7 = baseline
-    8 = bnf
-    
+    An about page
     """
-    tpl_params = {}
-    tpl_params['glit_entries'] = MtEntry.objects.filter(author__pk=3).filter(published=True)
-    tpl_params['glit_comments'] = MtComment.objects.filter(visible=True).filter(mt_author__pk=3)[:5]
-    tpl_params['jenseits_entries'] = MtEntry.objects.filter(author__pk=4).filter(published=True)
-    tpl_params['jenseits_comments'] = MtComment.objects.filter(visible=True).filter(mt_author__pk=4)[:5]
-    tpl_params['habitus_entries'] = MtEntry.objects.filter(author__pk=5).filter(published=True)
-    tpl_params['habitus_comments'] = MtComment.objects.filter(visible=True).filter(mt_author__pk=5)[:5]
-    tpl_params['tellyou_entries'] = MtEntry.objects.filter(author__pk=6).filter(published=True)
-    tpl_params['tellyou_comments'] = MtComment.objects.filter(visible=True).filter(mt_author__pk=6)[:5]
-    tpl_params['baseline_entries'] = MtEntry.objects.filter(author__pk=7).filter(published=True)
-    tpl_params['baseline_comments'] = MtComment.objects.filter(visible=True).filter(mt_author__pk=7)[:5]
-    tpl_params['bnf_entries'] = MtEntry.objects.filter(author__pk=8).filter(published=True)
-    tpl_params['bnf_comments'] = MtComment.objects.filter(visible=True).filter(mt_author__pk=8)[:5]
-
-    return render(request, "themes/2011/about.html", tpl_params)
+    return render(request, "themes/roxanne/about.html", {})
 
 
 def index_php(request):

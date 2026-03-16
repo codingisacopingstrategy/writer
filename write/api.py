@@ -14,6 +14,7 @@ class MtAuthorResource(ModelResource):
         queryset = User.objects.all()
         authorization = Authorization()
         resource_name = 'author'
+        always_return_data = True
 
 
 class MtEntryResource(ModelResource):
@@ -23,6 +24,7 @@ class MtEntryResource(ModelResource):
         queryset = MtEntry.objects.all()
         authorization = Authorization()
         resource_name = 'entry'
+        always_return_data = True
 
     def dehydrate(self, bundle):
         """
@@ -55,6 +57,7 @@ class MtCommentResource(ModelResource):
         queryset = MtComment.objects.all()
         authorization = Authorization()
         resource_name = 'comment'
+        always_return_data = True
 
     def dehydrate(self, bundle):
         bundle.data['entry'] = bundle.obj.entry.pk

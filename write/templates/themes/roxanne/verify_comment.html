@@ -1,0 +1,21 @@
+{% extends "themes/roxanne/base.html" %}
+{% block title %}reading ‘about’ pages{% endblock %}
+
+{% block heading %}About{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+{% block postnav %}
+    {% include "themes/roxanne/comment_form.html" %}
+    {% if EDITING %}<select property="mt:entry_author_id">
+    {% for author in authors %}
+    <option value="{{ author.pk }}"{% if author.pk == e.author.pk %} selected="true"{% endif %}>{{ author }}</option>
+    {% endfor %}</select>
+    <h4 class="author">published: <input property="mt:entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.published %}checked="yes"{% endif%}/></h4>
+    <h4>Excerpt</h4>
+    <p><a href="#" id="set-excerpt">Set excerpt</a></p>
+    <h4>Thumbnail uri</h4>
+    <p><a href="#" id="set-thumbnail-uri">Set thumbnail uri</a></p>
+    {% endif %}
+{% endblock %}
