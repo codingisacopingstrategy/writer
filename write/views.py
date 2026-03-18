@@ -203,8 +203,8 @@ def handle_comment(request):
         comment.visible = True
         comment.ip = get_client_ip(request)
         comment.save()
-        #comment.entry.commit()
-        return redirect('entry-read', slug=comment.entry.slug)
+        comment.entry.commit()
+        return redirect("/and/%s" % comment.entry.slug)
 
     # if a GET (or any other method):
     else:

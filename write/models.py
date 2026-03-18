@@ -95,7 +95,7 @@ class MtEntry(models.Model):
         if response.status_code != 200:
             raise Exception(response.status_code)
         
-        return response.content.encode('utf-8')
+        return response.content
     
     """
     Generate the HTML of the page and commit it to the Git repository
@@ -104,18 +104,18 @@ class MtEntry(models.Model):
         filename = "%s.html" % self.slug
         absolute_path = os.path.join(PUBLIC_PATH, filename)
 
-        with open(absolute_path, 'w', encoding="utf-8") as f:
+        with open(absolute_path, 'wb') as f:
             f.write(self.generate())
 
         # In Git (through Dulwich) we work with relative paths
-        add(REPO, filename)
+        add(REPO, absolute_path)
 
         # If generating the HTML and adding it to the index changes
         # nothing we should not commit.
         # We expect `get_tree_changes` to return something like:
         # {'add': [], 'modify': ['the-underwater-screen-or-lessons-from-wordperfect.html'], 'delete': []}
         changes = get_tree_changes(REPO)
-        if filename not in changes['modify']:
+        if filename.encode('utf-8') not in changes['modify']:
             return
 
         if not message:
