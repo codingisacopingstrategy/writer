@@ -20,7 +20,7 @@ class CommentForm(ModelForm):
             'parent': HiddenInput(),
             'entry': HiddenInput()
         }
-        fields = ['author', 'email', 'ip', 'text', 'url', 'parent', 'captcha_code', 'entry']
+        fields = ['author', 'email', 'text', 'url', 'parent', 'captcha_code', 'entry']
 
     def clean_author(self):
         """

@@ -19,6 +19,18 @@ from write.models import MtEntry, MtComment
 from write.forms import CommentForm
 
 
+def get_client_ip(request):
+    """
+    We’re behind a proxy but if our nginx is configured correctly we
+    should be able to get the request ip in 'HTTP_X_FORWARDED_FOR'
+    Otherwise fall back to REMOTE_ADDRESS which should be 127.0.0.1
+    """
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        return x_forwarded_for.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR')
+
+
 def latest_entry_read(request):
     """
     /and/ redirects to /and/the-latest-article
@@ -189,6 +201,7 @@ def handle_comment(request):
 
         comment = form.save(commit=False)
         comment.visible = True
+        comment.ip = get_client_ip(request)
         comment.save()
         #comment.entry.commit()
         return redirect('entry-read', slug=comment.entry.slug)
