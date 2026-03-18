@@ -1,12 +1,18 @@
         <div class="comments-open" id="comments-open">
             <div class="comments-open-content">
                 <div id="comment-greeting"></div>
+                <pre style="display:none;">
+                    {{ form.errors.as_json }}
+                </pre>
                 <form method="post" action="{%  url 'comments' %}">
                   {% csrf_token %}
 
                     {{ form.non_field_errors }}
-                    {{ form.parent }}
-                    {{ form.entry }}
+
+                    <div style="display: none;"><!-- hidden fields normally not visual to user -->
+                        {{ form.parent.errors }}{{ form.parent }}
+                        {{ form.entry.errors }}{{ form.entry }}
+                    </div>
                         <div id="comments-open-text">
                             {{ form.text.errors }}{{ form.text }}
                             <p class="byline">You can use html tags to format your post: &lt;a&gt;, &lt;em&gt;, &lt;strong&gt;, &lt;b&gt;, &lt;i&gt;, &lt;br&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;ol&gt;, &lt;li&gt;, &lt;blockquote&gt;</p>
@@ -34,7 +40,6 @@
                         <p class="byline" id="comments-open-license">By submitting your comment, you agree to license it under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution Share-Alike license</a>, the same license used for the text of the blog.</p>
                             <input type="submit" accesskey="s" name="post" id="comment-submit" value="Submit" />
                         </div>
-                    </form>
                 </form>
             </div>
         </div>
