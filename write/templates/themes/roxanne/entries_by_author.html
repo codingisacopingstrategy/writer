@@ -1,5 +1,5 @@
 {% extends "themes/roxanne/base.html" %}
-{% block title %}{{ title }}{% endblock %}
+{% block title %}{{ title | lower }}{% endblock %}
 
 {% block head %}
     <meta property="og:title dc:title" content="I like tight pants and stories by {{ a }}"/>
@@ -24,7 +24,7 @@
 
 {% block content %}
     <ul class="entry_list">{% for e in a_entries %}
-        <li><a href="/is/{{ e.slug }}">I like tight pants and {{ e.title|lower }}</a></li>
+        <li><a href="/and/{{ e.slug }}">I like tight pants and {{ e.title|lower }}</a></li>
     {% endfor %}</ul>
 {% endblock %}
 

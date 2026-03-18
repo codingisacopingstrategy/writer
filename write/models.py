@@ -71,7 +71,7 @@ class MtEntry(models.Model):
     # http://stackoverflow.com/questions/2214852/next-previous-links-from-a-query-set-generic-views
     def next(self):
         if self.id:
-            next = MtEntry.objects.filter(published=True).filter(id__gt=self.id)
+            next = MtEntry.objects.filter(published=True).filter(id__gt=self.id).order_by('created_on')
             if next:
                 return next[0]
         return False

@@ -30,7 +30,7 @@
             </article>
             <nav id="authors">
             {% for a in main_authors_excluding_current_author %}
-              <a href="/is/stories/by/{{ a }}" {% if a.pk == e.author.pk %} class="selected-author"{% endif %}>
+              <a href="/and/stories/by/{{ a }}" {% if a.pk == e.author.pk %} class="selected-author"{% endif %}>
                 <img alt="{{ a }}" src="/and/assets/that/are/logotypes/of/author/{{ a }}{% if a.pk == e.author.pk %}-cropped{% endif %}.svg"{% if a.pk != e.author.pk %} style="width: 100%"{% endif %}/>
               </a>
             {% endfor %}

@@ -71,3 +71,14 @@ class Command(BaseCommand):
             xml_path = os.path.join(path, 'recent_entries.xml')
             with open(xml_path, 'wb') as f:
                 f.write(response.content)
+
+            path = os.path.join(PUBLISH_DIR, 'stories', 'by')
+            if not os.path.exists(path):
+                os.makedirs(path)
+            for author in ['glit', 'bnf', 'tellyou', 'jenseits', 'baseline', 'habitus']:
+                response = c.get('/is/stories/by/' + author)
+                path = os.path.join(PUBLISH_DIR, 'stories', 'by', author + '.html')
+                with open(path, 'wb') as f:
+                    f.write(response.content)
+
+

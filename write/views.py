@@ -159,7 +159,7 @@ def entries_by_author(request, author_slug):
     tpl_params['andor'] = '/and/'
     tpl_params['a'] = current_author
     tpl_params['a_entries'] = published_entries.filter(author=current_author)
-    tpl_params['latest_entry'] = tpl_params['a_entries'][0]
+    tpl_params['latest_entry'] = published_entries[0]
     tpl_params['title'] = "Stories by " + str(current_author)
 
     tpl_params['main_authors_excluding_current_author'] = main_authors_excluding_current_author
@@ -184,7 +184,6 @@ def handle_comment(request):
         # create a form instance and populate it with data from the request:
         form = CommentForm(post)
         form.data['ip'] = request.META['REMOTE_ADDR']
-        print(form.data['captcha_code'].strip().lower())
         if not form.is_valid():
             return render(request, "themes/roxanne/verify_comment.html", {'form': form})
 
