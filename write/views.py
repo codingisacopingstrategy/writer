@@ -130,7 +130,9 @@ def entry(request, slug, editing=False, comment_form=None):
     tpl_params['andor'] = '/or/' if editing else '/and/'
 
     tpl_params['e'] = entry
-    tpl_params['e_comments'] = entry.mtcomment_set.filter(visible=True).order_by('created_on')
+    tpl_params['e_comments'] = []
+    if entry.pk:
+        tpl_params['e_comments'] = entry.mtcomment_set.filter(visible=True).order_by('created_on')
     tpl_params['title'] = entry.title
     tpl_params['a'] = entry.author
     tpl_params['a_entries'] = published_entries.filter(author=entry.author).exclude(pk=entry.pk)
