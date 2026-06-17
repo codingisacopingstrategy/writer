@@ -1,12 +1,13 @@
 #!/usr/bin/env
 # -*- coding: utf-8 -*-
 
-from django.urls import include, re_path
+from django.urls import include, re_path, path
 from django.views.generic import RedirectView
 from django.contrib import admin
 
 from django.contrib.auth.views import LoginView, LogoutView
 
+from imagescaler import scale_image
 from write.api import MtEntryResource, MtCommentResource
 import write.views
 
@@ -24,6 +25,8 @@ I like tight pants
           but others, like the RSS feed  
 """
 urlpatterns = [
+    path('and/assets/scaled/to/<int:size>/<path:path>', scale_image),
+
     # /or/ -> These urls point to the editable version. You need to be logged to access those.
     re_path(r'^or/login$',  LoginView.as_view(template_name='themes/2011/login.html'),  name='login'),
     re_path(r'^or/logout$', LogoutView.as_view(template_name='themes/2011/logout.html'), name='logout'),
