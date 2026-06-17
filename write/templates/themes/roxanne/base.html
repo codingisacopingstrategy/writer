@@ -29,11 +29,11 @@
                 {% block content  %}{% endblock %}
             </article>
             <nav id="authors">
+                <ul class="colourful-authors">
             {% for a in main_authors_excluding_current_author %}
-              <a href="/and/stories/by/{{ a }}" {% if a.pk == e.author.pk %} class="selected-author"{% endif %}>
-                <img alt="{{ a }}" src="/and/assets/that/are/logotypes/of/author/{{ a }}{% if a.pk == e.author.pk %}-cropped{% endif %}.svg"{% if a.pk != e.author.pk %} style="width: 100%"{% endif %}/>
-              </a>
+                <li class="{{ a }}"><a href="">{%  if a.username == 'bnf' %}bnf<span>bnf</span>{% elif a.username == 'glit' %}glit<span>glit</span>{% elif a.username == 'tellyou' %}tell  you{% else %}{{ a }}{% endif %}</a></li>
             {% endfor %}
+                </ul>
             {% block postnav %}{% endblock %}
             </nav>
         </main>
