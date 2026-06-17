@@ -99,7 +99,7 @@ def entry(request, slug, editing=False, comment_form=None):
         <p>Hello dear start the editing process.</p>
         """
 
-        entry.entry_title = slug.replace('-', ' ').title()
+        entry.title = slug.replace('-', ' ').title()
         entry.published = False  # draft by default
 
     """
