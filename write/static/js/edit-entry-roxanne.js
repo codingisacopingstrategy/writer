@@ -22,11 +22,22 @@ class Entry {
         this.slug = meta ? meta.getAttribute("content") : '';
 
         const editorEl = document.querySelector("article > section");
+        const initialHTML = editorEl.innerHTML;
+        let firstCall = true;
 
         //  make it editable
         this.editor = new Squire(editorEl, {
             blockTag: 'p',
-            sanitizeToDOMFragment: html => sanitize(editorEl.innerHTML)
+            sanitizeToDOMFragment: html => {
+                // Squire's constructor calls setHTML("") which would wipe
+                // the server-rendered content. On that first call, return
+                // the original DOM content instead.
+                if (firstCall) {
+                    firstCall = false;
+                    return sanitize(initialHTML);
+                }
+                return sanitize(html);
+            }
         });
 
         // sent edits to the API
@@ -139,9 +150,17 @@ class Comment {
 
         //  make it editable
         const editorEl = el.querySelector(".comment-editor");
+        const initialHTML = editorEl.innerHTML;
+        let firstCall = true;
         this.editor = new Squire(editorEl, {
             blockTag: 'p',
-            sanitizeToDOMFragment: html => sanitize(editorEl.innerHTML)
+            sanitizeToDOMFragment: html => {
+                if (firstCall) {
+                    firstCall = false;
+                    return sanitize(initialHTML);
+                }
+                return sanitize(html);
+            }
         });
 
         // sent edits to the API

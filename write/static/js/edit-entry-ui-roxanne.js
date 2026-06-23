@@ -112,3 +112,110 @@ document.getElementById("set-thumbnail-uri").addEventListener("click", function 
     const meta = document.querySelector('meta[property~="og:image"]');
     if (meta) meta.setAttribute("content", thumbPrompt);
 });
+
+// ---- Squire toolbar ----
+(function () {
+    const toolbar = document.getElementById("squire-toolbar");
+    const htmlSource = document.getElementById("squire-html-source");
+    if (!toolbar || !htmlSource) return;
+
+    const editorEl = document.querySelector("article > section");
+    const editor = entry.editor;
+    let sourceMode = false;
+
+    // -- Show / hide toolbar on article focus --
+    editorEl.addEventListener("focus", function () {
+        toolbar.hidden = false;
+        toolbar.classList.add("visible");
+    });
+
+    // Format‐tag to Squire method pairs (toggle style)
+    const formatActions = {
+        bold:           { tag: "B",   on: "bold",         off: "removeBold" },
+        italic:         { tag: "I",   on: "italic",       off: "removeItalic" },
+        underline:      { tag: "U",   on: "underline",    off: "removeUnderline" },
+        strikethrough:  { tag: "S",   on: "strikethrough",off: "removeStrikethrough" },
+        subscript:      { tag: "SUB", on: "subscript",    off: "removeSubscript" },
+        superscript:    { tag: "SUP", on: "superscript",  off: "removeSuperscript" },
+    };
+
+    // -- Update active states from Squire's path --
+    function updateActiveStates() {
+        for (const [action, fmt] of Object.entries(formatActions)) {
+            const btn = toolbar.querySelector(`[data-action="${action}"]`);
+            if (btn) {
+                btn.classList.toggle("active", editor.hasFormat(fmt.tag));
+            }
+        }
+        // Link active state
+        const linkBtn = toolbar.querySelector('[data-action="link"]');
+        if (linkBtn) {
+            linkBtn.classList.toggle("active", editor.hasFormat("A"));
+        }
+    }
+
+    editor.addEventListener("pathChange", updateActiveStates);
+    editor.addEventListener("select", updateActiveStates);
+    editor.addEventListener("cursor", updateActiveStates);
+
+    // -- Button click handler --
+    toolbar.addEventListener("mousedown", function (e) {
+        // Prevent toolbar clicks from stealing focus from the editor
+        e.preventDefault();
+    });
+
+    toolbar.addEventListener("click", function (e) {
+        const btn = e.target.closest("button[data-action]");
+        if (!btn) return;
+        const action = btn.dataset.action;
+
+        // HTML source toggle
+        if (action === "html") {
+            sourceMode = !sourceMode;
+            btn.classList.toggle("active", sourceMode);
+            if (sourceMode) {
+                htmlSource.value = editor.getHTML();
+                htmlSource.hidden = false;
+                editorEl.hidden = true;
+                htmlSource.focus();
+            } else {
+                editor.setHTML(htmlSource.value);
+                htmlSource.hidden = true;
+                editorEl.hidden = false;
+                editorEl.focus();
+                entry.update();
+            }
+            return;
+        }
+
+        // Remove all formatting
+        if (action === "removeAllFormatting") {
+            editor.removeAllFormatting();
+            editorEl.focus();
+            return;
+        }
+
+        // Link
+        if (action === "link") {
+            if (editor.hasFormat("A")) {
+                editor.removeLink();
+            } else {
+                const url = prompt("URL:");
+                if (url) editor.makeLink(url);
+            }
+            editorEl.focus();
+            return;
+        }
+
+        // Inline format toggles
+        const fmt = formatActions[action];
+        if (fmt) {
+            if (editor.hasFormat(fmt.tag)) {
+                editor[fmt.off]();
+            } else {
+                editor[fmt.on]();
+            }
+            editorEl.focus();
+        }
+    });
+})();
