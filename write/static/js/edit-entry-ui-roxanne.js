@@ -129,6 +129,11 @@ document.getElementById("set-thumbnail-uri").addEventListener("click", function 
         toolbar.classList.add("visible");
     });
 
+    editorEl.addEventListener("blur", function () {
+        if (sourceMode) return;
+        toolbar.classList.remove("visible");
+    });
+
     // Format‐tag to Squire method pairs (toggle style)
     const formatActions = {
         bold:           { tag: "B",   on: "bold",         off: "removeBold" },
