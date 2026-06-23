@@ -30,7 +30,7 @@ def deploy(c):
     conn = connection()
     with conn.cd(FABRIC_DJANGO_PATH):
         conn.run('git pull origin master')
-        conn.sudo('supervisorctl restart tightpants', password=getpass(), pty=True)
+    conn.sudo('supervisorctl restart tightpants', password=getpass())
 
 
 @task
