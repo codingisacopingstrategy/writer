@@ -57,27 +57,6 @@
 
 
 {% block extrajs %}
-  <script>
-    const paragraphs = document.querySelectorAll("article p");
-
-    paragraphs.forEach(p => {
-      if (
-        p.childNodes.length === 1 &&
-        p.firstChild.nodeType === Node.ELEMENT_NODE &&
-        p.firstChild.tagName === "SPAN"
-      ) {
-        return;
-      }
-
-      const span = document.createElement("span");
-
-      while (p.firstChild) {
-        span.appendChild(p.firstChild);
-      }
-
-      p.appendChild(span);
-    });
-  </script>
 
     {% if EDITING %}
     <!-- make all elements <article> editable with Squire Editor -->
