@@ -27,6 +27,9 @@ class FabricException(Exception):
 
 @task
 def deploy(c):
+    """
+    Pull python changes and restart public server
+    """
     conn = connection()
     with conn.cd(FABRIC_DJANGO_PATH):
         conn.run('git pull origin master')
@@ -41,6 +44,16 @@ def status(c):
     conn = connection()
     with conn.cd(FABRIC_PATH):
         conn.run('git status')
+
+
+@task
+def history(c):
+    """
+    Run `git log` on the server
+    """
+    conn = connection()
+    with conn.cd(FABRIC_PATH):
+        conn.run('git --no-pager log --no-decorate --oneline -n 7')
 
 
 @task
@@ -71,7 +84,7 @@ def publish(c):
 
 
 @task
-def commit(c, slug=None, message=None):
+def commit(c, message):
     """
     Commit on the server
     Specify the message in a command line argument as such:
@@ -81,22 +94,9 @@ def commit(c, slug=None, message=None):
     with conn.cd(FABRIC_PATH):
         # Add all posts’ html
         conn.run('ls *.html | grep -v googled | xargs git add')  # skip the Google Webmaster verification file google*.html
-        if slug:
-            # Add assets for this specific post
-            conn.run('''cat ''' + slug + '''.html | python -c 'import re; import fileinput; r = re.compile(""""\\/and\\/(assets\\/[^"]+)""" + chr(34)); print "\\n".join(["\\n".join(s.replace("/and/","") for s in r.findall(line)) for line in fileinput.input() if len(r.findall(line)) > 0])' | xargs git add ''')
-            # Screenshot this post, add it to git
-            # run('/home/s/apps/i.liketightpants.net/writer-venv/bin/python manage.py screenshot %s' % slug)
-            conn.run('git add assets/as/screenshots/of/%s.png' % slug, warn=True)
-            if message:
-                conn.run('git commit -m %s' % quote(message))
-            else:
-                result = conn.run('git ls-files --error-unmatch %s.html' % slug, warn=True, hide=True)
-                if result.ok:
-                    conn.run('git commit -m "Modified post %s"' % slug)
-                else:
-                    conn.run('git commit -m "Added post %s"' % slug)
-        elif message:
-            conn.run('git commit -m %s' % quote(message))
+        # and other post related
+        conn.run('git add feed/us/recent_entries.xml index.php assets')
+        conn.run('git commit -m %s' % quote(message))
 
 
 @task
