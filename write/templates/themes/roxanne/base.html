@@ -31,7 +31,7 @@
             <nav id="authors">
                 <ul class="colourful-authors">
             {% for a in main_authors_excluding_current_author %}
-                <li class="{{ a }}"><a href="">{%  if a.username == 'bnf' %}bnf<span>bnf</span>{% elif a.username == 'glit' %}glit<span>glit</span>{% elif a.username == 'tellyou' %}tell  you{% else %}{{ a }}{% endif %}</a></li>
+                <li class="{{ a }}"><a href="/and/stories/by/{{ a }}">{%  if a.username == 'bnf' %}bnf<span>bnf</span>{% elif a.username == 'glit' %}glit<span>glit</span>{% elif a.username == 'tellyou' %}tell  you{% else %}{{ a }}{% endif %}</a></li>
             {% endfor %}
                 </ul>
             {% block postnav %}{% endblock %}
