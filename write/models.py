@@ -135,6 +135,9 @@ class MtEntry(models.Model):
 
     class Meta:
         ordering = ('-created_on',)
+        permissions = [
+            ('publish_mtentry', 'Can publish entries'),
+        ]
 
 
 class MtComment(models.Model):

@@ -3,7 +3,13 @@
 
 from tastypie import fields
 from tastypie.resources import ModelResource
-from tastypie.authorization import Authorization
+from tastypie.authorization import DjangoAuthorization
+from write.auth import (
+    AuthorAuthorization,
+    EntryAuthorization,
+    LoggedInAuthentication,
+    can_publish,
+)
 from write.models import MtEntry, MtComment
 from django.contrib.auth.models import User
 
@@ -12,7 +18,8 @@ class MtAuthorResource(ModelResource):
 
     class Meta:
         queryset = User.objects.all()
-        authorization = Authorization()
+        authentication = LoggedInAuthentication()
+        authorization = AuthorAuthorization()
         resource_name = 'author'
         always_return_data = True
 
@@ -22,9 +29,20 @@ class MtEntryResource(ModelResource):
 
     class Meta:
         queryset = MtEntry.objects.all()
-        authorization = Authorization()
+        authentication = LoggedInAuthentication()
+        authorization = EntryAuthorization()
         resource_name = 'entry'
         always_return_data = True
+
+    def hydrate(self, bundle):
+        # The editor always sends `published`. Ignore it unless the user
+        # has write.publish_mtentry (superusers have every permission).
+        if not can_publish(bundle.request.user) and 'published' in bundle.data:
+            if getattr(bundle.obj, 'pk', None):
+                bundle.data['published'] = bundle.obj.published
+            else:
+                bundle.data['published'] = False
+        return bundle
 
     def dehydrate(self, bundle):
         """
@@ -55,7 +73,8 @@ class MtCommentResource(ModelResource):
 
     class Meta:
         queryset = MtComment.objects.all()
-        authorization = Authorization()
+        authentication = LoggedInAuthentication()
+        authorization = DjangoAuthorization()
         resource_name = 'comment'
         always_return_data = True
 
