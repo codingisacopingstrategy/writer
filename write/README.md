@@ -5,7 +5,7 @@ Make sure you’ve installed `virtualenv`, and you’ve cloned both the `writer`
     pip install -r requirements.txt
     cp write/local_settings.example.py write/local_settings.py
 
-Inbetween these steps, you need to find a file `write.db` to put in the folder write. Then:
+Inbetween these steps, you need a `write.db` in the folder `write`. Copy the live one with `fab mirror` (from this checkout, after `local_settings.py` can reach the server). Then:
 
     python manage.py runserver
 

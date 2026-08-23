@@ -8,6 +8,7 @@ the movable type software is installed that takes care of publishing
 static html files, handling public comments and trackbacks.
 """
 
+import os
 from getpass import getpass
 from shlex import quote
 from fabric import Connection, task
@@ -107,6 +108,19 @@ def archive(c):
     conn = connection()
     with conn.cd(FABRIC_PATH):
         conn.run('git push origin master')  # push to github
+
+
+@task
+def mirror(c):
+    """
+    Copy the server write.db onto this checkout
+    """
+    remote_db = os.path.join(FABRIC_DJANGO_PATH, 'write', 'write.db')
+    here = os.path.abspath(os.path.join(os.path.dirname(__file__), 'write', 'write.db'))
+    conn = connection()
+    conn.get(remote_db, here)
+    print('Mirrored %s to %s' % (remote_db, here))
+    print('Restart local Django if it is running so it opens the new file.')
 
 
 """
