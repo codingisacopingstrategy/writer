@@ -41,6 +41,7 @@
         <footer>
             <ul>
                 <li>and {{ title | lower }}</li>
+                {% if EDITING %}<li><a href="/admin/">admin</a></li>{% endif %}
                 <li {% if e and e.pk == latest_entry.pk %}class="current">latest{% else %}><a href="{{ andor }}{{ latest_entry.slug }}">latest</a>{% endif %}</li>
                 {% if e.previous %}<li><a href="{{ andor }}{{ e.previous.slug }}">previous</a></li>{% endif %}
                 {% if e.next %}<li><a href="{{ andor }}{{ e.next.slug }}">next</a></li>{% endif %}
