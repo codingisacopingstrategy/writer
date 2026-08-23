@@ -35,6 +35,7 @@ urlpatterns = [
     path('or/', write.views.latest_entry_write, name='latest-entry-write'),
     path('or/archives', write.views.wall, name='wall'),
     path('or/links.json', write.views.links, name='links-json'),
+    path('or/assets/', include('assets.urls')),
     path('or/<slug:slug>', write.views.entry_write, name='entry-write'),
 
     # /is/ -> These files are the live views from which Django will generate the static files

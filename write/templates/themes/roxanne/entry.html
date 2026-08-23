@@ -53,6 +53,9 @@
         <button type="button" data-action="link" title="Link">
             <svg width="16" height="16" viewBox="0 0 16 16"><path d="M7 8.5H5a3 3 0 1 1 0-6h2V1H5a4.5 4.5 0 0 0 0 9h2V8.5zM9 1v1.5h2a3 3 0 1 1 0 6H9V10h2a4.5 4.5 0 0 0 0-9H9zM4.5 5h7v1.5h-7V5z" fill="currentColor" transform="translate(0,2)"/></svg>
         </button>
+        <button type="button" data-action="image" title="Insert image">
+            <svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 3h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm1 2v6h10V5H3zm2 1.5A1.5 1.5 0 1 1 3.5 8 1.5 1.5 0 0 1 5 6.5zM3 11l2.8-2.8 1.7 1.7L11.2 6 13 8.2V11H3z" fill="currentColor"/></svg>
+        </button>
         <button type="button" data-action="removeAllFormatting" title="Remove formatting">
             <svg width="16" height="16" viewBox="0 0 16 16"><path d="M11.15 2.44a1.5 1.5 0 0 1 2.12 0l.29.29a1.5 1.5 0 0 1 0 2.12L7.8 10.6l-2.4-2.4 5.75-5.76zM4.7 8.9l2.4 2.4-1.6 1.6a1 1 0 0 1-.7.3H3.2a1 1 0 0 1-.7-1.7L4.7 8.9z" fill="currentColor"/></svg>
         </button>
@@ -95,10 +98,12 @@
 
     {% if EDITING %}
     <link href="{{ STATIC_URL }}js/edit-entry-roxanne-toolbar.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}js/assets-picker.css" rel="stylesheet"/>
     <!-- make all elements <article> editable with Squire Editor -->
     <script type="text/javascript" src="{{ STATIC_URL }}squire/squire-raw.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry-roxanne.js"> </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/edit-entry-ui-roxanne.js"> </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/assets-picker.js"> </script>
     {% endif %}
 
 {% endblock %}

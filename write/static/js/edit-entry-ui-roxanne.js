@@ -131,6 +131,7 @@ document.getElementById("set-thumbnail-uri").addEventListener("click", function 
 
     editorEl.addEventListener("blur", function () {
         if (sourceMode) return;
+        if (typeof window.assetPickerOpen === "function" && window.assetPickerOpen()) return;
         toolbar.classList.remove("visible");
     });
 
@@ -197,6 +198,13 @@ document.getElementById("set-thumbnail-uri").addEventListener("click", function 
         if (action === "removeAllFormatting") {
             editor.removeAllFormatting();
             editorEl.focus();
+            return;
+        }
+
+        if (action === "image") {
+            if (typeof window.openAssetPicker === "function") {
+                window.openAssetPicker();
+            }
             return;
         }
 
