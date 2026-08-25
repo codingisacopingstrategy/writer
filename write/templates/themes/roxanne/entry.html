@@ -84,7 +84,6 @@
     {% for author in authors %}
     <option value="{{ author.pk }}"{% if author.pk == e.author.pk %} selected="true"{% endif %}>{{ author }}</option>
     {% endfor %}</select>
-    {% if perms.write.publish_mtentry %}<h4 class="author">published: <input property="mt:entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.published %}checked="yes"{% endif%}/></h4>{% endif %}
     <h4>Excerpt</h4>
     <p class="meta-field">
         <input id="excerpt-input" type="text" value="{{ e.excerpt }}">
@@ -97,6 +96,12 @@
         <button type="button" class="meta-cancel" disabled>Cancel</button>
         <button type="button" class="meta-save" disabled>Update</button>
     </p>
+    {% if perms.write.publish_mtentry %}
+    <p class="publish-field">
+        <button type="button" id="publish-entry" class="publish-entry" data-published="{% if e.published %}true{% else %}false{% endif %}">{% if e.published %}Save Modifications{% else %}Publish{% endif %}</button>
+        <label class="publish-all"><input type="checkbox" id="publish-all"> update all posts</label>
+    </p>
+    {% endif %}
     {% endif %}
 
 {% endblock %}

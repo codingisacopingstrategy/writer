@@ -90,7 +90,8 @@ header#site.save-err > img {
     30% { filter: drop-shadow(0 0 4px #e52e2e) drop-shadow(0 0 1px #e52e2e); }
 }
 
-nav#authors .meta-field {
+nav#authors .meta-field,
+nav#authors .publish-field {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -98,7 +99,8 @@ nav#authors .meta-field {
     margin: 0 0 14.4pt;
 }
 nav#authors .meta-field input,
-nav#authors .meta-field button {
+nav#authors .meta-field button,
+nav#authors .publish-entry {
     border: 2px solid #D8127E;
     border-radius: 0.5cm;
     padding: 0.5cm;
@@ -115,11 +117,21 @@ nav#authors .meta-field input {
     width: 100%;
     min-width: 0;
 }
-nav#authors .meta-field button {
+nav#authors .meta-field button,
+nav#authors .publish-entry {
     padding: 0.25cm 0.5cm;
     cursor: pointer;
 }
-nav#authors .meta-field button:disabled {
+nav#authors .meta-field button:disabled,
+nav#authors .publish-entry:disabled {
     opacity: 0.35;
     cursor: default;
+}
+nav#authors .publish-all {
+    font-family: ComputerModern, serif;
+    font-style: italic;
+    font-size: 12pt;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }

@@ -147,6 +147,13 @@ bindMetaField(
     'meta[property~="og:image"]'
 );
 
+const publishBtn = document.getElementById("publish-entry");
+if (publishBtn) {
+    publishBtn.addEventListener("click", function () {
+        entry.publishNow();
+    });
+}
+
 // ---- Squire toolbar ----
 (function () {
     const toolbar = document.getElementById("squire-toolbar");

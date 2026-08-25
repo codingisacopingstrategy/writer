@@ -1,17 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from tastypie import fields
-from tastypie.resources import ModelResource
+import json
+
+from django.contrib.auth.models import User
+from django.urls import re_path
+from tastypie import fields, http
 from tastypie.authorization import DjangoAuthorization
+from tastypie.resources import ModelResource
+from tastypie.utils import trailing_slash
+
 from write.auth import (
     AuthorAuthorization,
     EntryAuthorization,
     LoggedInAuthentication,
     can_publish,
 )
-from write.models import MtEntry, MtComment
-from django.contrib.auth.models import User
+from write.models import MtComment, MtEntry
+from write.publish import publish_entry
 
 
 class MtAuthorResource(ModelResource):
@@ -64,6 +70,38 @@ class MtEntryResource(ModelResource):
         if 'author' in bundle.data:
             bundle.data['author'] = {'pk': bundle.data['author']}
         return bundle
+
+    def prepend_urls(self):
+        return [
+            re_path(
+                r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/publish%s$"
+                % (self._meta.resource_name, trailing_slash()),
+                self.wrap_view("publish"),
+                name="api_entry_publish",
+            ),
+        ]
+
+    def publish(self, request, **kwargs):
+        self.method_check(request, allowed=["post"])
+        self.is_authenticated(request)
+        if not can_publish(request.user):
+            return http.HttpUnauthorized()
+
+        try:
+            entry = MtEntry.objects.get(pk=kwargs["pk"])
+        except (MtEntry.DoesNotExist, ValueError):
+            return http.HttpNotFound()
+
+        try:
+            payload = json.loads(request.body.decode("utf-8") or "{}")
+        except ValueError:
+            payload = {}
+        update_all = bool(payload.get("update_all"))
+        publish_entry(entry, update_all=update_all)
+        return self.create_response(
+            request,
+            {"published": True, "update_all": update_all},
+        )
 
 
 class MtCommentResource(ModelResource):

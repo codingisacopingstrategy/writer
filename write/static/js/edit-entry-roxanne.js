@@ -140,8 +140,41 @@ class Entry {
     }
 
     published() {
-        const input = document.querySelector('input[property="mt:entry_status"]');
-        return input ? input.checked : false;
+        const btn = document.getElementById("publish-entry");
+        if (btn) return btn.dataset.published === "true";
+        const article = document.querySelector("article");
+        return !!(article && article.dataset.published === "true");
+    }
+
+    markPublished() {
+        const btn = document.getElementById("publish-entry");
+        if (btn) {
+            btn.dataset.published = "true";
+            btn.textContent = "Save Modifications";
+        }
+        const article = document.querySelector("article");
+        if (article) article.dataset.published = "true";
+    }
+
+    publishNow() {
+        const btn = document.getElementById("publish-entry");
+        const updateAll = !!(document.getElementById("publish-all") || {}).checked;
+        if (btn) btn.disabled = true;
+        return this.update()
+            .then(() => {
+                const entryId = this.id();
+                if (!entryId) return;
+                return apiWrite(`/api/entry/${entryId}/publish/`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ update_all: updateAll }),
+                });
+            })
+            .then(() => this.markPublished())
+            .catch((err) => console.error(err))
+            .then(() => {
+                if (btn) btn.disabled = false;
+            });
     }
 
     id() {
@@ -209,7 +242,7 @@ class Entry {
         const url = entryId ? `/api/entry/${entryId}/` : '/api/entry/';
         const method = entryId ? 'PATCH' : 'POST';
         console.log(postData);
-        apiWrite(url, {
+        return apiWrite(url, {
             method,
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(postData)
@@ -218,8 +251,12 @@ class Entry {
             console.log(entryId ? 'Updated entry' : 'Created entry', data);
             this.rememberMeta();
             if (!entryId) location.reload(true);
+            return data;
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+            console.error(err);
+            throw err;
+        });
 
     }
 }

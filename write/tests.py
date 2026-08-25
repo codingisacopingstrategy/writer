@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 from django.contrib.auth.models import Permission, User
 from django.test import TestCase
@@ -15,7 +16,7 @@ def grant(user, *codenames):
 class PublishRightsTests(TestCase):
     def test_permissions_not_superuser_alone(self):
         owner = User.objects.create_superuser('eric', 'eric@example.com', 'x')
-        assist = User.objects.create_user('grok')
+        assist = User.objects.create_user('assist')
         self.assertTrue(can_publish(owner))
         self.assertTrue(can_delete_entry(owner))
         self.assertFalse(can_publish(assist))
@@ -36,7 +37,7 @@ class PublishRightsTests(TestCase):
 class EntryApiAuthTests(TestCase):
     def setUp(self):
         self.owner = User.objects.create_superuser('eric', 'eric@example.com', 'secret')
-        self.assist = User.objects.create_user('grok', 'grok@example.com', 'secret')
+        self.assist = User.objects.create_user('assist', 'assist@example.com', 'secret')
         grant(self.assist, 'add_mtentry', 'change_mtentry', 'add_mtcomment', 'change_mtcomment')
         self.draft = MtEntry.objects.create(
             author=self.owner,
@@ -176,3 +177,60 @@ class EntryApiAuthTests(TestCase):
         self.assertEqual(response.status_code, 201)
         created = MtEntry.objects.get(slug='new-one')
         self.assertFalse(created.published)
+
+
+class EntryPublishActionTests(TestCase):
+    def setUp(self):
+        self.owner = User.objects.create_superuser('eric', 'eric@example.com', 'secret')
+        self.assist = User.objects.create_user('assist', 'assist@example.com', 'secret')
+        grant(self.assist, 'add_mtentry', 'change_mtentry')
+        self.draft = MtEntry.objects.create(
+            author=self.owner,
+            title='Draft',
+            slug='draft',
+            body='<p>hi</p>',
+            published=False,
+        )
+
+    def post_publish(self, user, update_all=False):
+        if user is not None:
+            self.client.force_login(user)
+        else:
+            self.client.logout()
+        return self.client.post(
+            '/api/entry/%s/publish/' % self.draft.pk,
+            data=json.dumps({'update_all': update_all}),
+            content_type='application/json',
+        )
+
+    def test_anonymous_cannot_publish(self):
+        response = self.post_publish(None)
+        self.assertEqual(response.status_code, 401)
+        self.draft.refresh_from_db()
+        self.assertFalse(self.draft.published)
+
+    def test_assistant_cannot_publish(self):
+        response = self.post_publish(self.assist)
+        self.assertEqual(response.status_code, 401)
+        self.draft.refresh_from_db()
+        self.assertFalse(self.draft.published)
+
+    @patch('write.publish.regenerate_published_site')
+    @patch('write.models.MtEntry.commit', return_value=b'cid')
+    def test_publisher_commits_this_entry(self, mock_commit, mock_all):
+        publisher = User.objects.create_user('publisher')
+        grant(publisher, 'change_mtentry', 'publish_mtentry')
+        response = self.post_publish(publisher)
+        self.assertEqual(response.status_code, 200)
+        self.draft.refresh_from_db()
+        self.assertTrue(self.draft.published)
+        mock_commit.assert_called_once_with()
+        mock_all.assert_not_called()
+
+    @patch('write.publish.regenerate_published_site')
+    @patch('write.models.MtEntry.commit', return_value=b'cid')
+    def test_update_all_regenerates_the_site(self, mock_commit, mock_all):
+        response = self.post_publish(self.owner, update_all=True)
+        self.assertEqual(response.status_code, 200)
+        mock_all.assert_called_once_with()
+        mock_commit.assert_called_once_with()

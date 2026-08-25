@@ -25,7 +25,7 @@
         </header>
         <main class="{% block mainclasses %}glit{% endblock %} article">
             {% block header %}{% endblock %}
-            <article {% if e and e.pk %} property="mt:entry_id" content="{{ e.pk }}"{% endif %}>
+            <article {% if e and e.pk %} property="mt:entry_id" content="{{ e.pk }}"{% endif %} data-published="{% if e and e.published %}true{% else %}false{% endif %}">
                 {% block content  %}{% endblock %}
             </article>
             <nav id="authors">
