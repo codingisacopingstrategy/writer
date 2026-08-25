@@ -65,3 +65,27 @@
     outline: none;
     background: #0d0d0d;
 }
+
+header#site.save-pending > img,
+header#site.save-ok > img,
+header#site.save-err > img {
+    transform-origin: center center;
+}
+header#site.save-pending > img {
+    animation: etoile-spin 0.7s linear infinite;
+}
+header#site.save-ok > img {
+    animation: etoile-flash-ok 0.9s ease;
+}
+header#site.save-err > img {
+    animation: etoile-flash-err 0.9s ease;
+}
+@keyframes etoile-spin {
+    to { transform: rotate(360deg); }
+}
+@keyframes etoile-flash-ok {
+    30% { filter: drop-shadow(0 0 4px #2ee56a) drop-shadow(0 0 1px #2ee56a); }
+}
+@keyframes etoile-flash-err {
+    30% { filter: drop-shadow(0 0 4px #e52e2e) drop-shadow(0 0 1px #e52e2e); }
+}

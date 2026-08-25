@@ -14,6 +14,63 @@ function debounce(fn, delay) {
     };
 }
 
+const SaveStatus = {
+    pending: 0,
+    startedAt: 0,
+    timer: 0,
+    minSpin: 600,
+    header() {
+        return document.querySelector("header#site");
+    },
+    begin() {
+        const header = this.header();
+        if (!header) return;
+        clearTimeout(this.timer);
+        if (this.pending === 0) this.startedAt = Date.now();
+        this.pending += 1;
+        header.classList.remove("save-ok", "save-err");
+        header.classList.add("save-pending");
+    },
+    end(ok) {
+        const header = this.header();
+        if (!header) return;
+        this.pending = Math.max(0, this.pending - 1);
+        if (this.pending > 0) return;
+        const flash = () => {
+            header.classList.remove("save-pending");
+            header.classList.add(ok ? "save-ok" : "save-err");
+            this.timer = setTimeout(() => {
+                header.classList.remove("save-ok", "save-err");
+            }, 900);
+        };
+        const wait = Math.max(0, this.minSpin - (Date.now() - this.startedAt));
+        clearTimeout(this.timer);
+        this.timer = setTimeout(flash, wait);
+    },
+};
+
+function apiWrite(url, options) {
+    SaveStatus.begin();
+    return fetch(url, options)
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error(String(res.status));
+            }
+            if (res.status === 204 || (options && options.method === "DELETE")) {
+                SaveStatus.end(true);
+                return null;
+            }
+            return res.json().then((data) => {
+                SaveStatus.end(true);
+                return data;
+            });
+        })
+        .catch((err) => {
+            SaveStatus.end(false);
+            throw err;
+        });
+}
+
 
 // ---- Entry object ----
 class Entry {
@@ -128,12 +185,11 @@ class Entry {
         const url = entryId ? `/api/entry/${entryId}/` : '/api/entry/';
         const method = entryId ? 'PATCH' : 'POST';
         console.log(postData);
-        fetch(url, {
+        apiWrite(url, {
             method,
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(postData)
         })
-        .then(res => res.json())
         .then(data => {
             console.log(entryId ? 'Updated entry' : 'Created entry', data);
             if (!entryId) location.reload(true);
@@ -233,28 +289,24 @@ class Comment {
         const id = this.id();
         const postData = this.toHash();
         if (id) {
-            fetch(this.resource_uri(), {
+            apiWrite(this.resource_uri(), {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(postData)
             })
-            .then(res => res.json())
             .then(data => console.log('Updated comment', data))
             .catch(err => console.error(err));
         } else {
-            // New comment
-            fetch(this.resource_uri(), {
+            apiWrite(this.resource_uri(), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(postData)
             })
-            .then(res => res.json())
             .then(data => {
                 const id = data.id;
                 console.log("Succesfully created Comment " + id);
                 console.log(location);
                 if (createdCallback) createdCallback(id);
-
             })
             .catch(err => console.error(err));
         }
@@ -263,7 +315,7 @@ class Comment {
     delete() {
         const id = this.id();
         if (!id) return;
-        fetch(this.resource_uri(), { method: 'DELETE' })
+        apiWrite(this.resource_uri(), { method: 'DELETE' })
             .then(() => this.el.remove())
             .catch(err => console.error(err));
     }
