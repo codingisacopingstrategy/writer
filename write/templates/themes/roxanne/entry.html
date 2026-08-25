@@ -16,6 +16,7 @@
 
     <meta property="mt:entry_basename" content="{{ e.slug }}" />
     <meta property="dc:modified" content="{{ e.modified_on|date:"c" }}" />
+    {% if e.custom_css %}<style id="entry-custom-css">{{ e.custom_css|safe }}</style>{% endif %}
 {% endblock %}
 
 {% block header %}<header id="author" class="selected-author"><img alt="{{ a }}" src="/and/assets/that/are/logotypes/of/author/{{ a }}-cropped.svg"/></header>{% endblock %}
@@ -93,6 +94,12 @@
     <h4>Thumbnail uri</h4>
     <p class="meta-field">
         <input id="thumbnail-input" type="text" value="{{ e.preview_image }}">
+        <button type="button" class="meta-cancel" disabled>Cancel</button>
+        <button type="button" class="meta-save" disabled>Update</button>
+    </p>
+    <h4>Custom CSS</h4>
+    <p class="meta-field">
+        <textarea id="custom-css-input" rows="8">{{ e.custom_css }}</textarea>
         <button type="button" class="meta-cancel" disabled>Cancel</button>
         <button type="button" class="meta-save" disabled>Update</button>
     </p>

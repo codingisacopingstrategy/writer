@@ -119,12 +119,14 @@ class Entry {
         return meta ? meta.content : '';
     }
 
+    custom_css() {
+        const input = document.getElementById("custom-css-input");
+        return input ? input.value : '';
+    }
+
     rememberMeta() {
-        const excerpt = document.getElementById("excerpt-input");
-        const thumb = document.getElementById("thumbnail-input");
-        if (excerpt) excerpt.dataset.saved = excerpt.value;
-        if (thumb) thumb.dataset.saved = thumb.value;
-        document.querySelectorAll(".meta-field input").forEach((input) => {
+        document.querySelectorAll(".meta-field input, .meta-field textarea").forEach((input) => {
+            input.dataset.saved = input.value;
             input.dispatchEvent(new Event("input"));
         });
     }
@@ -218,6 +220,7 @@ class Entry {
             modified_on: this.modified_on(),
             excerpt: this.excerpt(),
             preview_image: this.preview_image(),
+            custom_css: this.custom_css(),
             body: this.body()
         };
     }
@@ -236,7 +239,7 @@ class Entry {
         const modifiedEl = document.querySelector('[property="dc:modified"]');
         if (modifiedEl) modifiedEl.setAttribute('content', new Date().toISOString());
 
-        const postData = this.makeHash(['author','title','slug','published','created_on','modified_on','excerpt','preview_image','body']);
+        const postData = this.makeHash(['author','title','slug','published','created_on','modified_on','excerpt','preview_image','custom_css','body']);
         postData.body = this.editor.getHTML();
         const entryId = this.id();
         const url = entryId ? `/api/entry/${entryId}/` : '/api/entry/';

@@ -63,6 +63,7 @@
 
     <meta property="mt:entry_basename" content="{{ e.slug }}" />
     <meta property="dc:modified" content="{{ e.modified_on|date:"c" }}" />
+    {% if e.custom_css %}<style id="entry-custom-css">{{ e.custom_css|safe }}</style>{% endif %}
 
 {% endblock %}
 

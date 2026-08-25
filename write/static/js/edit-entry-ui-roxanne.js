@@ -121,9 +121,24 @@ function bindMetaField(input, field, metaSelector) {
     save.addEventListener("click", function () {
         if (!dirty()) return;
         const value = input.value;
-        document.querySelectorAll(metaSelector).forEach(function (meta) {
-            meta.setAttribute("content", value);
-        });
+        if (metaSelector) {
+            document.querySelectorAll(metaSelector).forEach(function (meta) {
+                meta.setAttribute("content", value);
+            });
+        }
+        if (field === "custom_css") {
+            let style = document.getElementById("entry-custom-css");
+            if (!value) {
+                if (style) style.remove();
+            } else {
+                if (!style) {
+                    style = document.createElement("style");
+                    style.id = "entry-custom-css";
+                    document.head.appendChild(style);
+                }
+                style.textContent = value;
+            }
+        }
         entry.patchFields({ [field]: value })
             .then(function () {
                 input.dataset.saved = value;
@@ -146,6 +161,7 @@ bindMetaField(
     "preview_image",
     'meta[property~="og:image"]'
 );
+bindMetaField(document.getElementById("custom-css-input"), "custom_css");
 
 const publishBtn = document.getElementById("publish-entry");
 if (publishBtn) {

@@ -228,6 +228,30 @@ class EntryApiAuthTests(TestCase):
         created = MtEntry.objects.get(slug='new-one')
         self.assertFalse(created.published)
 
+    def test_entry_head_includes_custom_css(self):
+        entry = MtEntry.objects.create(
+            author=self.owner,
+            title='Styled',
+            slug='styled',
+            body='<p>hi</p>',
+            published=True,
+            custom_css='article .as-page { color: #0058ed; }',
+        )
+        response = self.client.get('/is/%s' % entry.slug)
+        self.assertContains(response, 'id="entry-custom-css"', html=False)
+        self.assertContains(response, 'article .as-page { color: #0058ed; }')
+
+    def test_entry_head_omits_empty_custom_css(self):
+        entry = MtEntry.objects.create(
+            author=self.owner,
+            title='Plain',
+            slug='plain',
+            body='<p>hi</p>',
+            published=True,
+        )
+        response = self.client.get('/is/%s' % entry.slug)
+        self.assertNotContains(response, 'id="entry-custom-css"')
+
 
 class EntryPublishActionTests(TestCase):
     def setUp(self):

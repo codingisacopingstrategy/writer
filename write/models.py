@@ -85,6 +85,7 @@ class MtEntry(models.Model):
     modified_on = models.DateTimeField(auto_now=True, blank=True, null=True)
     excerpt = models.TextField(blank=True)
     preview_image = models.URLField(blank=True, max_length=765)
+    custom_css = models.TextField(blank=True)
     body = models.TextField()
 
     def tight_pants_title(self):

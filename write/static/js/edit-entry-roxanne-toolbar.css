@@ -98,7 +98,12 @@ nav#authors .publish-field {
     gap: 6px;
     margin: 0 0 14.4pt;
 }
+nav#authors .meta-field textarea {
+    min-height: 8em;
+    resize: vertical;
+}
 nav#authors .meta-field input,
+nav#authors .meta-field textarea,
 nav#authors .meta-field button,
 nav#authors .publish-entry {
     border: 2px solid #D8127E;
@@ -112,7 +117,8 @@ nav#authors .publish-entry {
     color: #000;
     background: #fff;
 }
-nav#authors .meta-field input {
+nav#authors .meta-field input,
+nav#authors .meta-field textarea {
     flex: 1 1 100%;
     width: 100%;
     min-width: 0;
