@@ -5,8 +5,6 @@
                     {{ form.errors.as_json }}
                 </pre>
                 <form method="post" action="{%  url 'comments' %}">
-                  {% csrf_token %}
-
                     {{ form.non_field_errors }}
 
                     <div style="display: none;"><!-- hidden fields normally not visual to user -->

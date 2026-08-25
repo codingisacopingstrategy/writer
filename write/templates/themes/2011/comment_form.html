@@ -3,8 +3,6 @@
             <div class="comments-open-content">
                 <div id="comment-greeting"></div>
                 <form method="post" action="{%  url 'comments' %}">
-                  {% csrf_token %}
-
                     {{ form.non_field_errors }}
                     {{ form.parent }}
                     {{ form.entry }}
