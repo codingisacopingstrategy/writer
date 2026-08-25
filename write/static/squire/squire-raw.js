@@ -142,7 +142,9 @@
         return UNKNOWN;
     }
     let nodeCategory;
-    if (!Array.from(node.childNodes).every(isInline)) {
+    if (node instanceof SVGElement) { // TIGHTPANTS-SVG
+      nodeCategory = INLINE;
+    } else if (!Array.from(node.childNodes).every(isInline)) {
       nodeCategory = CONTAINER;
     } else if (inlineNodeNames.test(node.nodeName)) {
       nodeCategory = INLINE;
@@ -840,6 +842,11 @@
           cleanTree(child, config, preserveWS || nodeName === "PRE");
         }
       } else {
+        // TIGHTPANTS-SVG — not an HTMLElement; default branch would remove it
+        if (child instanceof SVGElement) {
+          continue;
+        }
+        // /TIGHTPANTS-SVG
         if (child instanceof Text) {
           let data = child.data;
           const startsWithWS = !notWS.test(data.charAt(0));
