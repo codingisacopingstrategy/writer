@@ -86,9 +86,17 @@
     {% endfor %}</select>
     {% if perms.write.publish_mtentry %}<h4 class="author">published: <input property="mt:entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.published %}checked="yes"{% endif%}/></h4>{% endif %}
     <h4>Excerpt</h4>
-    <p><a href="#" id="set-excerpt">Set excerpt</a></p>
+    <p class="meta-field">
+        <input id="excerpt-input" type="text" value="{{ e.excerpt }}">
+        <button type="button" class="meta-cancel" disabled>Cancel</button>
+        <button type="button" class="meta-save" disabled>Update</button>
+    </p>
     <h4>Thumbnail uri</h4>
-    <p><a href="#" id="set-thumbnail-uri">Set thumbnail uri</a></p>
+    <p class="meta-field">
+        <input id="thumbnail-input" type="text" value="{{ e.preview_image }}">
+        <button type="button" class="meta-cancel" disabled>Cancel</button>
+        <button type="button" class="meta-save" disabled>Update</button>
+    </p>
     {% endif %}
 
 {% endblock %}

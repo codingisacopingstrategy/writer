@@ -89,3 +89,37 @@ header#site.save-err > img {
 @keyframes etoile-flash-err {
     30% { filter: drop-shadow(0 0 4px #e52e2e) drop-shadow(0 0 1px #e52e2e); }
 }
+
+nav#authors .meta-field {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 14.4pt;
+}
+nav#authors .meta-field input,
+nav#authors .meta-field button {
+    border: 2px solid #D8127E;
+    border-radius: 0.5cm;
+    padding: 0.5cm;
+    box-sizing: border-box;
+    font-family: ComputerModern, serif;
+    font-weight: normal;
+    font-style: italic;
+    font-size: 12pt;
+    color: #000;
+    background: #fff;
+}
+nav#authors .meta-field input {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+}
+nav#authors .meta-field button {
+    padding: 0.25cm 0.5cm;
+    cursor: pointer;
+}
+nav#authors .meta-field button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}

@@ -106,13 +106,37 @@ class Entry {
     }
 
     excerpt() {
+        const input = document.getElementById("excerpt-input");
+        if (input) return input.value;
         const meta = document.querySelector('meta[property~="og:description"]');
         return meta ? meta.content : '';
     }
 
     preview_image() {
+        const input = document.getElementById("thumbnail-input");
+        if (input) return input.value;
         const meta = document.querySelector('meta[property~="og:image"]');
         return meta ? meta.content : '';
+    }
+
+    rememberMeta() {
+        const excerpt = document.getElementById("excerpt-input");
+        const thumb = document.getElementById("thumbnail-input");
+        if (excerpt) excerpt.dataset.saved = excerpt.value;
+        if (thumb) thumb.dataset.saved = thumb.value;
+        document.querySelectorAll(".meta-field input").forEach((input) => {
+            input.dispatchEvent(new Event("input"));
+        });
+    }
+
+    patchFields(fields) {
+        const entryId = this.id();
+        if (!entryId) return this.update();
+        return apiWrite(`/api/entry/${entryId}/`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(fields),
+        });
     }
 
     published() {
@@ -192,6 +216,7 @@ class Entry {
         })
         .then(data => {
             console.log(entryId ? 'Updated entry' : 'Created entry', data);
+            this.rememberMeta();
             if (!entryId) location.reload(true);
         })
         .catch(err => console.error(err));

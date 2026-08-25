@@ -95,23 +95,57 @@ document.querySelector(".comments-content").addEventListener("click", function (
     }
 });
 
-document.getElementById("set-excerpt").addEventListener("click", function (e) {
-    e.preventDefault();
+function bindMetaField(input, field, metaSelector) {
+    if (!input) return;
+    input.dataset.saved = input.value;
+    const row = input.closest(".meta-field");
+    if (!row) return;
+    const cancel = row.querySelector(".meta-cancel");
+    const save = row.querySelector(".meta-save");
 
-    const aboutPrompt = prompt("The about value", entry.excerpt());
+    function dirty() {
+        return input.value !== input.dataset.saved;
+    }
 
-    const meta = document.querySelector('meta[property~="og:description"]');
-    if (meta) meta.setAttribute("content", aboutPrompt);
-});
+    function syncButtons() {
+        const on = dirty();
+        cancel.disabled = !on;
+        save.disabled = !on;
+    }
 
-document.getElementById("set-thumbnail-uri").addEventListener("click", function (e) {
-    e.preventDefault();
+    input.addEventListener("input", syncButtons);
+    cancel.addEventListener("click", function () {
+        input.value = input.dataset.saved;
+        syncButtons();
+    });
+    save.addEventListener("click", function () {
+        if (!dirty()) return;
+        const value = input.value;
+        document.querySelectorAll(metaSelector).forEach(function (meta) {
+            meta.setAttribute("content", value);
+        });
+        entry.patchFields({ [field]: value })
+            .then(function () {
+                input.dataset.saved = value;
+                syncButtons();
+            })
+            .catch(function (err) {
+                console.error(err);
+            });
+    });
+    syncButtons();
+}
 
-    const thumbPrompt = prompt("The thumbnail uri", entry.preview_image());
-
-    const meta = document.querySelector('meta[property~="og:image"]');
-    if (meta) meta.setAttribute("content", thumbPrompt);
-});
+bindMetaField(
+    document.getElementById("excerpt-input"),
+    "excerpt",
+    'meta[property~="og:description"], meta[name="description"]'
+);
+bindMetaField(
+    document.getElementById("thumbnail-input"),
+    "preview_image",
+    'meta[property~="og:image"]'
+);
 
 // ---- Squire toolbar ----
 (function () {
