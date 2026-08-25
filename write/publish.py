@@ -6,7 +6,7 @@ import os
 from django.conf import settings
 from django.test.client import Client
 
-from write.models import MtEntry
+from write.models import MtEntry, commit_repo_paths, page_commit_message
 
 OUTPUT_DIR = getattr(settings, "PUBLISH_DIR", None) or settings.PUBLIC_PATH
 
@@ -66,10 +66,41 @@ def regenerate_published_site(client=None):
     write_site_indexes(client)
 
 
+def generated_output_paths():
+    paths = [
+        os.path.join(OUTPUT_DIR, "%s.html" % entry.slug)
+        for entry in MtEntry.objects.filter(published=True)
+    ]
+    paths.extend(
+        [
+            os.path.join(OUTPUT_DIR, "index.php"),
+            os.path.join(OUTPUT_DIR, "archives.html"),
+            os.path.join(OUTPUT_DIR, "feed", "us", "recent_entries.xml"),
+        ]
+    )
+    paths.extend(
+        os.path.join(OUTPUT_DIR, "stories", "by", author + ".html")
+        for author in AUTHOR_SLUGS
+    )
+    return paths
+
+
 def publish_entry(entry, update_all=False):
-    if not entry.published:
+    first = not entry.published
+    if first:
         entry.published = True
         entry.save(update_fields=["published"])
+    message = page_commit_message(first, entry.tight_pants_title())
     if update_all:
         regenerate_published_site()
-    return entry.commit()
+        return commit_repo_paths(
+            generated_output_paths(),
+            message=message,
+            name=entry.author.username,
+            email=entry.author.email,
+        )
+    return entry.commit(
+        message=message,
+        commiter_name=entry.author.username,
+        commiter_email=entry.author.email,
+    )

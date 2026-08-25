@@ -22,6 +22,53 @@ from write.settings import PUBLIC_PATH
 REPO = Repo(PUBLIC_PATH)
 rex = re.compile(r'\W+')
 
+
+def as_text(value):
+    if value is None or value is False:
+        return ''
+    if isinstance(value, bytes):
+        return value.decode('utf-8')
+    return str(value)
+
+
+def git_path(value):
+    if isinstance(value, bytes):
+        return value
+    return as_text(value).encode('utf-8')
+
+
+def staged_page_changed(filename, changes):
+    name = git_path(filename)
+    for key in ('modify', 'add'):
+        for item in changes.get(key, ()):
+            if git_path(item) == name:
+                return True
+    return False
+
+
+def git_identity(name, email):
+    return '%s <%s>' % (as_text(name), as_text(email))
+
+
+def page_commit_message(first, title):
+    return '%s: %s' % ('Publish' if first else 'Update', title)
+
+
+def commit_repo_paths(paths, message, name, email):
+    existing = [path for path in paths if os.path.exists(path)]
+    if existing:
+        add(REPO, existing)
+    changes = get_tree_changes(REPO)
+    if not (changes.get('add') or changes.get('modify') or changes.get('delete')):
+        return None
+    identity = git_identity(name, email)
+    return commit(
+        REPO,
+        message=as_text(message),
+        author=identity,
+        committer=identity,
+    )
+
 """
 A simple data model: Authors, Articles (entries), Comments.
 
@@ -112,22 +159,29 @@ class MtEntry(models.Model):
 
         # If generating the HTML and adding it to the index changes
         # nothing we should not commit.
-        # We expect `get_tree_changes` to return something like:
-        # {'add': [], 'modify': ['the-underwater-screen-or-lessons-from-wordperfect.html'], 'delete': []}
+        # New posts land in `add`, edits in `modify`.
         changes = get_tree_changes(REPO)
-        if filename.encode('utf-8') not in changes['modify']:
+        if not staged_page_changed(filename, changes):
             return
 
         if not message:
-            message = ("Update: %s" % self.tight_pants_title()).encode('utf-8')
+            is_new = any(
+                git_path(item) == git_path(filename)
+                for item in changes.get('add', ())
+            )
+            message = page_commit_message(is_new, self.tight_pants_title())
         if not commiter_name:
-            commiter_name = self.author.username.encode('utf-8')
+            commiter_name = self.author.username
         if not commiter_email:
-            commiter_email = self.author.email.encode('utf-8')
+            commiter_email = self.author.email
 
-        commiter = ("%s <%s>" % (commiter_name, commiter_email)).encode('utf-8')
-
-        commit_id = commit(REPO, message=message, committer=commiter)
+        identity = git_identity(commiter_name, commiter_email)
+        commit_id = commit(
+            REPO,
+            message=as_text(message),
+            author=identity,
+            committer=identity,
+        )
         return commit_id
 
     def __str__(self):

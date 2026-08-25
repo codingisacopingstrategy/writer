@@ -5,12 +5,62 @@ from django.contrib.auth.models import Permission, User
 from django.test import TestCase
 
 from write.auth import can_delete_entry, can_publish
-from write.models import MtEntry
+from write.models import MtEntry, git_identity, page_commit_message, staged_page_changed
 
 
 def grant(user, *codenames):
     for codename in codenames:
         user.user_permissions.add(Permission.objects.get(codename=codename))
+
+
+class StagedPageTests(TestCase):
+    def test_new_html_counts_as_a_change(self):
+        changes = {
+            'add': [b'smartphones-never-die.html'],
+            'modify': [],
+            'delete': [],
+        }
+        self.assertTrue(staged_page_changed('smartphones-never-die.html', changes))
+
+    def test_edited_html_counts_as_a_change(self):
+        changes = {'add': [], 'modify': [b'hello.html'], 'delete': []}
+        self.assertTrue(staged_page_changed('hello.html', changes))
+
+    def test_unchanged_html_does_not(self):
+        changes = {'add': [], 'modify': [], 'delete': []}
+        self.assertFalse(staged_page_changed('hello.html', changes))
+
+    def test_str_paths_from_newer_dulwich_still_match(self):
+        changes = {'add': ['new.html'], 'modify': [], 'delete': []}
+        self.assertTrue(staged_page_changed('new.html', changes))
+
+
+class GitIdentityTests(TestCase):
+    def test_bytes_do_not_leak_repr_into_the_identity(self):
+        self.assertEqual(
+            git_identity(b'bnf', b'eric@ericschrijver.nl'),
+            'bnf <eric@ericschrijver.nl>',
+        )
+
+    def test_text_stays_text(self):
+        self.assertEqual(
+            git_identity('bnf', 'eric@ericschrijver.nl'),
+            'bnf <eric@ericschrijver.nl>',
+        )
+
+
+class PageCommitMessageTests(TestCase):
+    def test_first_publish_says_publish(self):
+        self.assertEqual(
+            page_commit_message(True, 'I like tight pants and draft'),
+            'Publish: I like tight pants and draft',
+        )
+
+    def test_later_save_says_update(self):
+        self.assertEqual(
+            page_commit_message(False, 'I like tight pants and draft'),
+            'Update: I like tight pants and draft',
+        )
 
 
 class PublishRightsTests(TestCase):
@@ -224,13 +274,34 @@ class EntryPublishActionTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.draft.refresh_from_db()
         self.assertTrue(self.draft.published)
-        mock_commit.assert_called_once_with()
+        mock_commit.assert_called_once()
+        self.assertEqual(
+            mock_commit.call_args.kwargs['message'],
+            'Publish: I like tight pants and draft',
+        )
         mock_all.assert_not_called()
 
+    @patch('write.publish.commit_repo_paths', return_value=b'cid')
     @patch('write.publish.regenerate_published_site')
-    @patch('write.models.MtEntry.commit', return_value=b'cid')
-    def test_update_all_regenerates_the_site(self, mock_commit, mock_all):
+    def test_update_all_commits_the_whole_site(self, mock_all, mock_commit_all):
         response = self.post_publish(self.owner, update_all=True)
         self.assertEqual(response.status_code, 200)
         mock_all.assert_called_once_with()
-        mock_commit.assert_called_once_with()
+        mock_commit_all.assert_called_once()
+        self.assertGreater(len(mock_commit_all.call_args[0][0]), 1)
+        self.assertEqual(
+            mock_commit_all.call_args.kwargs['message'],
+            'Publish: I like tight pants and draft',
+        )
+
+    @patch('write.publish.commit_repo_paths', return_value=b'cid')
+    @patch('write.publish.regenerate_published_site')
+    def test_later_update_all_uses_update_message(self, mock_all, mock_commit_all):
+        self.draft.published = True
+        self.draft.save()
+        response = self.post_publish(self.owner, update_all=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            mock_commit_all.call_args.kwargs['message'],
+            'Update: I like tight pants and draft',
+        )
