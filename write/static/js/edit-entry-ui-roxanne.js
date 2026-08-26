@@ -3,7 +3,7 @@ function newCommentElement() {
     const template = document.createElement('template');
     template.innerHTML = `
 <div class="comment">
-    <div class="comment-editor" property="comment_text">
+    <div class="comment-editor" property="mt:comment_text">
         <p>Welcome</p>
     </div>
     <p class="byline" property="mt:comment_email" content="eric@ericschrijver.nl">
@@ -27,11 +27,6 @@ function newCommentElement() {
     const created = el.querySelector('[property="dc:created"]');
     created.setAttribute("content", new Date().toISOString());
     created.textContent = d.toLocaleString();
-
-    const editor = el.querySelector('.comment-editor');
-    if (editor && editor.aloha) {
-        editor.aloha();
-    }
 
     return el;
 }
@@ -69,15 +64,19 @@ document.querySelector(".comments-content").addEventListener("click", function (
         document.querySelector(".comments-content").appendChild(el);
     }
 
-    const editorHTML = el.querySelector(".comment-editor").innerHTML;
-    const c = new Comment(el, editorHTML);
+    const c = new Comment(el);
 
     console.log(c.created_on());
 
     c.update(function (id) {
         el.setAttribute("property", "mt:comment_id");
         el.setAttribute("content", id);
+        el.id = "comment-" + id;
+        comments[el.id] = c;
     });
+
+    const editorEl = el.querySelector(".comment-editor");
+    if (editorEl) editorEl.focus();
 });
 
 document.querySelector(".comments-content").addEventListener("click", function (e) {
@@ -87,7 +86,7 @@ document.querySelector(".comments-content").addEventListener("click", function (
     e.preventDefault();
 
     const parent = deleteLink.closest(".comment");
-    const c = new Comment(parent);
+    const c = comments[parent.id] || new Comment(parent);
 
     const confirmed = confirm("Delete?");
     if (confirmed) {
@@ -174,23 +173,55 @@ if (publishBtn) {
 (function () {
     const toolbar = document.getElementById("squire-toolbar");
     const htmlSource = document.getElementById("squire-html-source");
-    if (!toolbar || !htmlSource) return;
+    if (!toolbar || !htmlSource || typeof ActiveEditor === "undefined") return;
 
-    const editorEl = document.querySelector("article > section");
-    const editor = entry.editor;
+    const htmlBtn = toolbar.querySelector('[data-action="html"]');
     let sourceMode = false;
+    let sourceSession = null;
 
-    // -- Show / hide toolbar on article focus --
-    editorEl.addEventListener("focus", function () {
+    function currentSquire() {
+        return ActiveEditor.squire;
+    }
+
+    function currentRoot() {
+        return ActiveEditor.root;
+    }
+
+    function saveCurrent() {
+        if (typeof ActiveEditor.save === "function") ActiveEditor.save();
+    }
+
+    function showToolbar() {
         toolbar.hidden = false;
         toolbar.classList.add("visible");
-    });
+    }
 
-    editorEl.addEventListener("blur", function () {
+    function hideToolbar() {
         if (sourceMode) return;
         if (typeof window.assetPickerOpen === "function" && window.assetPickerOpen()) return;
         toolbar.classList.remove("visible");
-    });
+    }
+
+    function dockChrome(root) {
+        if (!root || !root.parentNode) return;
+        root.before(toolbar);
+        if (sourceMode) {
+            root.after(htmlSource);
+        } else {
+            toolbar.after(htmlSource);
+        }
+    }
+
+    function applySourceIfOpen() {
+        if (!sourceMode || !sourceSession) return;
+        sourceSession.squire.setHTML(htmlSource.value);
+        sourceSession.save();
+        sourceSession.root.hidden = false;
+        htmlSource.hidden = true;
+        sourceMode = false;
+        sourceSession = null;
+        if (htmlBtn) htmlBtn.classList.remove("active");
+    }
 
     // Format‐tag to Squire method pairs (toggle style)
     const formatActions = {
@@ -202,26 +233,44 @@ if (publishBtn) {
         superscript:    { tag: "SUP", on: "superscript",  off: "removeSuperscript" },
     };
 
-    // -- Update active states from Squire's path --
     function updateActiveStates() {
+        const editor = currentSquire();
+        if (!editor) return;
         for (const [action, fmt] of Object.entries(formatActions)) {
             const btn = toolbar.querySelector(`[data-action="${action}"]`);
             if (btn) {
                 btn.classList.toggle("active", editor.hasFormat(fmt.tag));
             }
         }
-        // Link active state
         const linkBtn = toolbar.querySelector('[data-action="link"]');
         if (linkBtn) {
             linkBtn.classList.toggle("active", editor.hasFormat("A"));
         }
     }
 
-    editor.addEventListener("pathChange", updateActiveStates);
-    editor.addEventListener("select", updateActiveStates);
-    editor.addEventListener("cursor", updateActiveStates);
+    document.addEventListener("squire-activate", function () {
+        if (sourceMode && sourceSession && sourceSession.root !== currentRoot()) {
+            applySourceIfOpen();
+        }
+        dockChrome(currentRoot());
+        showToolbar();
+        updateActiveStates();
+    });
 
-    // -- Button click handler --
+    document.addEventListener("squire-path", updateActiveStates);
+
+    document.addEventListener("focusout", function () {
+        requestAnimationFrame(function () {
+            const next = document.activeElement;
+            if (!next) return hideToolbar();
+            if (toolbar.contains(next) || htmlSource.contains(next)) return;
+            if (next.closest && next.closest(".asset-picker")) return;
+            const root = currentRoot();
+            if (root && root.contains(next)) return;
+            hideToolbar();
+        });
+    });
+
     toolbar.addEventListener("mousedown", function (e) {
         // Prevent toolbar clicks from stealing focus from the editor
         e.preventDefault();
@@ -231,22 +280,32 @@ if (publishBtn) {
         const btn = e.target.closest("button[data-action]");
         if (!btn) return;
         const action = btn.dataset.action;
+        const editor = currentSquire();
+        const editorEl = currentRoot();
+        if (!editor || !editorEl) return;
 
         // HTML source toggle
         if (action === "html") {
             sourceMode = !sourceMode;
             btn.classList.toggle("active", sourceMode);
             if (sourceMode) {
+                sourceSession = {
+                    squire: editor,
+                    root: editorEl,
+                    save: ActiveEditor.save,
+                };
                 htmlSource.value = editor.getHTML();
                 htmlSource.hidden = false;
                 editorEl.hidden = true;
+                editorEl.after(htmlSource);
                 htmlSource.focus();
             } else {
                 editor.setHTML(htmlSource.value);
                 htmlSource.hidden = true;
                 editorEl.hidden = false;
+                sourceSession = null;
                 editorEl.focus();
-                entry.update();
+                saveCurrent();
             }
             return;
         }

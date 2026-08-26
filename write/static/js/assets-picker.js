@@ -1,9 +1,6 @@
 (function () {
     const toolbar = document.getElementById("squire-toolbar");
-    if (!toolbar || typeof entry === "undefined" || !entry.editor) return;
-
-    const editor = entry.editor;
-    const editorEl = document.querySelector("article > section");
+    if (!toolbar || typeof ActiveEditor === "undefined") return;
     let open = false;
     let path = "called";
     let filterTimer = 0;
@@ -42,7 +39,7 @@
     function close() {
         open = false;
         picker.hidden = true;
-        editorEl.focus();
+        if (ActiveEditor.root) ActiveEditor.root.focus();
     }
 
     function showStatus(text) {
@@ -116,11 +113,12 @@
 
     function insert(item) {
         if (!item || item.kind !== "image" || !item.url) return;
+        if (!ActiveEditor.squire) return;
         const attrs = { alt: item.name };
         if (item.width) attrs.width = String(item.width);
         if (item.height) attrs.height = String(item.height);
-        editor.insertImage(item.url, attrs);
-        entry.update();
+        ActiveEditor.squire.insertImage(item.url, attrs);
+        ActiveEditor.save();
         close();
     }
 

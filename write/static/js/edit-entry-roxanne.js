@@ -49,6 +49,57 @@ const SaveStatus = {
     },
 };
 
+const squireByRoot = new WeakMap();
+
+const ActiveEditor = {
+    squire: null,
+    root: null,
+    save() {},
+    activate(squire, root, save) {
+        this.squire = squire;
+        this.root = root;
+        this.save = save || function () {};
+        document.dispatchEvent(new CustomEvent("squire-activate"));
+    },
+};
+
+function attachSquire(root, save) {
+    if (!root) return null;
+    const existing = squireByRoot.get(root);
+    if (existing) return existing;
+
+    const initialHTML = root.innerHTML;
+    let firstCall = true;
+    const squire = new Squire(root, {
+        blockTag: "p",
+        sanitizeToDOMFragment: (html) => {
+            // Squire's constructor calls setHTML("") which would wipe
+            // the server-rendered content. On that first call, return
+            // the original DOM content instead.
+            if (firstCall) {
+                firstCall = false;
+                return sanitize(initialHTML);
+            }
+            return sanitize(html);
+        },
+    });
+    squireByRoot.set(root, squire);
+    root.addEventListener("input", debounce(save, 1000));
+    root.addEventListener("focusin", function () {
+        ActiveEditor.activate(squire, root, save);
+    });
+    squire.addEventListener("pathChange", function () {
+        document.dispatchEvent(new CustomEvent("squire-path"));
+    });
+    squire.addEventListener("select", function () {
+        document.dispatchEvent(new CustomEvent("squire-path"));
+    });
+    squire.addEventListener("cursor", function () {
+        document.dispatchEvent(new CustomEvent("squire-path"));
+    });
+    return squire;
+}
+
 function apiWrite(url, options) {
     SaveStatus.begin();
     return fetch(url, options)
@@ -79,30 +130,9 @@ class Entry {
         this.slug = meta ? meta.getAttribute("content") : '';
 
         const editorEl = document.querySelector("article > section");
-        const initialHTML = editorEl.innerHTML;
-        let firstCall = true;
-
-        //  make it editable
-        this.editor = new Squire(editorEl, {
-            blockTag: 'p',
-            sanitizeToDOMFragment: html => {
-                // Squire's constructor calls setHTML("") which would wipe
-                // the server-rendered content. On that first call, return
-                // the original DOM content instead.
-                if (firstCall) {
-                    firstCall = false;
-                    return sanitize(initialHTML);
-                }
-                return sanitize(html);
-            }
-        });
-
-        // sent edits to the API
-        this.listener = editorEl.addEventListener(
-            'input',
-            debounce(() => this.update(), 1000)
-        );
-
+        const save = () => this.update();
+        this.editor = attachSquire(editorEl, save);
+        ActiveEditor.activate(this.editor, editorEl, save);
     }
 
     excerpt() {
@@ -205,9 +235,7 @@ class Entry {
     }
 
     body() {
-        const articleEditor = editors['main-article'];
-        let txt = articleEditor ? articleEditor.getHTML() : document.querySelector('article').innerHTML;
-        return txt;
+        return this.editor ? this.editor.getHTML() : '';
     }
 
     toHash() {
@@ -265,30 +293,14 @@ class Entry {
 }
 
 // ---- Comment object ----
+const comments = {};
+
 class Comment {
     constructor(el) {
         this.el = el;
-
-        //  make it editable
         const editorEl = el.querySelector(".comment-editor");
-        const initialHTML = editorEl.innerHTML;
-        let firstCall = true;
-        this.editor = new Squire(editorEl, {
-            blockTag: 'p',
-            sanitizeToDOMFragment: html => {
-                if (firstCall) {
-                    firstCall = false;
-                    return sanitize(initialHTML);
-                }
-                return sanitize(html);
-            }
-        });
-
-        // sent edits to the API
-        this.listener = editorEl.addEventListener(
-            'input',
-            debounce(() => this.update(), 1000)
-        );
+        this.editor = attachSquire(editorEl, () => this.update());
+        comments[el.id || ("pending-" + Date.now())] = this;
     }
 
     id() {
@@ -326,7 +338,11 @@ class Comment {
         const parentContainer = this.el.closest('.comments-parent-container');
         if (!parentContainer) return null;
         const prevComment = parentContainer.previousElementSibling;
-        return prevComment ? new Comment(prevComment).id() : null;
+        if (!prevComment || !prevComment.classList.contains("comment")) return null;
+        if (prevComment.getAttribute("property") === "mt:comment_id") {
+            return parseInt(prevComment.getAttribute("content"), 10);
+        }
+        return null;
     }
 
     text() {
@@ -406,9 +422,7 @@ class Comment {
 
 // ---- Initialize editors ----
 let entry = new Entry();
-const editors = {}; // Store Squire editors by element id
 
-const comments = {}
-document.querySelectorAll("div.comment").forEach(el => {
-    comments[el.id] = new Comment(el);
-})
+document.querySelectorAll("div.comment").forEach((el) => {
+    new Comment(el);
+});
