@@ -54,7 +54,6 @@ document.querySelector(".comments-content").addEventListener("click", function (
             console.log("there is no container for children, adding one");
             container = document.createElement("div");
             container.className = "comments-parent-container";
-            container.style.marginLeft = "20px";
             parentComment.after(container);
         }
 
