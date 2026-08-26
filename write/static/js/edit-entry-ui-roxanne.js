@@ -16,7 +16,7 @@ function newCommentElement() {
             <option value="7">baseline</option>
             <option value="8" selected="true">bnf</option>
         </select>- <span property="dc:created" content="">October 12, 2012 10:27 AM</span>
-        <br /> <a title="Reply" href="#reply">Reply</a> <a href="#delete"><b>×</b></a>
+        <br /> <button type="button" title="Reply" href="#reply">Reply</button> <button type="button" href="#delete"><b>×</b></button>
     </p>
 </div>
 `;
@@ -38,7 +38,7 @@ function newCommentElement() {
 
 /* Handle the insertion of nested comment elements */
 document.querySelector(".comments-content").addEventListener("click", function (e) {
-    const replyLink = e.target.closest('a[href="#reply"]');
+    const replyLink = e.target.closest('[href="#reply"]');
     if (!replyLink) return;
 
     e.preventDefault();
@@ -81,7 +81,7 @@ document.querySelector(".comments-content").addEventListener("click", function (
 });
 
 document.querySelector(".comments-content").addEventListener("click", function (e) {
-    const deleteLink = e.target.closest('a[href="#delete"]');
+    const deleteLink = e.target.closest('[href="#delete"]');
     if (!deleteLink) return;
 
     e.preventDefault();

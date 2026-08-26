@@ -9,7 +9,7 @@
 <p class="byline" {% if EDITING %}property="mt:comment_email" content="{{ c.email }}"{% endif %}>
   by {% if c.mt_author and c.mt_author.pk in author_ids and EDITING %}<select>{% for author in authors %}<option value="{{ author.pk }}" {% if author.pk == c.mt_author.pk %} selected="true"{% endif %}>{{ author }}</option>{% endfor %}</select>
      {% else %}<a property="dc:creator" href="{{ c.get_commenter_url }}">{{ c.author }}</a>{% endif %} - <a href="{{ andor }}{{ e.slug }}#comment-{{ c.pk }}"><span property="dc:created" content="{{ c.created_on|date:"c" }}">{{ c.created_on|date:"F j, Y f A" }}</span></a><br />
-  <a title="Reply" href="{% if EDITING %}#reply{% else %}javascript:void(0);{% endif %}" {% if not EDITING %}onclick="mtReplyCommentOnClick({{ c.pk }}, '{{ c.author }}')"{% endif %}>Reply</a>{% if EDITING %} <a href="#delete"><b>×</b></a>{% endif%}
+  <button type="button" title="Reply" href="{% if EDITING %}#reply{% else %}javascript:void(0);{% endif %}" {% if not EDITING %}onclick="mtReplyCommentOnClick({{ c.pk }}, '{{ c.author }}')"{% endif %}>Reply</button>{% if EDITING %} <button type="button" href="#delete"><b>×</b></button>{% endif%}
 </p>
 </div>
   <div class="comments-parent-container" style="margin-left: 20px;">
