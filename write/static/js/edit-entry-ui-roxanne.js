@@ -2,7 +2,7 @@
 function newCommentElement() {
     const template = document.createElement('template');
     template.innerHTML = `
-<div class="comment">
+<div class="comment bnf">
     <div class="comment-editor" property="mt:comment_text">
         <p>Welcome</p>
     </div>
@@ -28,7 +28,26 @@ function newCommentElement() {
     created.setAttribute("content", new Date().toISOString());
     created.textContent = d.toLocaleString();
 
+    syncCommentAuthorClass(el);
+    const authorSelect = el.querySelector("select");
+    if (authorSelect) {
+        authorSelect.addEventListener("change", function () {
+            syncCommentAuthorClass(el);
+        });
+    }
+
     return el;
+}
+
+const commentAuthorNames = ["glit", "jenseits", "habitus", "tellyou", "baseline", "bnf"];
+
+function syncCommentAuthorClass(commentEl) {
+    const sel = commentEl.querySelector("select");
+    commentAuthorNames.forEach(function (name) {
+        commentEl.classList.remove(name);
+    });
+    if (!sel || !sel.selectedOptions.length) return;
+    commentEl.classList.add(sel.selectedOptions[0].textContent.trim());
 }
 
 /* Handle the insertion of nested comment elements */
@@ -160,6 +179,14 @@ bindMetaField(
     'meta[property~="og:image"]'
 );
 bindMetaField(document.getElementById("custom-css-input"), "custom_css");
+
+document.querySelectorAll(".comment select").forEach(function (sel) {
+    const commentEl = sel.closest(".comment");
+    if (!commentEl) return;
+    sel.addEventListener("change", function () {
+        syncCommentAuthorClass(commentEl);
+    });
+});
 
 const publishBtn = document.getElementById("publish-entry");
 if (publishBtn) {
