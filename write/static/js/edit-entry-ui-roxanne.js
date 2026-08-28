@@ -195,6 +195,95 @@ if (publishBtn) {
     });
 }
 
+// Pretty-print live Squire HTML for the source textarea only.
+// First-level blocks stay flush left; nested structure indents 2 spaces.
+function prettyPrintHTML(html) {
+    const VOID = {
+        AREA: 1, BASE: 1, BR: 1, COL: 1, EMBED: 1, HR: 1, IMG: 1,
+        INPUT: 1, LINK: 1, META: 1, PARAM: 1, SOURCE: 1, TRACK: 1, WBR: 1,
+    };
+    const CONTAINER = {
+        ADDRESS: 1, ARTICLE: 1, ASIDE: 1, BLOCKQUOTE: 1, DIV: 1, DL: 1,
+        FIELDSET: 1, FIGURE: 1, FOOTER: 1, FORM: 1, HEADER: 1, MAIN: 1,
+        NAV: 1, OL: 1, SECTION: 1, TABLE: 1, TBODY: 1, TFOOT: 1, THEAD: 1,
+        TR: 1, UL: 1, COLGROUP: 1, SVG: 1, G: 1, DEFS: 1, SYMBOL: 1,
+        CLIPPATH: 1, MASK: 1, PATTERN: 1, FILTER: 1, LINEARGRADIENT: 1,
+        RADIALGRADIENT: 1, MARKER: 1, FOREIGNOBJECT: 1,
+    };
+    const BLOCK = Object.assign({
+        DD: 1, DT: 1, FIGCAPTION: 1, H1: 1, H2: 1, H3: 1, H4: 1, H5: 1,
+        H6: 1, HR: 1, LI: 1, P: 1, PRE: 1, TD: 1, TH: 1,
+    }, CONTAINER);
+
+    function isElement(node) {
+        return node && node.nodeType === 1;
+    }
+
+    function isStructural(el) {
+        return !!(el instanceof SVGElement || BLOCK[el.nodeName]);
+    }
+
+    function shouldBreak(el) {
+        if (el.nodeName === "PRE") return false;
+        if (CONTAINER[el.nodeName] || el instanceof SVGElement) {
+            return el.children.length > 0;
+        }
+        return Array.from(el.children).some(isStructural);
+    }
+
+    function openingTag(el) {
+        const html = el.cloneNode(false).outerHTML;
+        const closer = "</" + el.nodeName.toLowerCase() + ">";
+        if (html.length >= closer.length &&
+            html.slice(-closer.length).toLowerCase() === closer) {
+            return html.slice(0, -closer.length);
+        }
+        return html;
+    }
+
+    function pad(depth) {
+        return depth > 0 ? "  ".repeat(depth) : "";
+    }
+
+    function serializeElement(el, depth, parts) {
+        const indent = pad(depth);
+        const open = openingTag(el);
+        const close = "</" + el.nodeName.toLowerCase() + ">";
+
+        if (VOID[el.nodeName] || (el instanceof SVGElement && !el.hasChildNodes())) {
+            parts.push("\n", indent, VOID[el.nodeName] ? open : el.outerHTML);
+            return;
+        }
+        if (!shouldBreak(el)) {
+            parts.push("\n", indent, open, el.innerHTML, close);
+            return;
+        }
+        parts.push("\n", indent, open);
+        serializeChildren(el, depth + 1, parts);
+        parts.push("\n", indent, close);
+    }
+
+    function serializeChildren(parent, depth, parts) {
+        const indent = pad(depth);
+        for (const child of parent.childNodes) {
+            if (child.nodeType === 3) {
+                const text = child.data.replace(/[ \t\r\n]+/g, " ").trim();
+                if (text) parts.push("\n", indent, text);
+            } else if (child.nodeType === 8) {
+                parts.push("\n", indent, "<!--", child.data, "-->");
+            } else if (isElement(child)) {
+                serializeElement(child, depth, parts);
+            }
+        }
+    }
+
+    const root = document.createElement("div");
+    root.innerHTML = html;
+    const parts = [];
+    serializeChildren(root, 0, parts);
+    return parts.join("").replace(/^\n/, "");
+}
+
 // ---- Squire toolbar ----
 (function () {
     const toolbar = document.getElementById("squire-toolbar");
@@ -373,7 +462,12 @@ if (publishBtn) {
                     root: editorEl,
                     save: ActiveEditor.save,
                 };
-                htmlSource.value = editor.getHTML();
+                try {
+                    htmlSource.value = prettyPrintHTML(editor.getHTML());
+                } catch (err) {
+                    console.error(err);
+                    htmlSource.value = editor.getHTML();
+                }
                 htmlSource.hidden = false;
                 editorEl.hidden = true;
                 editorEl.after(htmlSource);
