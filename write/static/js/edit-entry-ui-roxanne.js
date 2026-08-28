@@ -202,8 +202,11 @@ if (publishBtn) {
     if (!toolbar || !htmlSource || typeof ActiveEditor === "undefined") return;
 
     const htmlBtn = toolbar.querySelector('[data-action="html"]');
+    const linkBtn = toolbar.querySelector('[data-action="link"]');
+    const linkUrl = document.getElementById("squire-link-url");
     let sourceMode = false;
     let sourceSession = null;
+    let linkPromptOpen = false;
 
     function currentSquire() {
         return ActiveEditor.squire;
@@ -225,7 +228,25 @@ if (publishBtn) {
     function hideToolbar() {
         if (sourceMode) return;
         if (typeof window.assetPickerOpen === "function" && window.assetPickerOpen()) return;
+        closeLinkPrompt();
         toolbar.classList.remove("visible");
+    }
+
+    function closeLinkPrompt() {
+        if (!linkUrl) return;
+        linkPromptOpen = false;
+        linkUrl.hidden = true;
+        linkUrl.value = "";
+        if (linkBtn) linkBtn.classList.remove("prompting");
+    }
+
+    function applyLinkPrompt() {
+        const editor = currentSquire();
+        const editorEl = currentRoot();
+        const url = linkUrl ? linkUrl.value.trim() : "";
+        closeLinkPrompt();
+        if (editor && url) editor.makeLink(url);
+        if (editorEl) editorEl.focus();
     }
 
     function dockChrome(root) {
@@ -278,6 +299,7 @@ if (publishBtn) {
         if (sourceMode && sourceSession && sourceSession.root !== currentRoot()) {
             applySourceIfOpen();
         }
+        closeLinkPrompt();
         dockChrome(currentRoot());
         showToolbar();
         updateActiveStates();
@@ -298,7 +320,8 @@ if (publishBtn) {
     });
 
     toolbar.addEventListener("mousedown", function (e) {
-        // Prevent toolbar clicks from stealing focus from the editor
+        // Keep the editor selection unless the user is typing in a field.
+        if (e.target.closest("input, textarea")) return;
         e.preventDefault();
     });
 
@@ -353,12 +376,22 @@ if (publishBtn) {
         // Link
         if (action === "link") {
             if (editor.hasFormat("A")) {
+                closeLinkPrompt();
                 editor.removeLink();
-            } else {
-                const url = prompt("URL:");
-                if (url) editor.makeLink(url);
+                editorEl.focus();
+            } else if (linkPromptOpen) {
+                applyLinkPrompt();
+            } else if (linkUrl) {
+                const selected = (editor.getSelectedText() || "").trim();
+                linkPromptOpen = true;
+                linkUrl.hidden = false;
+                linkUrl.value = /^(https?:\/\/|mailto:|\/)/i.test(selected) ? selected : "";
+                if (linkBtn) linkBtn.classList.add("prompting");
+                requestAnimationFrame(function () {
+                    linkUrl.focus();
+                    linkUrl.select();
+                });
             }
-            editorEl.focus();
             return;
         }
 
@@ -373,4 +406,18 @@ if (publishBtn) {
             editorEl.focus();
         }
     });
+
+    if (linkUrl) {
+        linkUrl.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                applyLinkPrompt();
+            } else if (e.key === "Escape") {
+                e.preventDefault();
+                closeLinkPrompt();
+                const editorEl = currentRoot();
+                if (editorEl) editorEl.focus();
+            }
+        });
+    }
 })();
