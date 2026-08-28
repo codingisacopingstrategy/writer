@@ -68,6 +68,11 @@ article section[contenteditable] a,
     text-decoration: underline;
     text-underline-offset: 2px;
 }
+::highlight(squire-link-pending),
+.squire-link-pending {
+    background-color: Highlight;
+    color: HighlightText;
+}
 .squire-html-source {
     box-sizing: border-box;
     width: 100%;

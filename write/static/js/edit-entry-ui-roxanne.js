@@ -207,6 +207,7 @@ if (publishBtn) {
     let sourceMode = false;
     let sourceSession = null;
     let linkPromptOpen = false;
+    const linkHighlightName = "squire-link-pending";
 
     function currentSquire() {
         return ActiveEditor.squire;
@@ -232,12 +233,41 @@ if (publishBtn) {
         toolbar.classList.remove("visible");
     }
 
+    function clearLinkSelection() {
+        if (window.CSS && CSS.highlights) {
+            CSS.highlights.delete(linkHighlightName);
+        }
+        document.querySelectorAll("." + linkHighlightName).forEach(function (el) {
+            const parent = el.parentNode;
+            if (!parent) return;
+            while (el.firstChild) parent.insertBefore(el.firstChild, el);
+            parent.removeChild(el);
+        });
+    }
+
+    function paintLinkSelection(range) {
+        clearLinkSelection();
+        if (!range || range.collapsed) return;
+        if (window.CSS && CSS.highlights && typeof Highlight === "function") {
+            CSS.highlights.set(linkHighlightName, new Highlight(range.cloneRange()));
+            return;
+        }
+        try {
+            const mark = document.createElement("span");
+            mark.className = linkHighlightName;
+            range.surroundContents(mark);
+        } catch (err) {
+            // Range splits a non-text node; leave it unpainted.
+        }
+    }
+
     function closeLinkPrompt() {
         if (!linkUrl) return;
         linkPromptOpen = false;
         linkUrl.hidden = true;
         linkUrl.value = "";
         if (linkBtn) linkBtn.classList.remove("prompting");
+        clearLinkSelection();
     }
 
     function applyLinkPrompt() {
@@ -383,6 +413,7 @@ if (publishBtn) {
                 applyLinkPrompt();
             } else if (linkUrl) {
                 const selected = (editor.getSelectedText() || "").trim();
+                paintLinkSelection(editor.getSelection());
                 linkPromptOpen = true;
                 linkUrl.hidden = false;
                 linkUrl.value = /^(https?:\/\/|mailto:|\/)/i.test(selected) ? selected : "";
