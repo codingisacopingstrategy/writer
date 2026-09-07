@@ -6,6 +6,100 @@ function sanitize(html) {
     return frag;
 }
 
+function createdOnRoot(el) {
+    if (!el) return null;
+    if (el.classList && el.classList.contains("created-on")) return el;
+    return el.closest ? el.closest(".created-on") : el;
+}
+
+function pad2(n) {
+    return String(n).padStart(2, "0");
+}
+
+function fillSelectRange(select, max, selected) {
+    if (!select || select.options.length) return;
+    const value = pad2(selected || 0);
+    for (let i = 0; i < max; i++) {
+        const option = document.createElement("option");
+        option.value = pad2(i);
+        option.textContent = pad2(i);
+        if (option.value === value) option.selected = true;
+        select.appendChild(option);
+    }
+}
+
+function ensureTimeSelects(root) {
+    if (!root || root.querySelector(".created-on-hour")) return;
+    const given = (root.getAttribute("data-time") || "00:00").split(":");
+    const hour = document.createElement("select");
+    hour.className = "created-on-hour";
+    hour.setAttribute("aria-label", "Hour");
+    fillSelectRange(hour, 24, given[0]);
+    const colon = document.createElement("span");
+    colon.className = "created-on-colon";
+    colon.setAttribute("aria-hidden", "true");
+    colon.textContent = ":";
+    const minute = document.createElement("select");
+    minute.className = "created-on-minute";
+    minute.setAttribute("aria-label", "Minute");
+    fillSelectRange(minute, 60, given[1]);
+    root.appendChild(hour);
+    root.appendChild(colon);
+    root.appendChild(minute);
+}
+
+function createdOnValue(el) {
+    const root = createdOnRoot(el) || el;
+    if (!root) return "";
+    const date = root.querySelector && root.querySelector('input[type="date"]');
+    const hour = root.querySelector && root.querySelector(".created-on-hour");
+    const minute = root.querySelector && root.querySelector(".created-on-minute");
+    if (date && date.value) {
+        const h = (hour && hour.value) || "00";
+        const m = (minute && minute.value) || "00";
+        return date.value + "T" + h + ":" + m + ":00";
+    }
+    return root.getAttribute("content") || "";
+}
+
+function bindCreatedOnInput(el, save) {
+    const root = createdOnRoot(el) || el;
+    if (!root || root.dataset.createdBound) return;
+    ensureTimeSelects(root);
+    root.dataset.createdBound = "1";
+    function commit() {
+        const iso = createdOnValue(root);
+        if (!iso) return;
+        root.setAttribute("content", iso);
+        save(iso);
+    }
+    root.querySelectorAll("input[type='date'], select").forEach(function (field) {
+        field.addEventListener("change", commit);
+    });
+}
+
+function fillCreatedOnInput(el, date) {
+    const root = createdOnRoot(el);
+    if (!root) return;
+    const ymd =
+        date.getFullYear() +
+        "-" +
+        pad2(date.getMonth() + 1) +
+        "-" +
+        pad2(date.getDate());
+    const h = pad2(date.getHours());
+    const m = pad2(date.getMinutes());
+    root.setAttribute("data-time", h + ":" + m);
+    ensureTimeSelects(root);
+    const dateInput = root.querySelector('input[type="date"]');
+    const hour = root.querySelector(".created-on-hour");
+    const minute = root.querySelector(".created-on-minute");
+    if (dateInput) dateInput.value = ymd;
+    if (hour) hour.value = h;
+    if (minute) minute.value = m;
+    root.setAttribute("content", ymd + "T" + h + ":" + m + ":00");
+}
+
 function debounce(fn, delay) {
     let timer;
     function debounced(...args) {
@@ -188,6 +282,10 @@ class Entry {
             save,
             this.editor && this.editor.cancelEdits
         );
+        bindCreatedOnInput(
+            document.querySelector("h2 [property='dc:created']"),
+            (iso) => this.patchFields({ created_on: iso })
+        );
     }
 
     excerpt() {
@@ -280,8 +378,7 @@ class Entry {
     }
 
     created_on() {
-        const e = document.querySelector('[property="dc:created"]');
-        return e ? e.getAttribute("content") : '';
+        return createdOnValue(document.querySelector("h2 [property='dc:created']"));
     }
 
     modified_on() {
@@ -357,6 +454,10 @@ class Comment {
         const editorEl = el.querySelector(".comment-editor");
         this.editor = attachSquire(editorEl, () => this.update());
         comments[el.id || ("pending-" + Date.now())] = this;
+        bindCreatedOnInput(
+            el.querySelector('[property="dc:created"]'),
+            () => this.update()
+        );
     }
 
     id() {
@@ -379,8 +480,7 @@ class Comment {
     }
 
     created_on() {
-        const e = this.el.querySelector('[property="dc:created"]');
-        return e ? e.getAttribute('content') : '';
+        return createdOnValue(this.el.querySelector('[property="dc:created"]'));
     }
 
     email() {

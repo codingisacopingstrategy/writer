@@ -26,7 +26,7 @@
 
 {% block content %}
     <h2>
-        <span property="dc:created" content="{{ e.created_on|date:"c" }}">{{ e.created_on|date:"F j, Y" }}</span>
+        {% if EDITING %}<span class="created-on" property="dc:created" content="{{ e.created_on|date:"c" }}" data-time="{{ e.created_on|date:"H:i" }}"><input type="date" value="{{ e.created_on|date:"Y-m-d" }}"></span>{% else %}<span property="dc:created" content="{{ e.created_on|date:"c" }}">{{ e.created_on|date:"F j, Y" }}</span>{% endif %}
         <span property="mt:entry_title"{% if EDITING %} contenteditable="true" {% endif %}>{{ e.title }}</span>
     </h2>
     {% if EDITING %}

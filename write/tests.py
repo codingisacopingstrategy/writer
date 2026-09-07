@@ -3,9 +3,10 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import Permission, User
 from django.test import TestCase
+from django.utils import timezone
 
 from write.auth import can_delete_entry, can_publish
-from write.models import MtEntry, git_identity, page_commit_message, staged_page_changed
+from write.models import MtComment, MtEntry, git_identity, page_commit_message, staged_page_changed
 
 
 def grant(user, *codenames):
@@ -240,6 +241,41 @@ class EntryApiAuthTests(TestCase):
         response = self.client.get('/is/%s' % entry.slug)
         self.assertContains(response, 'id="entry-custom-css"', html=False)
         self.assertContains(response, 'article .as-page { color: #0058ed; }')
+
+    def test_can_change_entry_created_on(self):
+        response = self.api(
+            'patch',
+            '/api/entry/%s/' % self.draft.pk,
+            user=self.owner,
+            payload={'created_on': '2012-10-12T22:00:00'},
+        )
+        self.assertEqual(response.status_code, 202)
+        self.draft.refresh_from_db()
+        self.assertEqual(
+            timezone.localtime(self.draft.created_on).strftime('%Y-%m-%dT%H:%M:%S'),
+            '2012-10-12T22:00:00',
+        )
+
+    def test_can_change_comment_created_on(self):
+        comment = MtComment.objects.create(
+            entry=self.draft,
+            author='bnf',
+            mt_author=self.owner,
+            text='<p>hi</p>',
+            visible=True,
+        )
+        response = self.api(
+            'patch',
+            '/api/comment/%s/' % comment.pk,
+            user=self.owner,
+            payload={'created_on': '2014-02-01T21:20:20'},
+        )
+        self.assertEqual(response.status_code, 202)
+        comment.refresh_from_db()
+        self.assertEqual(
+            timezone.localtime(comment.created_on).strftime('%Y-%m-%dT%H:%M:%S'),
+            '2014-02-01T21:20:20',
+        )
 
     def test_entry_head_omits_empty_custom_css(self):
         entry = MtEntry.objects.create(

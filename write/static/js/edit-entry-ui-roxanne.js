@@ -15,7 +15,7 @@ function newCommentElement() {
             <option value="6">tellyou</option>
             <option value="7">baseline</option>
             <option value="8" selected="true">bnf</option>
-        </select>- <span property="dc:created" content="">October 12, 2012 10:27 AM</span>
+        </select>- <span class="created-on" property="dc:created" content="" data-time=""><input type="date"></span>
         <br /> <button type="button" title="Reply" href="#reply">Reply</button> <button type="button" href="#delete"><b>×</b></button>
     </p>
 </div>
@@ -23,10 +23,7 @@ function newCommentElement() {
 
     const el = template.content.firstElementChild;
 
-    const d = new Date();
-    const created = el.querySelector('[property="dc:created"]');
-    created.setAttribute("content", new Date().toISOString());
-    created.textContent = d.toLocaleString();
+    fillCreatedOnInput(el.querySelector('[property="dc:created"]'), new Date());
 
     syncCommentAuthorClass(el);
     const authorSelect = el.querySelector("select");
