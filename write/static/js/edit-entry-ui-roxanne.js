@@ -315,9 +315,9 @@ function prettyPrintHTML(html) {
         toolbar.classList.add("visible");
     }
 
-    function hideToolbar() {
-        if (sourceMode) return;
-        if (typeof window.assetPickerOpen === "function" && window.assetPickerOpen()) return;
+    function hideToolbar(force) {
+        if (!force && sourceMode) return;
+        if (!force && typeof window.assetPickerOpen === "function" && window.assetPickerOpen()) return;
         closeLinkPrompt();
         toolbar.classList.remove("visible");
     }
@@ -389,6 +389,16 @@ function prettyPrintHTML(html) {
         if (htmlBtn) htmlBtn.classList.remove("active");
     }
 
+    function discardSourceIfOpen() {
+        if (!sourceMode) return;
+        if (sourceSession) sourceSession.root.hidden = false;
+        htmlSource.hidden = true;
+        htmlSource.value = "";
+        sourceMode = false;
+        sourceSession = null;
+        if (htmlBtn) htmlBtn.classList.remove("active");
+    }
+
     // Format‐tag to Squire method pairs (toggle style)
     const formatActions = {
         bold:           { tag: "B",   on: "bold",         off: "removeBold" },
@@ -413,6 +423,11 @@ function prettyPrintHTML(html) {
             linkBtn.classList.toggle("active", editor.hasFormat("A"));
         }
     }
+
+    document.addEventListener("squire-cancel", function () {
+        discardSourceIfOpen();
+        hideToolbar(true);
+    });
 
     document.addEventListener("squire-activate", function () {
         if (sourceMode && sourceSession && sourceSession.root !== currentRoot()) {

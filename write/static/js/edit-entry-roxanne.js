@@ -8,10 +8,15 @@ function sanitize(html) {
 
 function debounce(fn, delay) {
     let timer;
-    return (...args) => {
+    function debounced(...args) {
         clearTimeout(timer);
         timer = setTimeout(() => fn(...args), delay);
+    }
+    debounced.cancel = function () {
+        clearTimeout(timer);
+        timer = 0;
     };
+    return debounced;
 }
 
 const SaveStatus = {
@@ -55,13 +60,31 @@ const ActiveEditor = {
     squire: null,
     root: null,
     save() {},
-    activate(squire, root, save) {
+    cancel() {},
+    activate(squire, root, save, cancel) {
         this.squire = squire;
         this.root = root;
         this.save = save || function () {};
+        this.cancel = cancel || function () {};
         document.dispatchEvent(new CustomEvent("squire-activate"));
     },
 };
+
+function isSquireSurface(el) {
+    if (!el) return false;
+    if (ActiveEditor.root && (el === ActiveEditor.root || ActiveEditor.root.contains(el))) {
+        return true;
+    }
+    return !!(el.closest && el.closest("#squire-toolbar, #squire-html-source"));
+}
+
+document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    if (e.defaultPrevented) return;
+    if (!isSquireSurface(e.target)) return;
+    e.preventDefault();
+    ActiveEditor.cancel();
+});
 
 function attachSquire(root, save) {
     if (!root) return null;
@@ -84,9 +107,36 @@ function attachSquire(root, save) {
         },
     });
     squireByRoot.set(root, squire);
-    root.addEventListener("input", debounce(save, 1000));
+
+    let savedHTML = squire.getHTML();
+    let restoring = false;
+    const scheduledSave = debounce(save, 1000);
+
+    function rememberSaved() {
+        savedHTML = squire.getHTML();
+    }
+
+    function cancel() {
+        restoring = true;
+        scheduledSave.cancel();
+        document.dispatchEvent(new CustomEvent("squire-cancel"));
+        squire.setHTML(savedHTML);
+        scheduledSave.cancel();
+        restoring = false;
+        const active = document.activeElement;
+        if (active && typeof active.blur === "function") active.blur();
+        else root.blur();
+    }
+
+    squire.rememberSaved = rememberSaved;
+    squire.cancelEdits = cancel;
+
+    root.addEventListener("input", function () {
+        if (restoring) return;
+        scheduledSave();
+    });
     root.addEventListener("focusin", function () {
-        ActiveEditor.activate(squire, root, save);
+        ActiveEditor.activate(squire, root, save, cancel);
     });
     squire.addEventListener("pathChange", function () {
         document.dispatchEvent(new CustomEvent("squire-path"));
@@ -132,7 +182,12 @@ class Entry {
         const editorEl = document.querySelector("article > section");
         const save = () => this.update();
         this.editor = attachSquire(editorEl, save);
-        ActiveEditor.activate(this.editor, editorEl, save);
+        ActiveEditor.activate(
+            this.editor,
+            editorEl,
+            save,
+            this.editor && this.editor.cancelEdits
+        );
     }
 
     excerpt() {
@@ -281,6 +336,7 @@ class Entry {
         .then(data => {
             console.log(entryId ? 'Updated entry' : 'Created entry', data);
             this.rememberMeta();
+            if (this.editor && this.editor.rememberSaved) this.editor.rememberSaved();
             if (!entryId) location.reload(true);
             return data;
         })
@@ -370,27 +426,32 @@ class Comment {
         const id = this.id();
         const postData = this.toHash();
         if (id) {
-            apiWrite(this.resource_uri(), {
+            return apiWrite(this.resource_uri(), {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(postData)
             })
-            .then(data => console.log('Updated comment', data))
-            .catch(err => console.error(err));
-        } else {
-            apiWrite(this.resource_uri(), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(postData)
-            })
             .then(data => {
-                const id = data.id;
-                console.log("Succesfully created Comment " + id);
-                console.log(location);
-                if (createdCallback) createdCallback(id);
+                console.log('Updated comment', data);
+                if (this.editor && this.editor.rememberSaved) this.editor.rememberSaved();
+                return data;
             })
             .catch(err => console.error(err));
         }
+        return apiWrite(this.resource_uri(), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(postData)
+        })
+        .then(data => {
+            const id = data.id;
+            console.log("Succesfully created Comment " + id);
+            console.log(location);
+            if (this.editor && this.editor.rememberSaved) this.editor.rememberSaved();
+            if (createdCallback) createdCallback(id);
+            return data;
+        })
+        .catch(err => console.error(err));
     }
 
     delete() {
