@@ -288,6 +288,24 @@ class EntryApiAuthTests(TestCase):
         response = self.client.get('/is/%s' % entry.slug)
         self.assertNotContains(response, 'id="entry-custom-css"')
 
+    def test_read_reply_wires_parent_and_comment_form(self):
+        comment = MtComment.objects.create(
+            entry=self.live,
+            author="O'Brien",
+            text='<p>hi</p>',
+            visible=True,
+        )
+        response = self.client.get('/is/%s' % self.live.slug)
+        self.assertContains(response, '/and/scripts/being/script.js')
+        self.assertContains(response, 'id="id_parent"', html=False)
+        self.assertContains(response, 'id="id_text"', html=False)
+        self.assertContains(response, 'id="reply"', html=False)
+        self.assertContains(
+            response,
+            "mtReplyCommentOnClick(%s, '%s')" % (comment.pk, "O\\u0027Brien"),
+            html=False,
+        )
+
 
 class EntryPublishActionTests(TestCase):
     def setUp(self):

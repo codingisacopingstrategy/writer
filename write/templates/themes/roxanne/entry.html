@@ -75,7 +75,7 @@
           {% if e_comments %}
             {% include "themes/roxanne/comment.html" %}
           {% endif %}
-            <button type="button" title="Reply" href="#reply">Reply</button>
+            {% if EDITING %}<button type="button" title="Reply" href="#reply">Reply</button>{% else %}<a title="Reply" href="#reply" onclick="mtReplyCommentOnClick('', '')">Reply</a>{% endif %}
         </div>
     </div><!-- / comments -->
 {% endblock %}

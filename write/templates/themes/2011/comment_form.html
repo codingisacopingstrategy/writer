@@ -2,7 +2,7 @@
             <h4 class="comments-open-header">Leave a comment</h4>
             <div class="comments-open-content">
                 <div id="comment-greeting"></div>
-                <form method="post" action="{%  url 'comments' %}">
+                <form method="post" action="{%  url 'comments' %}" id="reply">
                     {{ form.non_field_errors }}
                     {{ form.parent }}
                     {{ form.entry }}
