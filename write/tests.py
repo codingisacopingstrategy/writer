@@ -316,6 +316,8 @@ class EntryApiAuthTests(TestCase):
         self.assertContains(response, '/and/logged/in/roxanne/js/edit-entry-roxanne.js')
         self.assertNotContains(response, '/and/js/edit-entry-roxanne.js')
         self.assertNotContains(response, '/and/squire/squire-raw.js')
+        self.assertNotContains(response, 'id="comments-open"', html=False)
+        self.assertContains(response, 'mt:entry_author_id', html=False)
 
     def test_old_editor_loads_logged_in_statics(self):
         old = MtEntry.objects.create(

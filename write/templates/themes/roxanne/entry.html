@@ -81,7 +81,9 @@
 {% endblock %}
 
 {% block postnav %}
+    {% if not EDITING %}
     {% include "themes/roxanne/comment_form.html" %}
+    {% endif %}
     {% if EDITING %}<select property="mt:entry_author_id">
     {% for author in authors %}
     <option value="{{ author.pk }}"{% if author.pk == e.author.pk %} selected="true"{% endif %}>{{ author }}</option>
