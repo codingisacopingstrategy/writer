@@ -337,8 +337,10 @@ class EntryApiAuthTests(TestCase):
     def test_read_comment_form_loads_squire(self):
         response = self.client.get('/is/%s' % self.live.slug)
         self.assertContains(response, '/and/logged/in/roxanne/squire/squire-raw.js')
+        self.assertContains(response, '/and/logged/in/roxanne/js/squire-toolbar.js')
         self.assertContains(response, '/and/scripts/being/comment-squire.js')
         self.assertContains(response, 'id="comment-squire"', html=False)
+        self.assertContains(response, 'data-action="html"', html=False)
 
 
 class CommentSanitizeTests(TestCase):
