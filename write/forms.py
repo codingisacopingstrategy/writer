@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import re
+
 from django.forms import ModelForm, CharField, ValidationError, EmailInput, URLInput, TextInput, Textarea, HiddenInput
 from write.models import MtComment
+from write.sanitize import sanitize_comment_html
 
 
 class CommentForm(ModelForm):
@@ -43,6 +46,12 @@ class CommentForm(ModelForm):
             raise ValidationError(
                 "This field is required.")
         return email_passed
+
+    def clean_text(self):
+        html = sanitize_comment_html(self.cleaned_data.get("text") or "")
+        if not re.sub(r"<[^>]+>", "", html).strip():
+            raise ValidationError("This field is required.")
+        return html
 
     def clean_captcha_code(self):
         """

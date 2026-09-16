@@ -7,7 +7,9 @@ from django.test import TestCase
 from django.utils import timezone
 
 from write.auth import can_delete_entry, can_publish
+from write.forms import CommentForm
 from write.models import MtComment, MtEntry, git_identity, page_commit_message, staged_page_changed
+from write.sanitize import sanitize_comment_html
 
 
 def grant(user, *codenames):
@@ -331,6 +333,65 @@ class EntryApiAuthTests(TestCase):
         self.assertContains(response, '/and/logged/in/2011/js/edit-entry.js')
         self.assertNotContains(response, '{{ STATIC_URL }}aloha/lib/aloha.js')
         self.assertNotContains(response, 'src="/and/aloha/lib/aloha.js"')
+
+    def test_read_comment_form_loads_squire(self):
+        response = self.client.get('/is/%s' % self.live.slug)
+        self.assertContains(response, '/and/logged/in/roxanne/squire/squire-raw.js')
+        self.assertContains(response, '/and/scripts/being/comment-squire.js')
+        self.assertContains(response, 'id="comment-squire"', html=False)
+
+
+class CommentSanitizeTests(TestCase):
+    def test_keeps_the_tags_the_form_advertises(self):
+        html = (
+            '<p>Hello <strong>there</strong> <em>world</em> '
+            '<a href="https://example.com" title="ex">link</a></p>'
+            '<ul><li>one</li></ul><blockquote>q</blockquote>'
+        )
+        self.assertEqual(sanitize_comment_html(html), html)
+
+    def test_strips_script_and_event_handlers(self):
+        html = (
+            '<p onclick="alert(1)">hi<script>alert(2)</script></p>'
+            '<a href="javascript:alert(3)">x</a>'
+        )
+        self.assertEqual(sanitize_comment_html(html), '<p>hi</p><a>x</a>')
+
+    def test_form_stores_cleaned_html(self):
+        entry = MtEntry.objects.create(
+            author=User.objects.create_user('eric', 'eric@example.com', 'x'),
+            title='Live',
+            slug='live-comment',
+            body='<p>hi</p>',
+            published=True,
+        )
+        form = CommentForm({
+            'author': 'Ada',
+            'email': 'ada@example.com',
+            'text': '<p>ok<script>bad()</script></p>',
+            'entry': entry.pk,
+            'captcha_code': 'brussels',
+        })
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data['text'], '<p>ok</p>')
+
+    def test_form_rejects_empty_html_after_stripping(self):
+        entry = MtEntry.objects.create(
+            author=User.objects.create_user('eric', 'eric@example.com', 'x'),
+            title='Live',
+            slug='live-empty',
+            body='<p>hi</p>',
+            published=True,
+        )
+        form = CommentForm({
+            'author': 'Ada',
+            'email': 'ada@example.com',
+            'text': '<script>alert(1)</script>',
+            'entry': entry.pk,
+            'captcha_code': 'brussels',
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn('text', form.errors)
 
 
 class EntryPublishActionTests(TestCase):
