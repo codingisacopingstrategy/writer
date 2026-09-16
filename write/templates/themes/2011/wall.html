@@ -1,7 +1,7 @@
 {% extends "themes/2011/base.html" %}
 {% block head %}
-<link rel="stylesheet" type="text/css" href="/and/js/lib/fullcalendar/fullcalendar.css" />
-<script type="text/javascript" src="/and/js/lib/fullcalendar/fullcalendar.js"></script>
+<link rel="stylesheet" type="text/css" href="/and/logged/in/2011/js/lib/fullcalendar/fullcalendar.css" />
+<script type="text/javascript" src="/and/logged/in/2011/js/lib/fullcalendar/fullcalendar.js"></script>
 {% endblock %}
 
 {% block extrajs %}
@@ -10,7 +10,7 @@
     var events = {{ entries_json|safe }};
 //]]>
 </script>
-<script type="text/javascript" src="/and/js/calendar-view.js"></script>
+<script type="text/javascript" src="/and/logged/in/2011/js/calendar-view.js"></script>
 {% endblock %}
 
 {% block content %}

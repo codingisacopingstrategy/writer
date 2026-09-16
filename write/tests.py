@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from unittest.mock import patch
 
 from django.contrib.auth.models import Permission, User
@@ -305,6 +306,31 @@ class EntryApiAuthTests(TestCase):
             "mtReplyCommentOnClick(%s, '%s')" % (comment.pk, "O\\u0027Brien"),
             html=False,
         )
+
+    def test_roxanne_editor_loads_logged_in_statics(self):
+        self.client.force_login(self.owner)
+        response = self.client.get('/or/%s' % self.live.slug)
+        self.assertContains(response, '/and/logged/in/roxanne/squire/squire-raw.js')
+        self.assertContains(response, '/and/logged/in/roxanne/js/edit-entry-roxanne.js')
+        self.assertNotContains(response, '/and/js/edit-entry-roxanne.js')
+        self.assertNotContains(response, '/and/squire/squire-raw.js')
+
+    def test_old_editor_loads_logged_in_statics(self):
+        old = MtEntry.objects.create(
+            author=self.owner,
+            title='Old',
+            slug='old-style',
+            body='<p>hi</p>',
+            published=True,
+        )
+        old.created_on = timezone.make_aware(datetime(2012, 10, 12, 22, 0, 0))
+        old.save(update_fields=['created_on'])
+        self.client.force_login(self.owner)
+        response = self.client.get('/or/%s' % old.slug)
+        self.assertContains(response, '/and/logged/in/2011/aloha/lib/aloha.js')
+        self.assertContains(response, '/and/logged/in/2011/js/edit-entry.js')
+        self.assertNotContains(response, '{{ STATIC_URL }}aloha/lib/aloha.js')
+        self.assertNotContains(response, 'src="/and/aloha/lib/aloha.js"')
 
 
 class EntryPublishActionTests(TestCase):
