@@ -211,7 +211,7 @@ class MtComment(models.Model):
 
     def get_commenter_url(self):
         if self.mt_author:
-            return "http://i.liketightpants.net/authors#%s" % self.author
+            return "http://i.liketightpants.net/and/stories/by/%s" % self.author
         if self.url:
             return self.url
         return ""
