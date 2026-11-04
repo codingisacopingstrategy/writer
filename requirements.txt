@@ -4,3 +4,4 @@ django-tastypie==0.14.7
 fabric==3.2.3
 playwright==1.58.0
 paramiko==5.0.0
+Pillow==12.2.0
