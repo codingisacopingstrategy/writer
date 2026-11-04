@@ -9,6 +9,8 @@ PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 DEBUG = True
 
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
@@ -164,3 +166,7 @@ try:
     from .local_settings import *
 except ImportError:
     pass
+
+# Publishing renders pages through Django’s test client
+# Allow this client regardless of local settings
+ALLOWED_HOSTS = [*ALLOWED_HOSTS, 'testserver']
