@@ -37,7 +37,7 @@ def write_entry_html(entry, client=None):
 def write_site_indexes(client=None):
     client = _client(client)
     writes = [
-        ("/is/index.php", os.path.join(OUTPUT_DIR, "index.php")),
+        ("/is/latest.txt", os.path.join(OUTPUT_DIR, "latest.txt")),
         ("/is/archives", os.path.join(OUTPUT_DIR, "archives.html")),
         (
             "/is/feed/us/recent_entries.xml",
@@ -73,7 +73,7 @@ def generated_output_paths():
     ]
     paths.extend(
         [
-            os.path.join(OUTPUT_DIR, "index.php"),
+            os.path.join(OUTPUT_DIR, "latest.txt"),
             os.path.join(OUTPUT_DIR, "archives.html"),
             os.path.join(OUTPUT_DIR, "feed", "us", "recent_entries.xml"),
         ]

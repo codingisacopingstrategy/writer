@@ -96,7 +96,7 @@ def commit(c, message):
         # Add all posts’ html
         conn.run('ls *.html | grep -v googled | xargs git add')  # skip the Google Webmaster verification file google*.html
         # and other post related
-        conn.run('git add feed/us/recent_entries.xml index.php assets')
+        conn.run('git add feed/us/recent_entries.xml latest.txt assets')
         conn.run('git commit -m %s' % quote(message))
 
 

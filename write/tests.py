@@ -1,4 +1,6 @@
 import json
+import os
+import tempfile
 from datetime import datetime
 from unittest.mock import patch
 
@@ -9,6 +11,7 @@ from django.utils import timezone
 from write.auth import can_delete_entry, can_publish
 from write.forms import CommentForm
 from write.models import MtComment, MtEntry, git_identity, page_commit_message, staged_page_changed
+from write.publish import AUTHOR_SLUGS, generated_output_paths, write_site_indexes
 from write.sanitize import sanitize_comment_html
 
 
@@ -474,3 +477,47 @@ class EntryPublishActionTests(TestCase):
             mock_commit_all.call_args.kwargs['message'],
             'Update: I like tight pants and draft',
         )
+
+
+class LatestEntryTests(TestCase):
+    def setUp(self):
+        self.author = User.objects.create_user('glit')
+        self.make_entry('older', True, datetime(2026, 4, 1))
+        self.make_entry('newer', True, datetime(2026, 6, 1))
+        self.make_entry('newest-draft', False, datetime(2026, 7, 1))
+
+    def make_entry(self, slug, published, created_on):
+        entry = MtEntry.objects.create(
+            author=self.author,
+            title=slug,
+            slug=slug,
+            body='<p>hi</p>',
+            published=published,
+        )
+        # created_on is auto_now_add, so it can only be set after creating
+        MtEntry.objects.filter(pk=entry.pk).update(created_on=timezone.make_aware(created_on))
+
+    def test_and_redirects_to_the_latest_published_entry(self):
+        response = self.client.get('/and/')
+        self.assertRedirects(response, '/and/newer', fetch_redirect_response=False)
+
+    def test_latest_txt_is_the_slug_and_a_newline(self):
+        response = self.client.get('/is/latest.txt')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'newer\n')
+        self.assertEqual(response['Content-Type'], 'text/plain; charset=utf-8')
+
+    def test_publish_writes_latest_txt_and_not_index_php(self):
+        for username in AUTHOR_SLUGS:
+            User.objects.get_or_create(username=username)
+        with tempfile.TemporaryDirectory() as output, patch('write.publish.OUTPUT_DIR', output):
+            write_site_indexes()
+            with open(os.path.join(output, 'latest.txt'), 'rb') as handle:
+                self.assertEqual(handle.read(), b'newer\n')
+            self.assertFalse(os.path.exists(os.path.join(output, 'index.php')))
+
+    def test_update_all_commits_latest_txt_and_not_index_php(self):
+        with patch('write.publish.OUTPUT_DIR', '/output'):
+            paths = generated_output_paths()
+        self.assertIn('/output/latest.txt', paths)
+        self.assertNotIn('/output/index.php', paths)

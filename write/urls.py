@@ -41,7 +41,7 @@ urlpatterns = [
     # /is/ -> These files are the live views from which Django will generate the static files
     #          Some of these (i.e. the post views) have a corresponding edit page,
     #          but others, like the RSS feed, are read only
-    path('is/index.php', write.views.index_php, name='index-php'),
+    path('is/latest.txt', write.views.latest_txt, name='latest-txt'),
     path('is/', write.views.latest_entry_read, name='latest-entry-read'),
     path('is/about', write.views.about, name='about'),
     path('is/feed/us/recent_entries.xml', write.views.feed, name='feed'),
@@ -61,5 +61,6 @@ urlpatterns = [
     path('api/', include(comment_resource.urls)),
 
     # This serves up the generated static files. In production the webserver should take care of it
+    path('and/', write.views.serve_html),
     path('and/<path:file_name>', write.views.serve_html)
 ]

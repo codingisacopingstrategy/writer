@@ -220,15 +220,13 @@ def about(request):
     return render(request, "themes/roxanne/about.html", {})
 
 
-def index_php(request):
+def latest_txt(request):
     """
-    Generate a simple PHP file that will redirect to the latest post.
-    Won’t work through Python, but the publish step saves this as a file, which will work on the simple PHP + statics
-    host where the final set of HTML files will be hosted
+    The slug of the latest post, followed by a newline.
+    The publish step saves this as a file, and nginx uses it to rewrite /and/ to the latest post
     """
     e = MtEntry.objects.filter(published=True).first()
-    return HttpResponse("""<?php header('Location: %s'); ?>""" % e.get_absolute_url(),
-                        content_type="text/plain; charset=utf-8")
+    return HttpResponse("%s\n" % e.slug, content_type="text/plain; charset=utf-8")
 
 
 def feed(request):
@@ -261,7 +259,7 @@ def links(request):
                         mimetype="application/json; charset=utf-8")
 
 
-def serve_html(request, file_name):
+def serve_html(request, file_name=''):
     """
     Using Django’s static file serving view in Development,
     with tweaks to reproduce our server setup.
