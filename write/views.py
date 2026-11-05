@@ -252,11 +252,11 @@ def links(request):
         entry_links.append({
             "link": entry.get_absolute_url(),
             "id": entry.get_absolute_url(),
-            "name": "I like tight pants and " + entry.entry_title.lower(),
+            "name": entry.tight_pants_title(),
             "type": "website"
         })
     return HttpResponse(json.dumps(entry_links, indent=2, ensure_ascii=False),
-                        mimetype="application/json; charset=utf-8")
+                        content_type="application/json; charset=utf-8")
 
 
 def serve_html(request, file_name=''):

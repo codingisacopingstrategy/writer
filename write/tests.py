@@ -521,3 +521,25 @@ class LatestEntryTests(TestCase):
             paths = generated_output_paths()
         self.assertIn('/output/latest.txt', paths)
         self.assertNotIn('/output/index.php', paths)
+
+
+class LinksJsonTests(TestCase):
+    def test_lists_only_published_entries(self):
+        author = User.objects.create_user('glit')
+        for slug, published in (('live-post', True), ('some-draft', False)):
+            MtEntry.objects.create(
+                author=author,
+                title=slug.replace('-', ' ').title(),
+                slug=slug,
+                body='<p>hi</p>',
+                published=published,
+            )
+        response = self.client.get('/or/links.json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/json; charset=utf-8')
+        self.assertEqual(json.loads(response.content), [{
+            'link': '/and/live-post',
+            'id': '/and/live-post',
+            'name': 'I like tight pants and live post',
+            'type': 'website',
+        }])
