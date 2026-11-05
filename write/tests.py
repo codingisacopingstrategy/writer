@@ -339,6 +339,38 @@ class EntryApiAuthTests(TestCase):
         self.assertNotContains(response, '{{ STATIC_URL }}aloha/lib/aloha.js')
         self.assertNotContains(response, 'src="/and/aloha/lib/aloha.js"')
 
+    def old_entry(self, published):
+        old = MtEntry.objects.create(
+            author=self.owner,
+            title='Old',
+            slug='old-style',
+            body='<p>hi</p>',
+            published=published,
+        )
+        old.created_on = timezone.make_aware(datetime(2012, 10, 12, 22, 0, 0))
+        old.save(update_fields=['created_on'])
+        return old
+
+    def test_old_editor_offers_publish_on_a_draft(self):
+        old = self.old_entry(published=False)
+        self.client.force_login(self.owner)
+        response = self.client.get('/or/%s' % old.slug)
+        self.assertContains(response, 'id="publish-entry">Publish</button>')
+        self.assertContains(response, 'id="publish-all"')
+
+    def test_old_editor_offers_save_modifications_on_a_live_entry(self):
+        old = self.old_entry(published=True)
+        self.client.force_login(self.owner)
+        response = self.client.get('/or/%s' % old.slug)
+        self.assertContains(response, 'id="publish-entry">Save Modifications</button>')
+
+    def test_old_editor_hides_publish_without_the_permission(self):
+        old = self.old_entry(published=False)
+        self.client.force_login(self.assist)
+        response = self.client.get('/or/%s' % old.slug)
+        self.assertNotContains(response, 'id="publish-entry"')
+        self.assertNotContains(response, 'id="publish-all"')
+
     def test_read_comment_form_loads_squire(self):
         response = self.client.get('/is/%s' % self.live.slug)
         self.assertContains(response, '/and/logged/in/roxanne/squire/squire-raw.js')

@@ -77,7 +77,9 @@
   {% for author in authors %}
     <option value="{{ author.pk }}"{% if author.pk == e.author.pk %} selected="true"{% endif %}>{{ author }}</option>
   {% endfor %}</select>
-    {% if perms.write.publish_mtentry %}<h4 class="author">published: <input property="mt:entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.published %}checked="yes"{% endif%}/></h4>{% endif %}
+    {% if perms.write.publish_mtentry %}<h4 class="author">published: <input property="mt:entry_status" type="checkbox" name="vehicle" value="Bike" {% if e.published %}checked="yes"{% endif%}/></h4>
+  <p><button type="button" id="publish-entry">{% if e.published %}Save Modifications{% else %}Publish{% endif %}</button></p>
+  <p><label><input type="checkbox" id="publish-all"> update all posts</label></p>{% endif %}
   <h4>Excerpt</h4>
   <p><a href="#" id="set-excerpt">Set excerpt</a></p>
   <h4>Thumbnail uri</h4>  
