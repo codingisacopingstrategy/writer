@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 
 from write.models import MtEntry
 from write.publish import regenerate_published_site, write_entry_html
@@ -10,21 +10,23 @@ from write.publish import regenerate_published_site, write_entry_html
 class Command(BaseCommand):
     help = "Saves html version"
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "slug",
+            nargs="?",
+            help="Slug of a published post. Leave it out to regenerate the whole site",
+        )
+
     def handle(self, *args, **options):
-        if len(args) > 1:
-            print("usage: python manage.py publish               # publish all posts")
-            print("usage: python manage.py publish slug-of-post  # publish one post")
-
-        elif len(args) == 1:
-            slug = args[0]
-            try:
-                entry = MtEntry.objects.get(slug=slug)
-            except MtEntry.DoesNotExist:
-                print("post %s not found" % slug)
-                return
-            print("fetching", entry.title.encode("utf-8"))
-            path = write_entry_html(entry)
-            print("generated", path)
-
-        else:
+        slug = options["slug"]
+        if not slug:
             regenerate_published_site()
+            return
+
+        try:
+            entry = MtEntry.objects.get(slug=slug, published=True)
+        except MtEntry.DoesNotExist:
+            raise CommandError("no published post with the slug %s" % slug)
+
+        path = write_entry_html(entry)
+        self.stdout.write("generated %s" % path)

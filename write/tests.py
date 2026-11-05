@@ -2,9 +2,12 @@ import json
 import os
 import tempfile
 from datetime import datetime
+from io import StringIO
 from unittest.mock import patch
 
 from django.contrib.auth.models import Permission, User
+from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.test import TestCase
 from django.utils import timezone
 
@@ -575,3 +578,36 @@ class LinksJsonTests(TestCase):
             'name': 'I like tight pants and live post',
             'type': 'website',
         }])
+
+
+class PublishCommandTests(TestCase):
+    def setUp(self):
+        author = User.objects.create_user('glit')
+        for slug, published in (('live', True), ('draft', False)):
+            MtEntry.objects.create(
+                author=author,
+                title=slug.title(),
+                slug=slug,
+                body='<p>hi</p>',
+                published=published,
+            )
+
+    @patch('write.management.commands.publish.regenerate_published_site')
+    def test_slug_writes_only_that_post(self, mock_all):
+        with tempfile.TemporaryDirectory() as output, patch('write.publish.OUTPUT_DIR', output):
+            call_command('publish', 'live', stdout=StringIO())
+            self.assertEqual(os.listdir(output), ['live.html'])
+        mock_all.assert_not_called()
+
+    def test_draft_and_unknown_slugs_are_refused(self):
+        for slug in ('draft', 'no-such-post'):
+            with self.subTest(slug=slug):
+                with tempfile.TemporaryDirectory() as output, patch('write.publish.OUTPUT_DIR', output):
+                    with self.assertRaises(CommandError):
+                        call_command('publish', slug)
+                    self.assertEqual(os.listdir(output), [])
+
+    @patch('write.management.commands.publish.regenerate_published_site')
+    def test_no_slug_regenerates_the_site(self, mock_all):
+        call_command('publish')
+        mock_all.assert_called_once_with()
