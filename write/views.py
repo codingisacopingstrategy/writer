@@ -33,7 +33,7 @@ def get_client_ip(request):
 
 def latest_entry_read(request):
     """
-    /and/ redirects to /and/the-latest-article
+    /is/ redirects to /is/the-latest-article
     """
     e = MtEntry.objects.filter(published=True).first()
     return redirect('entry-read', slug=e.slug)

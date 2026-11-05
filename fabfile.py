@@ -1,15 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-This fabfile contains some functions that allow to rebuild and
-archive the blog on the server that hosts it. Which is where
-the movable type software is installed that takes care of publishing
-static html files, handling public comments and trackbacks.
-"""
-
 import os
-from getpass import getpass
 from shlex import quote
 from fabric import Connection, task
 
