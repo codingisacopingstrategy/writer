@@ -557,6 +557,21 @@ class LatestEntryTests(TestCase):
         self.assertIn('/output/latest.txt', paths)
         self.assertNotIn('/output/index.php', paths)
 
+    def test_publish_writes_about_html_with_working_links(self):
+        for username in AUTHOR_SLUGS:
+            User.objects.get_or_create(username=username)
+        with tempfile.TemporaryDirectory() as output, patch('write.publish.OUTPUT_DIR', output):
+            write_site_indexes()
+            with open(os.path.join(output, 'about.html'), encoding='utf-8') as handle:
+                html = handle.read()
+        self.assertIn('<a href="/and/newer">latest</a>', html)
+        self.assertIn('<a href="/and/archives">index</a>', html)
+        self.assertIn('<li>and reading ‘about’ pages</li>', html)
+
+    def test_update_all_commits_about_html(self):
+        with patch('write.publish.OUTPUT_DIR', '/output'):
+            self.assertIn('/output/about.html', generated_output_paths())
+
 
 class LinksJsonTests(TestCase):
     def test_lists_only_published_entries(self):

@@ -39,6 +39,7 @@ def write_site_indexes(client=None):
     writes = [
         ("/is/latest.txt", os.path.join(OUTPUT_DIR, "latest.txt")),
         ("/is/archives", os.path.join(OUTPUT_DIR, "archives.html")),
+        ("/is/about", os.path.join(OUTPUT_DIR, "about.html")),
         (
             "/is/feed/us/recent_entries.xml",
             os.path.join(OUTPUT_DIR, "feed", "us", "recent_entries.xml"),
@@ -75,6 +76,7 @@ def generated_output_paths():
         [
             os.path.join(OUTPUT_DIR, "latest.txt"),
             os.path.join(OUTPUT_DIR, "archives.html"),
+            os.path.join(OUTPUT_DIR, "about.html"),
             os.path.join(OUTPUT_DIR, "feed", "us", "recent_entries.xml"),
         ]
     )

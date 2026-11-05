@@ -217,7 +217,12 @@ def about(request):
     """
     An about page
     """
-    return render(request, "themes/roxanne/about.html", {})
+    tpl_params = {}
+    tpl_params['latest_entry'] = MtEntry.objects.filter(published=True).first()
+    tpl_params['EDITING'] = False
+    tpl_params['andor'] = '/and/'
+    tpl_params['title'] = 'reading ‘about’ pages'
+    return render(request, "themes/roxanne/about.html", tpl_params)
 
 
 def latest_txt(request):
