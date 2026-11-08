@@ -47,7 +47,7 @@
                 {% if e.next %}<li><a href="{{ andor }}{{ e.next.slug }}">next</a></li>{% endif %}
                 <li><a href="/and/about">about</a></li>
                 <li {% if request.path == "/is/archives" %}class="current">index{% else %}>
-                        <a href="{{ andor }}archives">index</a>{% endif %}</li>{% if EDITING %}
+                        <a href="/{% if EDITING %}is{% else %}and{% endif %}/archives">index</a>{% endif %}</li>{% if EDITING %}
                 <li>
                     <form method="post" action="{% url 'logout' %}">
                         {% csrf_token %}
