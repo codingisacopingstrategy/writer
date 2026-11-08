@@ -51,8 +51,13 @@ def screenshot(slugs=[]):
             url = "%s?id=%s&the_secret_question=the_secret_answer" % (url, randint(222222, 777777))
             filename = screenshot_path(post)
             page = context.new_page()
+            # The button waits for all of this in one request, so every step has a timeout
+            # that keeps the whole well inside gunicorn's 30 second worker timeout
+            response = page.goto(url, wait_until="load", timeout=10000)
+            if not response or not response.ok:
+                raise RuntimeError("%s answered %s" % (posts[post], response.status if response else "nothing"))
             try:
-                page.goto(url, wait_until="networkidle", timeout=15000)
+                page.wait_for_load_state("networkidle", timeout=8000)
             except PlaywrightTimeoutError:
                 pass  # the page loaded, but something kept the network busy
             # remove open comment form for screenshot
@@ -71,5 +76,5 @@ def screenshot(slugs=[]):
                 header#site { display: none; }
                 .bottom-gap, footer { display: none !important; }
             """)
-            page.locator(".article").screenshot(path=filename)
+            page.locator(".article").screenshot(path=filename, timeout=5000)
             page.close()
