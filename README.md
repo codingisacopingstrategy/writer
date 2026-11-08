@@ -224,6 +224,8 @@ Screenshots are the images shown on the wall. You can find them in `assets/as/sc
 
 Both use `write/screenshots.py`, which loads `/is/<slug>` from `DEV_SERVER` in headless Chromium, so they need `playwright install chromium` and the site running at that address. For the button on the server, that means `DEV_SERVER` must be an address the server can reach itself at, and Django must be able to answer that page request while the button’s own request is still waiting. On a Linux server Chromium also needs system libraries, which `sudo <venv>/bin/playwright install-deps chromium` installs (Debian and Ubuntu); without them the launch fails with `error while loading shared libraries`. The command doesn’t commit its screenshots; `fab commit` picks them up with the rest of `assets/`.
 
+Articles with the coloured background come out as transparent PNGs that show just the rounded rectangle. 2011 articles have none, and keep their white background.
+
 Screenshots are switched off in `fab publish`, because regenerated PNGs are never identical and would bloat the public repository’s history.
 
 ## Known issues

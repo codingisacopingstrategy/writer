@@ -70,5 +70,17 @@ def screenshot(slugs=[]):
                 header#site { display: none; }
                 .bottom-gap, footer { display: none !important; }
             """)
-            page.locator(".article").screenshot(path=filename, timeout=5000)
+            # Pages with the coloured background get a transparent PNG, so the rounded
+            # rectangle shows as one. Pages without (2011) keep their white background
+            card_radius = page.evaluate("""() => {
+                const card = document.querySelector(".background-canvas");
+                return card ? getComputedStyle(card).borderRadius : null;
+            }""")
+            if card_radius:
+                page.add_style_tag(content="""
+                    html { background: transparent !important; }
+                    /* the logo and the ornamented border would otherwise stick out of the rounded corners */
+                    main.article { clip-path: inset(0 round %s); }
+                """ % card_radius)
+            page.locator(".article").screenshot(path=filename, timeout=5000, omit_background=bool(card_radius))
             page.close()
