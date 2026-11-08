@@ -20,7 +20,7 @@
         <div class="grid-item" style="width: 200px;">
             <p class="byline"><a href="/and/{{ e.slug }}">I like tight pants and {{ e.title | lower }}</a> {{ e.created_on | date:"Y-m-d" }}</p>
             <a href="/and/{{ e.slug }}">
-            <img src="/and/assets/as/screenshots/of/{{ e.slug }}.png" style="width:200px;" alt="I like tight pants and {{ e.title|lower }}">
+            {% with size=e.screenshot_size %}<img src="/and/assets/as/screenshots/of/{{ e.slug }}.png"{% if size %} width="{{ size.0 }}" height="{{ size.1 }}"{% endif %} style="width:200px;height:auto;" alt="I like tight pants and {{ e.title|lower }}">{% endwith %}
             </a>
         </div>
     {% endfor %}
@@ -32,7 +32,7 @@
         <div class="grid-item" style="width: 200px;">
             <p class="byline"><a href="/and/{{ e.slug }}">I like tight pants and {{ e.title | lower }}</a> {{ e.created_on | date:"Y-m-d" }}</p>
             <a href="/and/{{ e.slug }}">
-            <img src="/and/assets/as/screenshots/of/{{ e.slug }}.png" style="width:200px;" alt="I like tight pants and {{ e.title|lower }}">
+            {% with size=e.screenshot_size %}<img src="/and/assets/as/screenshots/of/{{ e.slug }}.png"{% if size %} width="{{ size.0 }}" height="{{ size.1 }}"{% endif %} style="width:200px;height:auto;" alt="I like tight pants and {{ e.title|lower }}">{% endwith %}
             </a>
         </div>
     {% endfor %}

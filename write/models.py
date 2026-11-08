@@ -8,6 +8,7 @@ from datetime import datetime
 from dulwich.repo import Repo
 from dulwich.porcelain import get_tree_changes, add, commit
 
+from django.core.files.images import get_image_dimensions
 from django.db import models
 
 # Because we’ll be calling out for screenshots
@@ -21,6 +22,10 @@ from write.settings import PUBLIC_PATH
 
 REPO = Repo(PUBLIC_PATH)
 rex = re.compile(r'\W+')
+
+
+def screenshot_path(slug):
+    return os.path.join(PUBLIC_PATH, "assets", "as", "screenshots", "of", "%s.png" % slug)
 
 
 def as_text(value):
@@ -93,6 +98,16 @@ class MtEntry(models.Model):
 
     def screenshot_url(self):
         return '/and/assets/as/screenshots/of/%s.png' % self.slug
+
+    def screenshot_size(self):
+        """
+        (width, height) of the screenshot, or None when there isn’t one yet
+        """
+        try:
+            size = get_image_dimensions(screenshot_path(self.slug))
+        except FileNotFoundError:
+            return None
+        return size if all(size) else None
     
     def editing_uri(self):
         return '/or/' + self.slug

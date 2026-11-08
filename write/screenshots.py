@@ -6,19 +6,13 @@ Create screenshots for the archive page
 """
 
 from random import randint
-import os
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, sync_playwright
 
-from write.models import commit_repo_paths
-from write.settings import PUBLIC_PATH
+from write.models import commit_repo_paths, screenshot_path
 try:
     from write.settings import DEV_SERVER
 except ImportError:
     DEV_SERVER = 'http://127.0.0.1:8000/'
-
-
-def screenshot_path(slug):
-    return os.path.join(PUBLIC_PATH, "assets", "as", "screenshots", "of", "%s.png" % slug)
 
 
 def screenshot_entry(entry):

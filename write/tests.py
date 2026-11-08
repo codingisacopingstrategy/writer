@@ -10,6 +10,7 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import TestCase
 from django.utils import timezone
+from PIL import Image
 
 from write.auth import can_delete_entry, can_publish
 from write.forms import CommentForm
@@ -717,3 +718,31 @@ class EntryScreenshotTests(TestCase):
                 with self.subTest(user=user, slug=slug):
                     response = self.client.get('/or/%s' % slug)
                     self.assertNotContains(response, 'id="screenshot-entry"')
+
+
+class ArchivesScreenshotSizeTests(TestCase):
+    def setUp(self):
+        author = User.objects.create_user('editor')
+        for slug in ('with-screenshot', 'without-screenshot'):
+            MtEntry.objects.create(author=author, title=slug, slug=slug, body='<p>hi</p>', published=True)
+        self.shots = tempfile.TemporaryDirectory()
+        self.addCleanup(self.shots.cleanup)
+        Image.new('RGB', (1190, 3000)).save(os.path.join(self.shots.name, 'with-screenshot.png'))
+        patcher = patch('write.models.screenshot_path', lambda slug: os.path.join(self.shots.name, '%s.png' % slug))
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_screenshot_size_reads_the_png(self):
+        self.assertEqual(MtEntry.objects.get(slug='with-screenshot').screenshot_size(), (1190, 3000))
+        self.assertIsNone(MtEntry.objects.get(slug='without-screenshot').screenshot_size())
+
+    def test_archives_give_each_screenshot_its_size(self):
+        response = self.client.get('/is/archives')
+        self.assertContains(
+            response,
+            '<img src="/and/assets/as/screenshots/of/with-screenshot.png" width="1190" height="3000" style="width:200px;height:auto;"',
+        )
+        self.assertContains(
+            response,
+            '<img src="/and/assets/as/screenshots/of/without-screenshot.png" style="width:200px;height:auto;"',
+        )
