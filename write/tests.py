@@ -16,6 +16,7 @@ from write.forms import CommentForm
 from write.models import MtComment, MtEntry, git_identity, page_commit_message, staged_page_changed
 from write.publish import AUTHOR_SLUGS, generated_output_paths, write_site_indexes
 from write.sanitize import sanitize_comment_html
+from write.screenshots import screenshot_entry, screenshot_path
 
 
 def grant(user, *codenames):
@@ -626,3 +627,93 @@ class PublishCommandTests(TestCase):
     def test_no_slug_regenerates_the_site(self, mock_all):
         call_command('publish')
         mock_all.assert_called_once_with()
+
+
+class EntryScreenshotTests(TestCase):
+    def setUp(self):
+        self.editor = User.objects.create_user('editor')
+        grant(self.editor, 'change_mtentry', 'publish_mtentry')
+        self.assist = User.objects.create_user('assist')
+        grant(self.assist, 'change_mtentry')
+        self.stranger = User.objects.create_user('stranger')
+        self.live = MtEntry.objects.create(
+            author=self.editor,
+            title='Live',
+            slug='live',
+            body='<p>hi</p>',
+            published=True,
+        )
+        old = MtEntry.objects.create(
+            author=self.editor,
+            title='Old',
+            slug='old-style',
+            body='<p>hi</p>',
+            published=True,
+        )
+        old.created_on = timezone.make_aware(datetime(2012, 10, 12, 22, 0, 0))
+        old.save(update_fields=['created_on'])
+
+    def request_screenshot(self, user, method='post'):
+        if user is not None:
+            self.client.force_login(user)
+        else:
+            self.client.logout()
+        return getattr(self.client, method)('/api/entry/%s/screenshot/' % self.live.pk)
+
+    @patch('write.api.screenshot_entry')
+    def test_editor_takes_a_screenshot_of_the_entry(self, mock_shot):
+        response = self.request_screenshot(self.editor)
+        self.assertEqual(response.status_code, 200)
+        mock_shot.assert_called_once_with(self.live)
+        self.assertEqual(
+            json.loads(response.content),
+            {'screenshot_url': '/and/assets/as/screenshots/of/live.png'},
+        )
+
+    @patch('write.screenshots.commit_repo_paths', return_value=b'cid')
+    @patch('write.screenshots.screenshot')
+    def test_the_new_screenshot_is_committed_as_the_author(self, mock_shot, mock_commit):
+        self.live.author.email = 'editor@example.com'
+        self.live.author.save()
+        screenshot_entry(self.live)
+        mock_shot.assert_called_once_with(['live'])
+        mock_commit.assert_called_once_with(
+            [screenshot_path('live')],
+            message='Screenshot: I like tight pants and live',
+            name='editor',
+            email='editor@example.com',
+        )
+        self.assertTrue(screenshot_path('live').endswith('/assets/as/screenshots/of/live.png'))
+
+    @patch('write.api.screenshot_entry')
+    def test_anonymous_and_users_without_publish_rights_are_refused(self, mock_shot):
+        for user in (None, self.stranger, self.assist):
+            with self.subTest(user=user):
+                self.assertEqual(self.request_screenshot(user).status_code, 401)
+        mock_shot.assert_not_called()
+
+    @patch('write.api.screenshot_entry')
+    def test_only_post_is_allowed(self, mock_shot):
+        self.assertEqual(self.request_screenshot(self.editor, method='get').status_code, 405)
+        mock_shot.assert_not_called()
+
+    @patch('write.api.screenshot_entry', side_effect=RuntimeError('no browser'))
+    def test_a_failed_screenshot_is_an_error_response(self, mock_shot):
+        # Tastypie answers with a 500 but also signals the exception, which the test client re-raises
+        self.client.raise_request_exception = False
+        self.assertEqual(self.request_screenshot(self.editor).status_code, 500)
+
+    def test_both_editors_show_the_button_to_editors(self):
+        self.client.force_login(self.editor)
+        for slug in ('live', 'old-style'):
+            with self.subTest(slug=slug):
+                response = self.client.get('/or/%s' % slug)
+                self.assertContains(response, 'id="screenshot-entry"')
+
+    def test_both_editors_hide_the_button_without_publish_rights(self):
+        for user in (self.stranger, self.assist):
+            self.client.force_login(user)
+            for slug in ('live', 'old-style'):
+                with self.subTest(user=user, slug=slug):
+                    response = self.client.get('/or/%s' % slug)
+                    self.assertNotContains(response, 'id="screenshot-entry"')

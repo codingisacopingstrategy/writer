@@ -114,6 +114,11 @@
         <label class="publish-all"><input type="checkbox" id="publish-all"> update all posts</label>
     </p>
     {% endif %}
+    {% if e.pk and perms.write.publish_mtentry %}
+    <p class="publish-field">
+        <button type="button" id="screenshot-entry" class="publish-entry">Take Screenshot</button>
+    </p>
+    {% endif %}
     {% endif %}
 
 {% endblock %}

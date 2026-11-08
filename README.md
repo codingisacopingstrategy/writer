@@ -191,7 +191,7 @@ You can find the tests in `write/tests.py` and `assets/tests.py`. They use a tem
 | `USE_TZ`                                            | Must be `True`. The default in `settings.py` is `False`, and the date cutoffs raise `TypeError` without it |
 | `ALLOWED_HOSTS`                                     | Defaults to `localhost` and `127.0.0.1`; set your domain in production. `testserver` is always added       |
 | `FABRIC_HOSTS`, `FABRIC_PATH`, `FABRIC_DJANGO_PATH` | The server, and the public repository and this repository on it                                            |
-| `DEV_SERVER`                                        | Optional base URL for `manage.py screenshot`                                                               |
+| `DEV_SERVER`                                        | Base URL that screenshots load pages from. Defaults to `http://127.0.0.1:8000/`                            |
 | `DEBUG`, `SECRET_KEY`                               | `settings.py` has development values; override both in production                                          |
 
 ## Deployment
@@ -217,7 +217,14 @@ The server’s public repository gains a commit with every publish and comment, 
 
 ## Screenshots
 
-`python manage.py screenshot [slug …]` captures the images shown on the wall, and defaults to all published entries. It needs the dev server running and `playwright install chromium`. It’s switched off in `fab publish`, because regenerated PNGs are never identical and would bloat the public repository’s history.
+Screenshots are the images shown on the wall. You can find them in `assets/as/screenshots/of/` in the public repository. There are two ways to take them:
+
+- **Take Screenshot**, under the publish controls in both editors, captures the article as it was last saved and commits the PNG, attributed to the article’s author, through `POST /api/entry/<id>/screenshot/`. It needs the **Can publish** permission.
+- `python manage.py screenshot [slug …]` captures several at once, and defaults to all published entries.
+
+Both use `write/screenshots.py`, which loads `/is/<slug>` from `DEV_SERVER` in headless Chromium, so they need `playwright install chromium` and the site running at that address. For the button on the server, that means `DEV_SERVER` must be an address the server can reach itself at, and Django must be able to answer that page request while the button’s own request is still waiting. The command doesn’t commit its screenshots; `fab commit` picks them up with the rest of `assets/`.
+
+Screenshots are switched off in `fab publish`, because regenerated PNGs are never identical and would bloat the public repository’s history.
 
 ## Known issues
 

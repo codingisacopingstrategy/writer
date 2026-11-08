@@ -18,6 +18,7 @@ from write.auth import (
 )
 from write.models import MtComment, MtEntry
 from write.publish import publish_entry
+from write.screenshots import screenshot_entry
 
 
 class MtAuthorResource(ModelResource):
@@ -79,6 +80,12 @@ class MtEntryResource(ModelResource):
                 self.wrap_view("publish"),
                 name="api_entry_publish",
             ),
+            re_path(
+                r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/screenshot%s$"
+                % (self._meta.resource_name, trailing_slash()),
+                self.wrap_view("screenshot"),
+                name="api_entry_screenshot",
+            ),
         ]
 
     def publish(self, request, **kwargs):
@@ -102,6 +109,23 @@ class MtEntryResource(ModelResource):
             request,
             {"published": True, "update_all": update_all},
         )
+
+    def screenshot(self, request, **kwargs):
+        """
+        Takes the screenshot the wall shows for this entry, and commits it
+        """
+        self.method_check(request, allowed=["post"])
+        self.is_authenticated(request)
+        if not can_publish(request.user):
+            return http.HttpUnauthorized()
+
+        try:
+            entry = MtEntry.objects.get(pk=kwargs["pk"])
+        except (MtEntry.DoesNotExist, ValueError):
+            return http.HttpNotFound()
+
+        screenshot_entry(entry)
+        return self.create_response(request, {"screenshot_url": entry.screenshot_url()})
 
 
 class MtCommentResource(ModelResource):
